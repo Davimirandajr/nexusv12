@@ -1,216 +1,58 @@
-/* --- NEXUS V12: YELLOW & RED RACING (MENU RETRÁTIL) --- */
 :root {
-    --primary-yellow: #ffcc00;
-    --accent-red: #cc0000;
-    --bg-dark: #0d0d0d;
-    --card-bg: #1a1a1a;
-    --text-white: #ffffff;
-    --text-gray: #a0a0a0;
-    --sidebar-width: 260px;
+    --y: #ffcc00; --r: #cc0000; --bg: #0d0d0d; --card: #1a1a1a;
 }
 
-* { box-sizing: border-box; }
-
-body {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--text-white);
-    margin: 0;
-    overflow-x: hidden;
-}
-
+* { box-sizing: border-box; transition: all 0.3s ease; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; }
 .hidden { display: none !important; }
 
-/* --- TELA DE LOGIN (OCUPA TELA TODA) --- */
-#login {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle, #222 0%, #000 100%);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 2000;
-}
-
-.login-box {
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 15px;
-    border-top: 4px solid var(--primary-yellow);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    width: 100%;
-    max-width: 350px;
-    text-align: center;
-}
-
-/* --- SIDEBAR RETRÁTIL --- */
+/* MENU LATERAL */
 aside {
-    width: var(--sidebar-width);
-    background: #000;
-    height: 100vh;
-    padding: 20px;
-    border-right: 1px solid #222;
-    position: fixed;
-    left: 0;
-    top: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1500;
-    display: flex;
-    flex-direction: column;
+    width: 260px; background: #000; height: 100vh; padding: 20px;
+    position: fixed; left: 0; top: 0; z-index: 1000;
+    border-right: 1px solid #222; display: flex; flex-direction: column;
 }
 
-/* Estilo do Botão da Setinha/Hambúrguer */
 #toggle-menu {
-    background: var(--primary-yellow);
-    border: none;
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    transition: 0.3s;
-    color: #000;
-    flex-shrink: 0;
+    position: fixed; left: 20px; top: 20px; z-index: 1100;
+    background: var(--y); border: none; width: 45px; height: 45px; border-radius: 8px;
+    cursor: pointer; font-size: 1.2rem; display: none; /* Só aparece no celular */
 }
 
-#toggle-menu:hover { transform: scale(1.1); background: #fff; }
+main { margin-left: 260px; padding: 40px; min-height: 100vh; }
 
-.logo-area h2 { 
-    color: var(--primary-yellow); 
-    margin-bottom: 30px; 
-    border-bottom: 2px solid var(--accent-red);
-    padding-bottom: 10px;
-}
-
-/* Navegação */
-nav { flex: 1; }
-.nav-btn {
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: var(--text-gray);
-    padding: 15px;
-    text-align: left;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-.nav-btn i { margin-right: 12px; font-size: 1.2rem; }
-.nav-btn:hover { background: rgba(255, 204, 0, 0.1); color: var(--primary-yellow); }
-
-/* Patrimônio */
-.stats-sidebar {
-    background: var(--accent-red);
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-/* --- CONTEÚDO PRINCIPAL (MAIN) --- */
-main {
-    margin-left: var(--sidebar-width);
-    padding: 40px;
-    transition: all 0.4s ease;
-    min-height: 100vh;
-}
-
-/* --- RESPONSIVIDADE (MOBILE) --- */
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
-    aside {
-        left: -260px; /* Esconde o menu para fora da tela */
-    }
-
-    aside.active {
-        left: 0; /* Desliza para dentro quando ativo */
-        box-shadow: 10px 0 50px rgba(0,0,0,0.9);
-    }
-
-    main {
-        margin-left: 0;
-        padding: 80px 20px 20px 20px;
-    }
-
-    #toggle-menu {
-        position: fixed;
-        left: 15px;
-        top: 15px;
-        z-index: 1600;
-    }
+    #toggle-menu { display: flex; align-items: center; justify-content: center; }
+    aside { left: -260px; padding-top: 80px; }
+    aside.active { left: 0; }
+    main { margin-left: 0; padding: 80px 15px; }
 }
 
-/* --- CARDS E GRID --- */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-}
+/* CARDS SHOWROOM */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.card { background: var(--card); border-radius: 12px; border: 1px solid #333; overflow: hidden; }
+.card:hover { border-color: var(--y); transform: translateY(-5px); }
+.img-v { height: 190px; background-size: cover; background-position: center; transition: 0.5s; }
+.info { padding: 15px; }
+.price { color: var(--y); font-size: 1.4rem; font-weight: bold; margin: 5px 0; }
 
-.card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: 0.3s;
-    border: 1px solid #333;
-}
+/* CRM */
+.card-client { border-left: 5px solid #444; background: var(--card); padding: 15px; margin-bottom: 15px; border-radius: 8px; }
+.lead-quente { border-left-color: var(--r); }
+.lead-morno { border-left-color: var(--y); }
 
-.card:hover { border-color: var(--primary-yellow); transform: translateY(-5px); }
+/* BOTÕES E INPUTS */
+.btn-primary { background: var(--y); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+.nav-btn { background: transparent; border: none; color: #888; padding: 15px; width: 100%; text-align: left; cursor: pointer; display: flex; align-items: center; }
+.nav-btn i { margin-right: 10px; }
+.nav-btn:hover { color: var(--y); background: #111; }
+.stats-sidebar { background: var(--r); padding: 15px; border-radius: 10px; margin-top: auto; text-align: center; }
 
-.img-v {
-    height: 190px;
-    background-size: cover;
-    background-position: center;
-    transition: 0.5s ease-in-out; /* Suaviza a troca de foto no hover */
-}
-
-.info { padding: 20px; }
-.price { color: var(--primary-yellow); font-size: 1.4rem; font-weight: bold; margin: 10px 0; }
-.specs { font-size: 0.85rem; color: var(--text-gray); text-transform: uppercase; }
-
-/* --- CRM LEADS --- */
-.grid-crm { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-.card-client {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 10px;
-    border-left: 6px solid #444;
-}
-.lead-quente { border-left-color: var(--accent-red); }
-.lead-morno { border-left-color: var(--primary-yellow); }
-.lead-frio { border-left-color: #555; }
-
-/* --- FORMULÁRIOS --- */
-.form-container { background: #151515; padding: 25px; border-radius: 12px; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
-
-input, select, textarea {
-    background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%;
-}
-
-.btn-primary {
-    background: var(--primary-yellow); color: #000; border: none; padding: 15px; 
-    border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase;
-}
-
-/* --- PÁGINAS --- */
+input, select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; margin-bottom: 10px; border-radius: 6px; }
 .page { display: none; }
-.page.active { display: block; animation: fadeIn 0.4s; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.page.active { display: block; }
 
-/* Loader */
-#loader {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; display: flex; align-items: center; justify-content: center; z-index: 9999;
-}
-.bar { width: 100px; height: 3px; background: var(--primary-yellow); margin-top: 10px; border-radius: 5px; }
+/* LOADER */
+#loader { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.bar { width: 100px; height: 3px; background: var(--y); margin-top: 10px; border-radius: 5px; }
