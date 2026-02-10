@@ -39,24 +39,14 @@
             <div class="logo-area">
                 <h2>NEXUS <span>V12</span></h2>
             </div>
-
             <nav>
-                <button onclick="window.nav('showroom')" class="nav-btn">
-                    <i class="fa fa-car"></i> <span>Estoque</span>
-                </button>
-                <button onclick="window.nav('novo')" class="nav-btn">
-                    <i class="fa fa-plus-circle"></i> <span>Novo Veículo</span>
-                </button>
-                <button onclick="window.nav('clientes')" class="nav-btn">
-                    <i class="fa fa-users"></i> <span>CRM Leads</span>
-                </button>
-                <button onclick="window.handleLogout()" class="nav-btn logout">
-                    <i class="fa fa-sign-out-alt"></i> <span>Sair</span>
-                </button>
+                <button onclick="window.nav('showroom')" class="nav-btn"><i class="fa fa-car"></i> <span>Estoque</span></button>
+                <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus-circle"></i> <span>Novo Veículo</span></button>
+                <button onclick="window.nav('clientes')" class="nav-btn"><i class="fa fa-users"></i> <span>CRM Leads</span></button>
+                <button onclick="window.handleLogout()" class="nav-btn logout"><i class="fa fa-sign-out-alt"></i> <span>Sair</span></button>
             </nav>
-
             <div class="stats-sidebar">
-                <p>Patrimônio em Estoque:</p>
+                <p>Patrimônio Total:</p>
                 <h3 id="stat-total">R$ 0,00</h3>
             </div>
         </aside>
@@ -65,7 +55,7 @@
             <section id="showroom" class="page active">
                 <header class="page-header">
                     <h1>Showroom Ativo</h1>
-                    <button onclick="window.open('portal.html', '_blank')" class="btn-primary-sm">Ver Portal Público</button>
+                    <button onclick="window.open('portal.html', '_blank')" class="btn-primary" style="width: auto; padding: 10px 20px;">Ver Portal</button>
                 </header>
                 <div id="listaCarros" class="grid"></div>
             </section>
@@ -75,38 +65,38 @@
                 <div class="form-container">
                     <div class="form-grid">
                         <input id="modelo" type="text" placeholder="Modelo e Versão">
-                        <input id="preco" type="number" placeholder="Preço (R$)">
-                        <input id="km" type="number" placeholder="Quilometragem">
+                        <input id="preco" type="number" placeholder="Preço (Ex: 80000)">
+                        <input id="km" type="number" placeholder="KM">
                         <select id="cambio">
                             <option value="Automático">Automático</option>
                             <option value="Manual">Manual</option>
                         </select>
                     </div>
-                    <textarea id="descricao" rows="3" placeholder="Descrição e Opcionais"></textarea>
+                    <textarea id="descricao" rows="3" placeholder="Opcionais e Detalhes"></textarea>
                     <div class="upload-grid">
-                        <input type="file" id="fotoFrente">
-                        <input type="file" id="fotoTraseira">
-                        <input type="file" id="fotoInterior">
+                        <label>Foto Frente: <input type="file" id="fotoFrente"></label>
+                        <label>Foto Traseira: <input type="file" id="fotoTraseira"></label>
+                        <label>Foto Interior: <input type="file" id="fotoInterior"></label>
                     </div>
                     <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary" style="margin-top:20px">SALVAR NO SISTEMA</button>
                 </div>
             </section>
 
             <section id="clientes" class="page">
-                <header class="page-header"><h1>CRM Leads</h1></header>
+                <header class="page-header"><h1>Gestão de Leads</h1></header>
                 <div class="crm-container">
                     <div class="crm-form">
-                        <input id="c-nome" placeholder="Nome">
+                        <input id="c-nome" placeholder="Nome do Cliente">
                         <input id="c-fone" placeholder="WhatsApp">
                         <select id="c-situacao">
-                            <option value="quente">🔥 Quente</option>
-                            <option value="morno">⚡ Morno</option>
-                            <option value="frio">❄️ Frio</option>
+                            <option value="quente">🔥 Lead Quente</option>
+                            <option value="morno">⚡ Em Negociação</option>
+                            <option value="frio">❄️ Frio / Curioso</option>
                         </select>
                         <textarea id="c-obs" placeholder="Observações"></textarea>
                         <button onclick="window.addCliente()" class="btn-primary">CADASTRAR LEAD</button>
                     </div>
-                    <div id="listaClientes" class="grid-crm"></div>
+                    <div id="listaClientes" class="grid-crm" style="margin-top: 20px;"></div>
                 </div>
             </section>
         </main>
