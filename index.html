@@ -31,12 +31,11 @@
     </section>
 
     <div id="app" class="hidden">
-        
+        <button id="toggle-menu" onclick="window.toggleSidebar()">
+            <i class="fa fa-bars"></i>
+        </button>
+
         <aside id="sidebar">
-            <button id="toggle-menu" onclick="window.toggleSidebar()">
-                <i class="fa fa-bars"></i>
-            </button>
-            
             <div class="logo-area">
                 <h2>NEXUS <span>V12</span></h2>
             </div>
@@ -63,13 +62,10 @@
         </aside>
 
         <main id="main-content">
-            
             <section id="showroom" class="page active">
                 <header class="page-header">
                     <h1>Showroom Ativo</h1>
-                    <div class="header-actions">
-                         <button onclick="window.open('portal.html', '_blank')" class="btn-ghost-sm">Abrir Portal Público</button>
-                    </div>
+                    <button onclick="window.open('portal.html', '_blank')" class="btn-primary-sm">Ver Portal Público</button>
                 </header>
                 <div id="listaCarros" class="grid"></div>
             </section>
@@ -78,58 +74,37 @@
                 <header class="page-header"><h1>Cadastrar Registro</h1></header>
                 <div class="form-container">
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label>Modelo e Versão</label>
-                            <input id="modelo" type="text" placeholder="Ex: Porsche 911 Carrera S">
-                        </div>
-                        <div class="form-group">
-                            <label>Preço de Venda (R$)</label>
-                            <input id="preco" type="number" placeholder="Ex: 850000">
-                        </div>
-                        <div class="form-group">
-                            <label>Quilometragem (KM)</label>
-                            <input id="km" type="number" placeholder="Ex: 12000">
-                        </div>
-                        <div class="form-group">
-                            <label>Câmbio</label>
-                            <select id="cambio">
-                                <option value="Automático">Automático</option>
-                                <option value="Manual">Manual</option>
-                            </select>
-                        </div>
+                        <input id="modelo" type="text" placeholder="Modelo e Versão">
+                        <input id="preco" type="number" placeholder="Preço (R$)">
+                        <input id="km" type="number" placeholder="Quilometragem">
+                        <select id="cambio">
+                            <option value="Automático">Automático</option>
+                            <option value="Manual">Manual</option>
+                        </select>
                     </div>
-                    <div class="form-group full">
-                        <label>Descrição Detalhada / Opcionais</label>
-                        <textarea id="descricao" rows="3" placeholder="Ex: Teto solar, bancos em couro vermelho, único dono..."></textarea>
+                    <textarea id="descricao" rows="3" placeholder="Descrição e Opcionais"></textarea>
+                    <div class="upload-grid">
+                        <input type="file" id="fotoFrente">
+                        <input type="file" id="fotoTraseira">
+                        <input type="file" id="fotoInterior">
                     </div>
-                    <div class="upload-section">
-                        <label><i class="fa fa-camera"></i> Fotos (Frente, Traseira, Interior)</label>
-                        <div class="upload-grid">
-                            <input type="file" id="fotoFrente" accept="image/*">
-                            <input type="file" id="fotoTraseira" accept="image/*">
-                            <input type="file" id="fotoInterior" accept="image/*">
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary">SALVAR NO SISTEMA</button>
-                    </div>
+                    <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary" style="margin-top:20px">SALVAR NO SISTEMA</button>
                 </div>
             </section>
 
             <section id="clientes" class="page">
-                <header class="page-header"><h1>Gestão de Clientes (CRM)</h1></header>
+                <header class="page-header"><h1>CRM Leads</h1></header>
                 <div class="crm-container">
                     <div class="crm-form">
-                        <h3>Novo Lead</h3>
-                        <input id="c-nome" placeholder="Nome do Cliente">
+                        <input id="c-nome" placeholder="Nome">
                         <input id="c-fone" placeholder="WhatsApp">
                         <select id="c-situacao">
-                            <option value="quente">🔥 Lead Quente (Fechamento)</option>
-                            <option value="morno">⚡ Em Negociação</option>
-                            <option value="frio">❄️ Apenas Curioso</option>
+                            <option value="quente">🔥 Quente</option>
+                            <option value="morno">⚡ Morno</option>
+                            <option value="frio">❄️ Frio</option>
                         </select>
-                        <textarea id="c-obs" placeholder="Observações da negociação..."></textarea>
-                        <button onclick="window.addCliente()" class="btn-primary full">CADASTRAR LEAD</button>
+                        <textarea id="c-obs" placeholder="Observações"></textarea>
+                        <button onclick="window.addCliente()" class="btn-primary">CADASTRAR LEAD</button>
                     </div>
                     <div id="listaClientes" class="grid-crm"></div>
                 </div>
