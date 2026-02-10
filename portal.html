@@ -3,192 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus V12 | Showroom Exclusivo</title>
+    <title>Showroom Público | Nexus V12</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #00f2ff;
-            --bg: #050505;
-            --card-bg: #111;
-            --text: #ffffff;
-        }
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding-bottom: 50px;
-        }
-        header {
-            padding: 60px 20px;
-            text-align: center;
-            background: radial-gradient(circle at center, #1a1a1a, #050505);
-            border-bottom: 1px solid #222;
-        }
-        h1 { font-style: italic; letter-spacing: 8px; font-size: 3rem; margin: 0; text-transform: uppercase; }
-        h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
-        header p { color: #888; letter-spacing: 2px; margin-top: 10px; }
+        :root { --p: #ffcc00; --bg: #0d0d0d; --c: #1a1a1a; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 0; }
         
-        .container { max-width: 1300px; margin: auto; padding: 40px 20px; }
+        header { text-align: center; padding: 60px 20px; background: linear-gradient(to bottom, #000, var(--bg)); }
+        header h1 { color: var(--p); font-size: 3rem; letter-spacing: 5px; margin: 0; }
+        header p { color: #888; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 40px;
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 30px; 
         }
 
-        /* Card de Luxo */
-        .car-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid #222;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-        }
-        .car-card:hover { 
-            border-color: var(--primary); 
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-        
-        /* Área da Imagem com Transição Suave */
-        .car-img {
-            height: 280px;
-            background-size: cover;
-            background-position: center;
-            transition: background-image 0.8s ease-in-out; /* Efeito de crossfade */
+        .card { 
+            background: var(--c); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            border: 1px solid #333; 
+            transition: 0.4s;
             position: relative;
         }
 
-        /* Overlay para destacar o texto */
-        .car-img::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(to top, rgba(17,17,17,1), transparent);
+        .card:hover { border-color: var(--p); transform: translateY(-10px); }
+
+        .img-box { 
+            height: 250px; 
+            background-size: cover; 
+            background-position: center; 
+            transition: 0.6s ease-in-out; 
         }
 
-        .car-info { padding: 30px; position: relative; z-index: 2; }
-        .car-info h3 { margin: 0; font-size: 1.6rem; letter-spacing: 1px; }
-        .car-price { color: var(--primary); font-size: 2rem; font-weight: 800; margin: 15px 0; }
-        
-        .btn-interesse {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 18px;
-            background: var(--primary);
-            color: black;
-            text-align: center;
-            text-decoration: none;
-            font-weight: 800;
-            border-radius: 12px;
+        .info { padding: 25px; }
+        .info h3 { margin: 0; font-size: 1.4rem; color: #fff; }
+        .price { color: var(--p); font-size: 1.8rem; font-weight: bold; margin: 15px 0; }
+        .specs { color: #aaa; font-size: 0.9rem; border-top: 1px solid #333; padding-top: 15px; display: flex; justify-content: space-between; }
+
+        .btn-whats { 
+            background: #25D366; 
+            color: #fff; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            margin-top: 20px; 
             transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn-interesse:hover { 
-            background: white; 
-            box-shadow: 0 0 30px var(--primary);
         }
 
-        /* Indicador de fotos (bolinhas) */
-        .photo-dots {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 5px;
-            z-index: 10;
-        }
-        .dot {
-            width: 6px;
-            height: 6px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-        .dot.active { background: var(--primary); width: 15px; border-radius: 10px; }
+        .btn-whats:hover { background: #128C7E; transform: scale(1.02); }
+        .btn-whats i { margin-right: 10px; font-size: 1.2rem; }
+
+        /* Estado Vazio */
+        #empty-msg { text-align: center; padding: 50px; color: #555; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>NEXUS <span>V12</span></h1>
-        <p>EXPERIÊNCIA AUTOMOTIVA PREMIUM</p>
+        <p>Seleção de Veículos Exclusivos</p>
     </header>
 
     <div class="container">
-        <div id="showroom-publico" class="grid"></div>
+        <div id="showroom-publico" class="grid">
+            </div>
+        <div id="empty-msg" style="display:none;">Nenhum veículo disponível no momento.</div>
     </div>
 
-    <script>
-        const AppState = {
-            carros: JSON.parse(localStorage.getItem("nexus_v12_carros") || "[]")
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CONFIGURAÇÃO DO FIREBASE (Igual à do seu script.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
+            authDomain: "nexus-v12.firebaseapp.com",
+            projectId: "nexus-v12",
+            storageBucket: "nexus-v12.firebasestorage.app",
+            messagingSenderId: "587840382224",
+            appId: "1:587840382224:web:61c0f1890c7c395dc77195"
         };
 
-        function renderPortal() {
-            const container = document.getElementById("showroom-publico");
-            const carrosAtivos = AppState.carros.filter(c => c.status !== 'vendido');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-            if (carrosAtivos.length === 0) {
-                container.innerHTML = "<p style='text-align:center; grid-column: 1/-1; color: #555;'>O estoque está sendo atualizado. Volte em breve.</p>";
+        const grid = document.getElementById("showroom-publico");
+        const emptyMsg = document.getElementById("empty-msg");
+
+        // Escutar as mudanças no banco de dados
+        onSnapshot(query(collection(db, "carros"), orderBy("data", "desc")), (snap) => {
+            if (snap.empty) {
+                grid.innerHTML = "";
+                emptyMsg.style.display = "block";
                 return;
             }
 
-            container.innerHTML = carrosAtivos.map((c, i) => `
-                <div class="car-card" data-index="${i}" data-foto-ativa="0">
-                    <div class="photo-dots">
-                        ${c.fotos.map((_, idx) => `<div class="dot ${idx === 0 ? 'active' : ''}"></div>`).join('')}
+            emptyMsg.style.display = "none";
+            grid.innerHTML = snap.docs.map(doc => {
+                const c = doc.data();
+                const fotoPrincipal = c.fotos && c.fotos[0] ? c.fotos[0] : 'https://via.placeholder.com/600x400?text=Sem+Foto';
+                const fotoHover = c.fotos && c.fotos[1] ? c.fotos[1] : fotoPrincipal;
+
+                return `
+                    <div class="card">
+                        <div class="img-box" 
+                             style="background-image: url('${fotoPrincipal}')"
+                             onmouseenter="this.style.backgroundImage='url(${fotoHover})'"
+                             onmouseleave="this.style.backgroundImage='url(${fotoPrincipal})'">
+                        </div>
+                        <div class="info">
+                            <h3>${c.modelo || 'Modelo não informado'}</h3>
+                            <p class="price">R$ ${c.preco ? c.preco.toLocaleString('pt-BR') : 'Consulte'}</p>
+                            <p style="color: #888; font-size: 0.85rem; height: 40px; overflow: hidden;">${c.descricao || ''}</p>
+                            <div class="specs">
+                                <span><i class="fa fa-tachometer-alt"></i> ${c.km || 0} KM</span>
+                                <span><i class="fa fa-cog"></i> ${c.cambio || 'N/A'}</span>
+                            </div>
+                            <a href="https://wa.me/55999999999?text=Olá, tenho interesse no ${c.modelo}" class="btn-whats" target="_blank">
+                                <i class="fab fa-whatsapp"></i> TENHO INTERESSE
+                            </a>
+                        </div>
                     </div>
-                    <div class="car-img" style="background-image: url('${c.fotos[0] || ''}')"></div>
-                    <div class="car-info">
-                        <h3>${c.modelo}</h3>
-                        <p class="car-price">R$ ${c.preco.toLocaleString('pt-BR')}</p>
-                        <a href="https://wa.me/5511999999999?text=Olá! Tenho interesse no ${c.modelo} que vi no portal." 
-                           target="_blank" class="btn-interesse">
-                           <i class="fab fa-whatsapp"></i> Negociar Agora
-                        </a>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function iniciarTrocaFotos() {
-            setInterval(() => {
-                document.querySelectorAll('.car-card').forEach(card => {
-                    const carIdx = card.dataset.index;
-                    const carro = AppState.carros.filter(c => c.status !== 'vendido')[carIdx];
-                    
-                    if (carro && carro.fotos.length > 1) {
-                        let atual = parseInt(card.dataset.fotoAtiva);
-                        let proxima = (atual + 1) % carro.fotos.length;
-                        
-                        // Atualiza a imagem
-                        const imgDiv = card.querySelector('.car-img');
-                        imgDiv.style.backgroundImage = `url('${carro.fotos[proxima]}')`;
-                        
-                        // Atualiza as bolinhas (dots)
-                        const dots = card.querySelectorAll('.dot');
-                        dots.forEach((dot, idx) => {
-                            dot.classList.toggle('active', idx === proxima);
-                        });
-
-                        card.dataset.fotoAtiva = proxima;
-                    }
-                });
-            }, 4000); // Troca a cada 4 segundos
-        }
-
-        // Iniciar
-        renderPortal();
-        iniciarTrocaFotos();
+                `;
+            }).join('');
+        });
     </script>
 </body>
 </html>
