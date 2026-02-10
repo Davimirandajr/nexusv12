@@ -1,0 +1,230 @@
+:root {
+    --primary: #00f2ff;
+    --primary-dark: #00a8b3;
+    --accent: #ff0055;
+    --bg-dark: #0a0b10;
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --text-main: #e0e0e0;
+    --glass: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: var(--bg-dark);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+/* --- Loader & Glitch --- */
+#loader {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: 0.8s ease-in-out;
+}
+
+.glitch {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.glitch span { color: var(--primary); }
+
+/* --- Layout Principal --- */
+#app {
+    display: flex;
+    min-height: 100vh;
+}
+
+aside {
+    width: 260px;
+    background: rgba(0, 0, 0, 0.4);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.logo-area h2 {
+    color: var(--primary);
+    font-style: italic;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+nav button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #888;
+    padding: 12px 15px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+    font-size: 0.9rem;
+}
+
+nav button i { margin-right: 10px; width: 20px; }
+
+nav button:hover, nav button.active {
+    background: var(--glass);
+    color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+}
+
+main {
+    flex: 1;
+    padding: 40px;
+    background: radial-gradient(circle at top right, #1a1b25, #0a0b10);
+    overflow-y: auto;
+}
+
+/* --- Estilo dos Cards (Showroom) --- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: 0.4s;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card-img {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    transition: 0.5s;
+}
+
+.card .info { padding: 20px; }
+
+.price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 10px 0;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.badge.showroom { background: #00ff8822; color: #00ff88; }
+.badge.oficina { background: #ffaa0022; color: #ffaa00; }
+.badge.vendido { background: #ff005522; color: #ff0055; }
+
+/* --- CRM Cards --- */
+.grid-crm {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.card-client {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.client-info h4 { color: var(--primary); margin-bottom: 5px; }
+
+/* --- Botões --- */
+.btn-primary {
+    background: var(--primary);
+    color: #000;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background: #fff;
+    box-shadow: 0 0 20px var(--primary);
+}
+
+.btn-ghost-sm {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger-sm {
+    background: rgba(255, 0, 85, 0.1);
+    color: #ff0055;
+    border: 1px solid #ff005533;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* --- Formulários --- */
+input, select {
+    width: 100%;
+    background: #15161d;
+    border: 1px solid var(--border);
+    padding: 12px;
+    color: #fff;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.hidden { display: none !important; }
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.5s ease; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
