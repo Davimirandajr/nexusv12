@@ -23,9 +23,10 @@
                 <p>Acesso ao Terminal de Comando</p>
             </div>
             <div class="input-group">
-                <input id="senha" type="password" placeholder="Chave de Acesso">
+                <input id="email-login" type="email" placeholder="E-mail Administrativo">
+                <input id="senha-login" type="password" placeholder="Sua Senha">
             </div>
-            <button onclick="handleLogin()" class="btn-primary">INICIAR SESSÃO</button>
+            <button onclick="window.handleLogin()" class="btn-primary">INICIAR SESSÃO</button>
         </div>
     </section>
 
@@ -33,13 +34,15 @@
         <aside>
             <div class="logo-area"><h2>NEXUS</h2></div>
             <nav>
-                <button onclick="nav('showroom')" class="nav-btn"><i class="fa fa-th-large"></i> Showroom</button>
-                <button onclick="nav('novo')" class="nav-btn"><i class="fa fa-plus"></i> Novo Veículo</button>
-                <button onclick="nav('clientes')" class="nav-btn"><i class="fa fa-address-card"></i> CRM Leads</button>
-                <button onclick="exportarDados()" class="nav-btn"><i class="fa fa-cloud-download-alt"></i> Backup</button>
-                <button onclick="window.open('portal.html', '_blank')" class="nav-btn" style="color: #00ff88; margin-top: 20px;">
-    <i class="fa fa-external-link-alt"></i> VER PORTAL PÚBLICO
-</button>
+                <button onclick="window.nav('showroom')" class="nav-btn"><i class="fa fa-th-large"></i> Showroom</button>
+                <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus"></i> Novo Veículo</button>
+                <button onclick="window.nav('clientes')" class="nav-btn"><i class="fa fa-address-card"></i> CRM Leads</button>
+                <button onclick="window.handleLogout()" class="nav-btn" style="color: #ff4444; margin-top: 20px;">
+                    <i class="fa fa-sign-out-alt"></i> SAIR
+                </button>
+                <button onclick="window.open('portal.html', '_blank')" class="nav-btn" style="color: #00ff88;">
+                    <i class="fa fa-external-link-alt"></i> VER PORTAL PÚBLICO
+                </button>
             </nav>
             <div class="stats-sidebar">
                 <p>Estoque: <span id="stat-total">R$ 0</span></p>
@@ -50,66 +53,40 @@
             <section id="showroom" class="page active">
                 <header class="page-header">
                     <h1>Showroom Dinâmico</h1>
-                    <p>Galeria de alta performance com rotação automática.</p>
+                    <p>Sincronizado com a nuvem Nexus.</p>
                 </header>
                 <div id="listaCarros" class="grid"></div>
             </section>
 
             <section id="novo" class="page">
-                <header class="page-header"><h1 id="tituloForm">Cadastrar Veículo</h1></header>
+                <header class="page-header"><h1>Cadastrar Veículo</h1></header>
                 <div class="form-container">
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label>Modelo</label>
-                            <input id="modelo" type="text" placeholder="Ex: Ferrari Roma">
-                        </div>
-                        <div class="form-group">
-                            <label>Preço (R$)</label>
-                            <input id="preco" type="number" placeholder="0.000.000">
-                        </div>
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select id="status">
-                                <option value="showroom">Showroom</option>
-                                <option value="oficina">Oficina</option>
-                                <option value="vendido">Vendido</option>
-                            </select>
-                        </div>
+                        <input id="modelo" type="text" placeholder="Modelo (Ex: Ferrari Roma)">
+                        <input id="preco" type="number" placeholder="Preço (Somente números)">
+                        <select id="status">
+                            <option value="showroom">Disponível</option>
+                            <option value="vendido">Vendido</option>
+                        </select>
                     </div>
-                    <div class="upload-area">
-                        <label>Fotos (Frente, Traseira, Interior)</label>
-                        <input type="file" id="fotoFrente" accept="image/*">
-                        <input type="file" id="fotoTraseira" accept="image/*">
-                        <input type="file" id="fotoInterior" accept="image/*">
-                    </div>
-                    <div class="form-actions">
-                        <button onclick="salvarVeiculo()" class="btn-primary">SALVAR REGISTRO</button>
-                        <button onclick="nav('showroom')" class="btn-ghost">CANCELAR</button>
-                    </div>
+                    <button onclick="window.salvarVeiculo()" class="btn-primary">SALVAR NO BANCO</button>
                 </div>
             </section>
 
-       <section id="clientes" class="page">
-    <header class="page-header"><h1>Pipeline de Vendas</h1></header>
-    <div class="crm-layout">
-        <div class="form-container side">
-            <h3 id="tituloCRM">Novo Lead</h3>
-            <input type="hidden" id="c-edit-id" value="">
-            
-            <input id="c-nome" placeholder="Nome do Cliente">
-            <input id="c-fone" placeholder="WhatsApp (ex: 5511999999999)">
-            <select id="c-veiculo"></select>
-            <input id="c-dias" type="number" placeholder="Prazo de Fechamento (Dias)">
-            
-            <button id="btn-save-crm" onclick="addCliente()" class="btn-primary full">CRIAR LEAD</button>
-            <button id="btn-cancel-crm" onclick="limparFormCRM()" class="btn-ghost full hidden">CANCELAR</button>
-        </div>
-        <div id="listaClientes" class="grid-crm"></div>
-    </div>
-</section>
+            <section id="clientes" class="page">
+                <header class="page-header"><h1>Pipeline de Vendas</h1></header>
+                <div class="crm-layout">
+                    <div class="form-container side">
+                        <input id="c-nome" placeholder="Nome do Cliente">
+                        <input id="c-fone" placeholder="WhatsApp (Ex: 5511999999999)">
+                        <button onclick="window.salvarCliente()" class="btn-primary full">CRIAR LEAD</button>
+                    </div>
+                    <div id="listaClientes" class="grid-crm"></div>
+                </div>
+            </section>
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
