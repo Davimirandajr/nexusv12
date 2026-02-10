@@ -31,21 +31,39 @@
     </section>
 
     <div id="app" class="hidden">
-        <aside>
-            <div class="logo-area"><h2>NEXUS</h2></div>
+        
+        <aside id="sidebar">
+            <button id="toggle-menu" onclick="window.toggleSidebar()">
+                <i class="fa fa-bars"></i>
+            </button>
+            
+            <div class="logo-area">
+                <h2>NEXUS <span>V12</span></h2>
+            </div>
+
             <nav>
-                <button onclick="window.nav('showroom')" class="nav-btn"><i class="fa fa-car"></i> Estoque</button>
-                <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus-circle"></i> Novo Veículo</button>
-                <button onclick="window.nav('clientes')" class="nav-btn"><i class="fa fa-users"></i> CRM Leads</button>
-                <button onclick="window.handleLogout()" class="nav-btn logout"><i class="fa fa-sign-out-alt"></i> Sair</button>
+                <button onclick="window.nav('showroom')" class="nav-btn">
+                    <i class="fa fa-car"></i> <span>Estoque</span>
+                </button>
+                <button onclick="window.nav('novo')" class="nav-btn">
+                    <i class="fa fa-plus-circle"></i> <span>Novo Veículo</span>
+                </button>
+                <button onclick="window.nav('clientes')" class="nav-btn">
+                    <i class="fa fa-users"></i> <span>CRM Leads</span>
+                </button>
+                <button onclick="window.handleLogout()" class="nav-btn logout">
+                    <i class="fa fa-sign-out-alt"></i> <span>Sair</span>
+                </button>
             </nav>
+
             <div class="stats-sidebar">
                 <p>Patrimônio em Estoque:</p>
                 <h3 id="stat-total">R$ 0,00</h3>
             </div>
         </aside>
 
-        <main>
+        <main id="main-content">
+            
             <section id="showroom" class="page active">
                 <header class="page-header">
                     <h1>Showroom Ativo</h1>
