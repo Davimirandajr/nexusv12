@@ -1,8 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 1. Configuração extraída da sua imagem de configurações do projeto
+// 1. Configuração do Projeto (Nexus V12)
 const firebaseConfig = {
     apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
     authDomain: "nexus-v12.firebaseapp.com",
@@ -16,32 +16,35 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Variáveis de controle local
+// Variáveis de Estado
 let carrosLocais = [];
 let clientesLocais = [];
 
-/* =====================
-   SISTEMA DE AUTENTICAÇÃO
-   (Exposto via window para o HTML encontrar)
-===================== */
+/* ============================================================
+   AUTENTICAÇÃO (O segredo está no "window.funcao")
+   Isso permite que o botão do HTML encontre a função no módulo.
+============================================================ */
 
 window.handleLogin = async () => {
     const email = document.getElementById("email-login").value;
     const senha = document.getElementById("senha-login").value;
-    
-    if(!email || !senha) return alert("Preencha e-mail e senha!");
+
+    if (!email || !senha) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
 
     try {
         await signInWithEmailAndPassword(auth, email, senha);
     } catch (e) {
-        console.error("Erro no login:", e.code);
-        alert("Falha no login: Verifique se o e-mail e senha estão corretos no Firebase.");
+        console.error("Erro ao logar:", e.code);
+        alert("Acesso Negado: Verifique seu e-mail e senha.");
     }
 };
 
 window.handleLogout = () => signOut(auth);
 
-// Monitor de Sessão
+// Monitor de estado do usuário
 onAuthStateChanged(auth, (user) => {
     const loginSec = document.getElementById("login");
     const appSec = document.getElementById("app");
@@ -58,28 +61,28 @@ onAuthStateChanged(auth, (user) => {
     if (loader) setTimeout(() => loader.style.display = 'none', 800);
 });
 
-/* =====================
-   SINCRONIZAÇÃO EM TEMPO REAL
-===================== */
+/* ============================================================
+   SINCRONIZAÇÃO EM TEMPO REAL (FIRESTORE)
+============================================================ */
 
 function iniciarSincronizacao() {
-    // Carros
+    // Escutar Carros
     onSnapshot(query(collection(db, "carros"), orderBy("data", "desc")), (snap) => {
         carrosLocais = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderShowroom();
         updateStats();
     });
 
-    // Clientes
+    // Escutar Leads/Clientes
     onSnapshot(query(collection(db, "clientes"), orderBy("data", "desc")), (snap) => {
         clientesLocais = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderCRM();
     });
 }
 
-/* =====================
-   AÇÕES DO ERP
-===================== */
+/* ============================================================
+   AÇÕES DO SISTEMA (VEÍCULOS E CLIENTES)
+============================================================ */
 
 window.salvarVeiculo = async () => {
     const modelo = document.getElementById("modelo").value;
@@ -88,39 +91,66 @@ window.salvarVeiculo = async () => {
 
     if (!modelo || isNaN(preco)) return alert("Dados inválidos!");
 
-    // Pegando fotos (suportando a compressão se houver arquivos)
-    const novasFotos = [];
     const f1 = document.getElementById("fotoFrente").files[0];
-    if(f1) novasFotos.push(await comprimirImagem(f1));
+    let fotoBase64 = "";
+    if (f1) fotoBase64 = await comprimirImagem(f1);
 
     try {
         await addDoc(collection(db, "carros"), {
             modelo,
             preco,
             status,
-            fotos: novasFotos,
+            fotos: [fotoBase64],
             data: new Date().toISOString()
         });
-        alert("Veículo cadastrado!");
+        alert("Veículo cadastrado com sucesso!");
         window.nav('showroom');
-    } catch (e) { alert("Erro: " + e.message); }
+        limparFormVeiculo();
+    } catch (e) { alert("Erro ao salvar: " + e.message); }
 };
 
 window.removerCarro = async (id) => {
-    if(confirm("Deseja excluir?")) await deleteDoc(doc(db, "carros", id));
+    if (confirm("Deseja realmente excluir este veículo?")) {
+        await deleteDoc(doc(db, "carros", id));
+    }
 };
 
-/* =====================
-   INTERFACE (RENDER)
-===================== */
+window.salvarCliente = async () => {
+    const nome = document.getElementById("c-nome").value;
+    const fone = document.getElementById("c-fone").value;
+
+    if (!nome || !fone) return alert("Preencha o nome e o WhatsApp!");
+
+    try {
+        await addDoc(collection(db, "clientes"), {
+            nome,
+            fone,
+            data: new Date().toLocaleDateString('pt-BR'),
+            timestamp: new Date().toISOString()
+        });
+        alert("Lead criado!");
+        document.getElementById("c-nome").value = "";
+        document.getElementById("c-fone").value = "";
+    } catch (e) { alert(e.message); }
+};
+
+/* ============================================================
+   INTERFACE E UI
+============================================================ */
+
+window.nav = (id) => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+};
 
 function renderShowroom() {
     const grid = document.getElementById("listaCarros");
-    if(!grid) return;
+    if (!grid) return;
     grid.innerHTML = carrosLocais.map(c => `
         <div class="card">
             <div class="card-img" style="background-image: url('${c.fotos?.[0] || ''}')"></div>
             <div class="info">
+                <span class="badge ${c.status}">${c.status.toUpperCase()}</span>
                 <h3>${c.modelo}</h3>
                 <p>R$ ${c.preco.toLocaleString('pt-BR')}</p>
                 <button onclick="window.removerCarro('${c.id}')" class="btn-danger-sm">Excluir</button>
@@ -131,29 +161,23 @@ function renderShowroom() {
 
 function renderCRM() {
     const list = document.getElementById("listaClientes");
-    if(!list) return;
+    if (!list) return;
     list.innerHTML = clientesLocais.map(c => `
         <div class="card-client">
             <h4>${c.nome}</h4>
             <p>${c.fone}</p>
-            <button onclick="window.removerCliente('${c.id}')" class="btn-danger-sm">×</button>
+            <div style="display:flex; gap:10px;">
+                <button onclick="window.open('https://wa.me/${c.fone.replace(/\D/g,'')}')" class="btn-primary-sm" style="background:#25D366">Whats</button>
+                <button onclick="window.deleteDoc(doc(db, 'clientes', '${c.id}'))" class="btn-danger-sm">×</button>
+            </div>
         </div>
     `).join('');
 }
 
-/* =====================
-   UTILITÁRIOS
-===================== */
-
-window.nav = (id) => {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-};
-
 function updateStats() {
     const total = carrosLocais.reduce((acc, cur) => acc + cur.preco, 0);
     const el = document.getElementById("stat-total");
-    if(el) el.innerText = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    if (el) el.innerText = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 async function comprimirImagem(file) {
@@ -172,4 +196,9 @@ async function comprimirImagem(file) {
             };
         };
     });
+}
+
+function limparFormVeiculo() {
+    document.getElementById("modelo").value = "";
+    document.getElementById("preco").value = "";
 }
