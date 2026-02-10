@@ -1,12 +1,14 @@
-/* --- NEXUS V12: YELLOW & RED RACING EDITION --- */
+/* --- NEXUS V12: ENTERPRISE EDITION (YELLOW & RED RACING) --- */
 :root {
-    --primary-yellow: #ffcc00; /* Amarelo Vibrante */
+    --primary-yellow: #ffcc00; /* Amarelo Luxo */
     --accent-red: #cc0000;    /* Vermelho Racing */
-    --bg-dark: #0d0d0d;       /* Fundo Preto Profundo */
-    --card-bg: #1a1a1a;       /* Cinza Dark para Cards */
+    --bg-dark: #0d0d0d;       /* Fundo Preto */
+    --card-bg: #1a1a1a;       /* Fundo dos Cards */
     --text-white: #ffffff;
     --text-gray: #a0a0a0;
 }
+
+* { box-sizing: border-box; }
 
 body {
     font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -25,6 +27,7 @@ body {
     align-items: center;
     justify-content: center;
     background: radial-gradient(circle, #222 0%, #000 100%);
+    padding: 20px;
 }
 
 .login-box {
@@ -38,20 +41,21 @@ body {
     text-align: center;
 }
 
-.brand h1 { font-size: 2rem; margin-bottom: 5px; color: var(--text-white); }
+.brand h1 { font-size: 2rem; margin: 0; color: var(--text-white); }
 .brand span { color: var(--primary-yellow); }
 .brand p { color: var(--text-gray); font-size: 0.9rem; margin-bottom: 25px; }
 
 /* --- DASHBOARD LAYOUT --- */
-#app { display: flex; height: 100vh; }
+#app { display: flex; height: 100vh; flex-direction: row; }
 
 aside {
-    width: 250px;
+    width: 260px;
     background: #000;
     padding: 20px;
     border-right: 1px solid #222;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
 .logo-area h2 { 
@@ -76,9 +80,11 @@ nav { flex: 1; }
     transition: 0.3s;
     border-radius: 8px;
     margin-bottom: 5px;
+    display: flex;
+    align-items: center;
 }
 
-.nav-btn i { margin-right: 10px; width: 20px; }
+.nav-btn i { margin-right: 12px; font-size: 1.1rem; }
 
 .nav-btn:hover {
     background: rgba(255, 204, 0, 0.1);
@@ -87,14 +93,16 @@ nav { flex: 1; }
 
 .nav-btn.logout:hover { color: var(--accent-red); background: rgba(204, 0, 0, 0.1); }
 
-/* --- PAGINAÇÃO --- */
-main { flex: 1; padding: 40px; overflow-y: auto; }
+/* --- CONTEÚDO PRINCIPAL --- */
+main { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-dark); }
 .page { display: none; }
-.page.active { display: block; animation: fadeIn 0.5s ease; }
+.page.active { display: block; animation: fadeIn 0.4s ease; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- CARDS DO SHOWROOM --- */
+.page-header { margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 15px; }
+
+/* --- GRID DE CARROS --- */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -105,113 +113,135 @@ main { flex: 1; padding: 40px; overflow-y: auto; }
     background: var(--card-bg);
     border-radius: 12px;
     overflow: hidden;
-    transition: 0.4s;
+    transition: 0.3s;
     border: 1px solid #333;
-    position: relative;
 }
 
 .card:hover {
-    transform: translateY(-8px);
     border-color: var(--primary-yellow);
-    box-shadow: 0 5px 20px rgba(255, 204, 0, 0.2);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.15);
 }
 
 .img-container {
-    height: 200px;
+    height: 190px;
     background-size: cover;
     background-position: center;
-    transition: 0.5s ease-in-out; /* Suaviza a troca de foto no hover */
+    transition: background-image 0.5s ease-in-out; /* Troca suave de fotos */
 }
 
-.info { padding: 20px; }
-.info h3 { margin: 0; font-size: 1.2rem; }
-.price { color: var(--primary-yellow); font-size: 1.4rem; font-weight: bold; margin: 10px 0; }
-.specs { font-size: 0.85rem; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
+.info { padding: 18px; }
+.info h3 { margin: 0; font-size: 1.1rem; color: #fff; }
+.price { color: var(--primary-yellow); font-size: 1.3rem; font-weight: bold; margin: 8px 0; }
+.specs { font-size: 0.8rem; color: var(--text-gray); text-transform: uppercase; }
 
-.badge-status {
-    background: var(--accent-red);
-    color: white;
-    font-size: 0.7rem;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-/* --- FORMULÁRIOS --- */
-.form-container { background: var(--card-bg); padding: 30px; border-radius: 12px; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-input, select, textarea {
-    background: #000;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 12px;
-    border-radius: 6px;
-    width: 100%;
-}
-
-input:focus { border-color: var(--primary-yellow); outline: none; }
-
-.upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-
-/* --- CRM (YELLOW/RED VERSION) --- */
+/* --- CRM LEADS --- */
 .grid-crm { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-
 .card-client {
     background: var(--card-bg);
     padding: 20px;
     border-radius: 10px;
-    border-left: 6px solid #444;
+    border-left: 5px solid #444;
 }
-
-/* Cores dos Leads baseadas no seu pedido */
 .lead-quente { border-left-color: var(--accent-red); }
 .lead-morno { border-left-color: var(--primary-yellow); }
 .lead-frio { border-left-color: #555; }
 
-.status-tag { font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); }
+/* --- COMPONENTES DE FORMULÁRIO --- */
+.form-container { background: #151515; padding: 25px; border-radius: 12px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+input, select, textarea {
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+input:focus { border-color: var(--primary-yellow); outline: none; }
+
+.upload-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 10px; }
 
 /* --- BOTÕES --- */
 .btn-primary {
     background: var(--primary-yellow);
     color: #000;
     border: none;
-    padding: 15px 25px;
-    font-weight: bold;
+    padding: 14px 25px;
+    font-weight: 800;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
     text-transform: uppercase;
+    transition: 0.3s;
 }
-
-.btn-primary:hover { background: #e6b800; transform: scale(1.02); }
+.btn-primary:hover { transform: scale(1.02); background: #f0c000; }
 
 .btn-danger-sm {
-    background: transparent;
+    background: rgba(204, 0, 0, 0.1);
     border: 1px solid var(--accent-red);
     color: var(--accent-red);
-    padding: 8px;
-    border-radius: 6px;
+    padding: 8px 12px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-.btn-danger-sm:hover { background: var(--accent-red); color: white; }
-
 .stats-sidebar {
-    margin-top: auto;
     background: var(--accent-red);
     padding: 15px;
     border-radius: 10px;
     text-align: center;
+    margin-top: auto;
 }
 
-.stats-sidebar p { font-size: 0.8rem; margin: 0; color: #ffcccc; }
-.stats-sidebar h3 { margin: 5px 0 0 0; color: #fff; }
+/* --- RESPONSIVIDADE (MOBILE) --- */
+@media (max-width: 768px) {
+    #app { flex-direction: column; }
 
-/* Loader */
+    aside {
+        width: 100%;
+        height: auto;
+        padding: 10px 15px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-right: none;
+        border-bottom: 1px solid #222;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo-area h2 { margin-bottom: 0; padding-bottom: 0; border-bottom: none; font-size: 1.1rem; }
+
+    nav {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        justify-content: flex-end;
+    }
+
+    .nav-btn {
+        padding: 8px;
+        font-size: 0.8rem;
+        width: auto;
+        margin-bottom: 0;
+        flex-direction: column;
+    }
+
+    .nav-btn i { margin-right: 0; margin-bottom: 4px; font-size: 1.2rem; }
+    .nav-btn span { font-size: 0.65rem; }
+
+    .stats-sidebar { display: none; } /* Esconde o total no topo do celular para não poluir */
+
+    main { padding: 20px; }
+
+    .form-grid { grid-template-columns: 1fr; } /* Coluna única no celular */
+}
+
+/* Loader Estilizado */
 #loader {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: #000; display: flex; align-items: center; justify-content: center; z-index: 9999;
 }
-.loader-content h1 span { color: var(--primary-yellow); }
-.bar { width: 100px; height: 4px; background: var(--accent-red); margin-top: 10px; border-radius: 2px; }
+.bar { width: 60px; height: 3px; background: var(--primary-yellow); margin-top: 15px; border-radius: 5px; animation: loading 1.5s infinite; }
+@keyframes loading { 0% { width: 0; } 100% { width: 100px; } }
