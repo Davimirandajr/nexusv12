@@ -1,39 +1,73 @@
-:root { --black: #000; --gold: #ffcc00; --red: #ff0000; --dark: #0a0a0a; --grey: #151515; --text: #fff; }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-body { background: var(--black); color: var(--text); overflow-x: hidden; }
+:root {
+    --primary: #CC0000; /* Vermelho */
+    --gold: #B8860B;    /* Dourado */
+    --bg-light: #F8F9FA;
+    --white: #FFFFFF;
+    --dark: #212529;
+    --grey: #6C757D;
+    --border: #E9ECEF;
+}
 
-/* SEGURANÇA CONTRA ATROPELAMENTO */
-.page-content, .hidden { display: none !important; }
-.active { display: block !important; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background: var(--bg-light); color: var(--dark); overflow-x: hidden; }
+
+.hidden { display: none !important; }
+.tab-content { display: none; }
+.tab-content.active { display: block !important; animation: slideUp 0.4s ease; }
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* LOGIN */
-#login.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-.login-box { background: var(--dark); padding: 40px; border-radius: 15px; border: 1px solid var(--grey); text-align: center; }
+#login { background: var(--white); height: 100vh; display: flex; align-items: center; justify-content: center; }
+.login-container { width: 100%; max-width: 400px; padding: 40px; text-align: center; }
+.login-header h1 { font-size: 2.5rem; color: var(--dark); }
+.v12 { color: var(--primary); }
+.login-form input { width: 100%; padding: 15px; margin-top: 15px; border: 1px solid var(--border); border-radius: 8px; }
+.btn-primary { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
 
 /* SIDEBAR */
-.sidebar { width: 250px; height: 100vh; background: #050505; position: fixed; border-right: 1px solid var(--grey); padding: 20px; z-index: 1000; transition: 0.3s; display: flex !important; flex-direction: column; }
-.content { margin-left: 250px; padding: 40px; min-height: 100vh; }
+.sidebar { width: 280px; height: 100vh; position: fixed; background: var(--white); border-right: 1px solid var(--border); padding: 30px 20px; z-index: 1000; transition: 0.3s; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+.sidebar-header span { color: var(--primary); }
 
-.nav-btn { width: 100%; padding: 15px; background: none; border: none; color: #666; text-align: left; cursor: pointer; font-weight: bold; border-radius: 8px; margin-bottom: 5px; }
-.nav-btn.active { background: var(--grey); color: var(--gold); }
-.btn-gold { background: var(--gold); color: #000; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; }
+.nav-item { width: 100%; padding: 15px; background: none; border: none; text-align: left; font-weight: 600; color: var(--grey); cursor: pointer; border-radius: 10px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; }
+.nav-item.active { background: #FFF0F0; color: var(--primary); }
+.nav-item:hover { background: var(--bg-light); }
+.logout { color: var(--grey); margin-top: 40px; }
 
-/* GRIDS */
-.grid-carros { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-.card { background: var(--dark); border-radius: 10px; border: 1px solid var(--grey); overflow: hidden; }
-.card-img { height: 150px; background-size: cover; background-position: center; }
-.card-body { padding: 15px; }
+/* CONTENT AREA */
+.main-content { margin-left: 280px; padding: 50px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.btn-outline { border: 2px solid var(--gold); color: var(--gold); background: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-/* FUNIL */
-.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-.funnel-col { background: var(--dark); padding: 15px; border-radius: 10px; border-top: 3px solid var(--gold); min-height: 400px; }
+/* CARDS */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+.car-card { background: var(--white); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.car-img { height: 200px; background-size: cover; background-position: center; }
+.car-info { padding: 20px; }
+.car-price { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
+
+/* FUNNEL */
+.funnel-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.funnel-column { background: #EEE; border-radius: 12px; min-height: 600px; padding: 15px; }
+.col-head { font-weight: 800; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 15px; text-align: center; }
+.color-gold { color: var(--gold); }
+.color-red { color: var(--primary); }
 
 /* MOBILE */
-.mobile-toggle { display: none; position: fixed; top: 15px; left: 15px; background: var(--gold); border: none; padding: 12px; z-index: 2000; border-radius: 5px; }
+.mobile-header { display: none; }
+.menu-close { display: none; background: none; border: none; font-size: 2rem; }
+
 @media (max-width: 900px) {
-    .sidebar { transform: translateX(-100%); }
+    .sidebar { transform: translateX(-100%); width: 100%; }
     .sidebar.open { transform: translateX(0); }
-    .content { margin-left: 0; padding: 70px 20px; }
-    .mobile-toggle { display: block; }
-    .funnel { grid-template-columns: 1fr !important; }
+    .main-content { margin-left: 0; padding: 100px 20px; }
+    .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: white; position: fixed; width: 100%; top: 0; z-index: 900; border-bottom: 1px solid var(--border); }
+    .funnel-container { grid-template-columns: 1fr; }
+    .menu-close { display: block; }
 }
+
+/* UPLOADER */
+.upload-slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0; }
+.slot { aspect-ratio: 1; border: 2px dashed var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.5rem; color: var(--grey); overflow: hidden; }
+.slot img { width: 100%; height: 100%; object-fit: cover; }
