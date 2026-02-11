@@ -16,76 +16,40 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 let fotosData = ["","","","",""];
 
-// FUNÇÃO DE NAVEGAÇÃO (CORRIGIDA)
+// NAVEGAÇÃO
 window.nav = (id) => {
-    // 1. Esconde TODAS as páginas de conteúdo
-    const pages = document.querySelectorAll('.page-content');
-    pages.forEach(p => p.classList.remove('active'));
-
-    // 2. Remove destaque de todos os botões
-    const btns = document.querySelectorAll('.nav-btn');
-    btns.forEach(b => b.classList.remove('active'));
-
-    // 3. Mostra a página certa
-    const target = document.getElementById(id);
-    if(target) {
-        target.classList.add('active');
-    }
-
-    // 4. Fecha o menu no celular
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const btn = document.querySelector(`[onclick="window.nav('${id}')"]`);
+    if(btn) btn.classList.add('active');
     document.getElementById("sidebar").classList.remove("open");
-    console.log("Navegou para:", id);
 };
 
 window.toggleMenu = () => document.getElementById("sidebar").classList.toggle("open");
 
-// MONITOR DE LOGIN
+// AUTH
 onAuthStateChanged(auth, (user) => {
-    document.getElementById("loader").style.display = "none";
     if (user) {
         document.getElementById("login").classList.remove("active");
-        document.getElementById("app").style.display = "block"; // Mostra o container do App
-        window.nav('showroom'); // Vai direto para o estoque
+        document.getElementById("app").classList.remove("hidden");
+        window.nav('showroom');
         syncData();
     } else {
         document.getElementById("login").classList.add("active");
-        document.getElementById("app").style.display = "none";
+        document.getElementById("app").classList.add("hidden");
     }
 });
 
-// LOGIN E LOGOUT
 window.handleLogin = () => {
-    const email = document.getElementById("email-login").value;
-    const senha = document.getElementById("senha-login").value;
-    signInWithEmailAndPassword(auth, email, senha).catch(e => alert("Erro: " + e.message));
+    const e = document.getElementById("email-login").value;
+    const s = document.getElementById("senha-login").value;
+    signInWithEmailAndPassword(auth, e, s).catch(err => alert("Acesso negado!"));
 };
 
 window.handleLogout = () => signOut(auth);
 
-// CADASTRAR VEÍCULO
-window.salvarVeiculo = async () => {
-    const btn = document.getElementById("btn-salvar");
-    btn.innerText = "CADASTRANDO...";
-    
-    try {
-        await addDoc(collection(db, "carros"), {
-            lojaId: auth.currentUser.uid,
-            modelo: document.getElementById("modelo").value,
-            preco: document.getElementById("preco").value,
-            fotos: fotosData.filter(f => f !== ""),
-            status: 'leads',
-            data: new Date().toISOString()
-        });
-        alert("Veículo salvo com sucesso!");
-        window.nav('showroom');
-    } catch (e) {
-        alert("Erro ao salvar: " + e.message);
-    } finally {
-        btn.innerText = "SALVAR VEÍCULO";
-    }
-};
-
-// PREVIEW DAS FOTOS
+// FOTOS PREVIEW
 window.preview = (input, id) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -96,25 +60,73 @@ window.preview = (input, id) => {
     reader.readAsDataURL(input.files[0]);
 };
 
-// PUXAR DADOS DO FIREBASE
+// SALVAR VEÍCULO
+window.salvarVeiculo = async () => {
+    const btn = document.getElementById("btn-salvar");
+    btn.innerText = "SALVANDO...";
+    try {
+        await addDoc(collection(db, "carros"), {
+            lojaId: auth.currentUser.uid,
+            modelo: document.getElementById("modelo").value,
+            preco: document.getElementById("preco").value,
+            vendedorWhats: document.getElementById("vendedor-select").value,
+            fotos: fotosData.filter(f => f !== ""),
+            status: 'leads'
+        });
+        alert("Sucesso!");
+        window.nav('showroom');
+        location.reload();
+    } catch (e) { alert("Erro ao salvar."); }
+};
+
+// SYNC REALTIME
 function syncData() {
     const q = query(collection(db, "carros"), where("lojaId", "==", auth.currentUser.uid));
     onSnapshot(q, (snap) => {
-        const list = document.getElementById("listaCarros");
+        const grid = document.getElementById("listaCarros");
         const lLeads = document.getElementById("col-leads");
-        
-        list.innerHTML = ""; lLeads.innerHTML = "";
-        
+        grid.innerHTML = ""; lLeads.innerHTML = "";
         snap.forEach(d => {
             const c = d.data();
-            const card = `
-                <div style="background:#111; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #222">
-                    <img src="${c.fotos[0]}" style="width:100%; border-radius:5px; height:150px; object-fit:cover">
-                    <h4 style="margin-top:10px">${c.modelo}</h4>
+            const card = `<div class="card">
+                <div class="card-img" style="background-image:url(${c.fotos[0]})"></div>
+                <div class="card-body">
+                    <h4>${c.modelo}</h4>
                     <p style="color:var(--gold)">R$ ${c.preco}</p>
-                </div>`;
-            list.innerHTML += card;
+                    <button onclick="window.del('${d.id}')" style="color:red; background:none; border:none; cursor:pointer; font-size:10px; margin-top:10px;">EXCLUIR</button>
+                </div>
+            </div>`;
+            grid.innerHTML += card;
             if(c.status === 'leads') lLeads.innerHTML += card;
         });
     });
+
+    onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", auth.currentUser.uid)), snap => {
+        const sel = document.getElementById("vendedor-select");
+        const list = document.getElementById("listaVendedores");
+        sel.innerHTML = `<option value="">Selecione o Vendedor</option>`;
+        list.innerHTML = "";
+        snap.forEach(d => {
+            const v = d.data();
+            sel.innerHTML += `<option value="${v.whats}">${v.nome}</option>`;
+            list.innerHTML += `<p>${v.nome} - ${v.whats}</p>`;
+        });
+    });
 }
+
+window.addVendedor = async () => {
+    await addDoc(collection(db, "vendedores"), {
+        lojaId: auth.currentUser.uid,
+        nome: document.getElementById("v-nome").value,
+        whats: document.getElementById("v-whats").value
+    });
+    alert("Vendedor cadastrado!");
+};
+
+window.del = (id) => confirm("Apagar?") && deleteDoc(doc(db, "carros", id));
+
+window.copyPortalLink = () => {
+    const link = `${window.location.origin}/portal.html?loja=${auth.currentUser.uid}`;
+    navigator.clipboard.writeText(link);
+    alert("Link copiado!");
+};
