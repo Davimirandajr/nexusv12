@@ -1,59 +1,38 @@
-:root {
-    --black: #000000;
-    --dark: #0a0a0a;
-    --gold: #ffcc00;
-    --red: #cc0000;
-    --grey: #1a1a1a;
-    --text: #ffffff;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-body { background: var(--black); color: var(--text); }
+:root { --black: #000; --gold: #ffcc00; --red: #ff0000; --dark: #111; --text: #fff; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+body { background: var(--black); color: var(--text); overflow-x: hidden; }
 
 .hidden { display: none !important; }
-
-/* Navegação entre Telas */
+.page { display: none; }
+.page.active { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
 .page-content { display: none; }
-.page-content.active { display: block; }
+.page-content.active { display: block; animation: fadeIn 0.3s; }
 
-/* Sidebar */
-.sidebar { width: 250px; height: 100vh; position: fixed; background: var(--dark); border-right: 2px solid var(--grey); padding: 30px 15px; }
-.logo { font-size: 1.5rem; font-weight: bold; text-align: center; margin-bottom: 40px; color: #fff; }
-.logo span { color: var(--gold); }
-
-.nav-btn { width: 100%; padding: 15px; background: none; border: none; color: #888; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 10px; font-weight: bold; transition: 0.3s; }
-.nav-btn.active, .nav-btn:hover { background: var(--grey); color: var(--gold); }
-.btn-sair { color: var(--red) !important; margin-top: 50px; }
-
-/* Conteúdo */
+/* Sidebar Responsiva */
+.sidebar { width: 250px; height: 100vh; background: #080808; position: fixed; border-right: 1px solid #222; padding: 20px; z-index: 1000; transition: 0.3s; }
 .content { margin-left: 250px; padding: 40px; }
-h2 { color: var(--gold); margin-bottom: 30px; letter-spacing: 2px; }
 
-/* Botões */
-.btn-gold { background: var(--gold); color: #000; border: none; padding: 15px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-.btn-red { background: var(--red); color: #fff; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+/* Menu Mobile */
+.mobile-toggle { display: none; position: fixed; top: 15px; left: 15px; background: var(--gold); border: none; padding: 10px; border-radius: 5px; z-index: 2000; }
 
-/* Cards Showroom */
-.grid-carros { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-.card { background: var(--dark); border: 1px solid var(--grey); border-radius: 10px; overflow: hidden; }
-.card-img { height: 160px; background-size: cover; background-position: center; }
-.card-body { padding: 15px; }
-.card-body h3 { font-size: 1rem; margin-bottom: 10px; }
-.card-body .price { color: var(--gold); font-weight: bold; }
+@media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); width: 260px; }
+    .sidebar.open { transform: translateX(0); }
+    .content { margin-left: 0; padding: 70px 20px; }
+    .mobile-toggle { display: block; }
+    .funnel { grid-template-columns: 1fr !important; }
+}
 
-/* Funil */
-.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-.funnel-col { background: var(--dark); padding: 15px; border-radius: 10px; min-height: 500px; border-top: 3px solid var(--gold); }
-.funnel-col h3 { font-size: 0.8rem; margin-bottom: 20px; text-align: center; }
-
-/* Formulários */
-.form-v12 { max-width: 500px; }
-input, select { width: 100%; padding: 15px; background: var(--grey); border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 15px; }
-.upload-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
-.slot { aspect-ratio: 1; background: var(--grey); border: 2px dashed #444; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+/* Estilo V12 */
+.logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 30px; text-align: center; }
+.logo span { color: var(--gold); }
+.nav-btn { width: 100%; padding: 15px; background: none; border: none; color: #666; text-align: left; cursor: pointer; border-radius: 8px; font-weight: bold; margin-bottom: 5px; }
+.nav-btn.active { background: #1a1a1a; color: var(--gold); }
+.btn-sair { color: var(--red) !important; margin-top: 30px; }
+.btn-gold { width: 100%; padding: 15px; background: var(--gold); border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
+.upload-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 15px 0; }
+.slot { aspect-ratio: 1; background: #222; border: 1px dashed #444; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
 .slot img { width: 100%; height: 100%; object-fit: cover; }
-
-/* Loader */
-#loader { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-.spinner { width: 40px; height: 40px; border: 4px solid #111; border-top: 4px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
-@keyframes spin { 100% { transform: rotate(360deg); } }
+.funnel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+.funnel-col { background: #0a0a0a; padding: 15px; border-radius: 10px; border-top: 2px solid var(--gold); min-height: 400px; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
