@@ -1,38 +1,35 @@
 :root { --black: #000; --gold: #ffcc00; --red: #ff0000; --dark: #0a0a0a; --grey: #151515; --text: #fff; }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
 body { background: var(--black); color: var(--text); overflow-x: hidden; }
 
-/* SEGURANÇA: ESCONDE TUDO POR PADRÃO */
+/* SEGURANÇA CONTRA ATROPELAMENTO */
 .page-content, .hidden { display: none !important; }
 .active { display: block !important; }
 
 /* LOGIN */
 #login.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-.login-box { background: var(--dark); padding: 40px; border-radius: 15px; border: 1px solid var(--grey); width: 320px; text-align: center; }
+.login-box { background: var(--dark); padding: 40px; border-radius: 15px; border: 1px solid var(--grey); text-align: center; }
 
 /* SIDEBAR */
 .sidebar { width: 250px; height: 100vh; background: #050505; position: fixed; border-right: 1px solid var(--grey); padding: 20px; z-index: 1000; transition: 0.3s; display: flex !important; flex-direction: column; }
 .content { margin-left: 250px; padding: 40px; min-height: 100vh; }
 
-/* BOTÕES E INPUTS */
 .nav-btn { width: 100%; padding: 15px; background: none; border: none; color: #666; text-align: left; cursor: pointer; font-weight: bold; border-radius: 8px; margin-bottom: 5px; }
 .nav-btn.active { background: var(--grey); color: var(--gold); }
 .btn-gold { background: var(--gold); color: #000; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; }
-.btn-red { background: var(--red); color: #fff; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 12px; }
-input, select { width: 100%; padding: 15px; background: #111; border: 1px solid #222; color: #fff; margin-bottom: 15px; border-radius: 5px; }
 
 /* GRIDS */
 .grid-carros { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-.card { background: var(--dark); border-radius: 10px; overflow: hidden; border: 1px solid var(--grey); }
+.card { background: var(--dark); border-radius: 10px; border: 1px solid var(--grey); overflow: hidden; }
 .card-img { height: 150px; background-size: cover; background-position: center; }
 .card-body { padding: 15px; }
 
 /* FUNIL */
 .funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-.funnel-col { background: var(--dark); padding: 15px; border-radius: 10px; border-top: 3px solid var(--gold); min-height: 450px; }
+.funnel-col { background: var(--dark); padding: 15px; border-radius: 10px; border-top: 3px solid var(--gold); min-height: 400px; }
 
 /* MOBILE */
-.mobile-toggle { display: none; position: fixed; top: 15px; left: 15px; background: var(--gold); border: none; padding: 12px; border-radius: 5px; z-index: 2000; }
+.mobile-toggle { display: none; position: fixed; top: 15px; left: 15px; background: var(--gold); border: none; padding: 12px; z-index: 2000; border-radius: 5px; }
 @media (max-width: 900px) {
     .sidebar { transform: translateX(-100%); }
     .sidebar.open { transform: translateX(0); }
