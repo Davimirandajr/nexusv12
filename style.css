@@ -1,46 +1,117 @@
+/* NEXUS V12 - IDENTIDADE VISUAL PREMIUM */
 :root {
-    --primary: #CC0000;
-    --gold: #C5A021;
-    --white: #FFFFFF;
-    --bg: #F9F9F9;
+    --primary: #CC0000;    /* Vermelho Nexus */
+    --gold: #B8860B;       /* Dourado */
+    --white: #FFFFFF;      /* Branco */
+    --bg-body: #F4F4F4;    /* Cinza Ultra Leve */
+    --text-main: #1A1A1A;  /* Preto Suave */
+    --border: #EEEEEE;     /* Bordas Finas */
 }
 
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
-body { background: var(--bg); color: #333; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
 
+body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+
+/* REGRAS DE VISIBILIDADE (ESSENCIAL PARA FUNCIONAR) */
 .hidden { display: none !important; }
+.tab-content { display: none !important; }
+.tab-content.active { display: block !important; }
 
-/* LOGIN */
-#login { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--white); }
-.login-box { text-align: center; width: 320px; padding: 40px; border: 1px solid #eee; border-radius: 15px; }
-.login-box h1 { font-weight: 900; margin-bottom: 20px; }
-.login-box span { color: var(--primary); }
+/* --- TELA DE LOGIN --- */
+#login {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--white);
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999;
+}
+#login.active { display: flex !important; }
+
+.login-box { width: 100%; max-width: 350px; padding: 40px; text-align: center; }
+.login-box h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 5px; letter-spacing: -1px; }
+.login-box h1 span { color: var(--primary); }
+.login-box p { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+
+.login-box input {
+    width: 100%; padding: 14px; margin-bottom: 12px;
+    border: 1px solid #DDD; border-radius: 8px; background: #FAFAFA;
+}
+
+.btn-red {
+    width: 100%; padding: 16px; background-color: var(--primary);
+    color: white; border: none; border-radius: 8px; font-weight: bold;
+    cursor: pointer; transition: 0.3s; font-size: 1rem;
+}
+.btn-red:hover { background-color: #A00000; transform: translateY(-2px); }
+
+/* --- LAYOUT PRINCIPAL (APP) --- */
+.app-container { display: flex; min-height: 100vh; }
 
 /* SIDEBAR */
 .sidebar {
-    width: 280px; height: 100vh; position: fixed;
-    background: var(--white); border-right: 1px solid #eee;
-    padding: 30px 20px; z-index: 1000;
+    width: 260px; height: 100vh; background-color: var(--white);
+    border-right: 1px solid var(--border); position: fixed;
+    padding: 30px 20px; display: flex; flex-direction: column;
 }
-.main-content { margin-left: 280px; padding: 40px; }
+
+.sidebar .logo { font-size: 1.5rem; font-weight: 900; margin-bottom: 40px; }
+.sidebar .logo span { color: var(--primary); }
 
 .nav-item {
-    width: 100%; padding: 15px; border: none; background: none;
-    text-align: left; font-weight: bold; color: #777;
-    cursor: pointer; border-radius: 10px; margin-bottom: 10px;
+    width: 100%; padding: 14px 18px; border: none; background: none;
+    text-align: left; cursor: pointer; font-weight: 600; color: #666;
+    border-radius: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+    transition: 0.2s;
 }
-.nav-item.active { background: #FFF0F0; color: var(--primary); }
 
-/* CARDS */
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.car-card { background: white; border-radius: 12px; border: 1px solid #eee; overflow: hidden; }
-.car-img { height: 180px; background-size: cover; background-position: center; }
+.nav-item i { width: 20px; font-size: 1.1rem; }
+.nav-item:hover { background-color: #F9F9F9; color: var(--primary); }
+.nav-item.active { background-color: #FFF2F2; color: var(--primary); border-left: 4px solid var(--primary); }
+
+.btn-sair { margin-top: auto; color: #999; }
+.btn-sair:hover { color: var(--primary); }
+
+/* CONTEÚDO */
+.main-content { margin-left: 260px; padding: 40px; width: 100%; }
+h2 { font-size: 1.8rem; margin-bottom: 30px; font-weight: 800; }
+h2 span { color: var(--gold); }
+
+/* GRID DE VEÍCULOS */
+.card-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;
+}
+
+.car-card {
+    background: var(--white); border-radius: 15px; border: 1px solid var(--border);
+    overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s;
+}
+.car-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+
+.car-img { height: 190px; background-size: cover; background-position: center; background-color: #EEE; }
+
 .car-info { padding: 20px; }
-.price { color: var(--gold); font-weight: 800; font-size: 1.2rem; }
+.car-info h3 { font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; }
+.car-price { color: var(--gold); font-size: 1.3rem; font-weight: 800; }
 
-/* MOBILE */
+.btn-del {
+    background: none; border: none; color: #FF4444; font-size: 0.8rem;
+    cursor: pointer; margin-top: 15px; font-weight: 600;
+}
+
+/* FORMULÁRIOS */
+.form-container { max-width: 600px; background: white; padding: 30px; border-radius: 15px; border: 1px solid var(--border); }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+
+.upload-slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
+.slot {
+    aspect-ratio: 1; border: 2px dashed #DDD; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #AAA; font-size: 1.2rem; overflow: hidden;
+}
+
+/* RESPONSIVIDADE */
 @media (max-width: 900px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); width: 100%; }
-    .main-content { margin-left: 0; padding: 80px 20px; }
+    .sidebar { transform: translateX(-100%); width: 100%; z-index: 1000; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; padding: 20px; }
 }
