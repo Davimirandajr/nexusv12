@@ -1,117 +1,88 @@
-/* NEXUS V12 - IDENTIDADE VISUAL PREMIUM */
 :root {
-    --primary: #CC0000;    /* Vermelho Nexus */
-    --gold: #B8860B;       /* Dourado */
-    --white: #FFFFFF;      /* Branco */
-    --bg-body: #F4F4F4;    /* Cinza Ultra Leve */
-    --text-main: #1A1A1A;  /* Preto Suave */
-    --border: #EEEEEE;     /* Bordas Finas */
+    --red: #D32F2F;
+    --gold: #C5A021;
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --dark: #1A1A1A;
+    --gray: #666666;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
-body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
-
-/* REGRAS DE VISIBILIDADE (ESSENCIAL PARA FUNCIONAR) */
+/* REGRAS DE ESTADO */
 .hidden { display: none !important; }
 .tab-content { display: none !important; }
 .tab-content.active { display: block !important; }
 
-/* --- TELA DE LOGIN --- */
-#login {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: var(--white);
-    display: none; flex-direction: column; align-items: center; justify-content: center;
-    z-index: 9999;
-}
-#login.active { display: flex !important; }
+body { background: var(--bg); color: var(--dark); }
 
-.login-box { width: 100%; max-width: 350px; padding: 40px; text-align: center; }
-.login-box h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 5px; letter-spacing: -1px; }
-.login-box h1 span { color: var(--primary); }
-.login-box p { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+/* LOGIN */
+#login.active { display: flex !important; align-items: center; justify-content: center; height: 100vh; background: var(--white); }
+.login-box { width: 100%; max-width: 380px; text-align: center; padding: 20px; }
+.txt-red { color: var(--red); }
+.txt-gold { color: var(--gold); }
+.login-box h1 { font-size: 2.8rem; font-weight: 900; margin-bottom: 10px; }
 
-.login-box input {
-    width: 100%; padding: 14px; margin-bottom: 12px;
-    border: 1px solid #DDD; border-radius: 8px; background: #FAFAFA;
+input, select { 
+    width: 100%; padding: 14px; margin-bottom: 15px; 
+    border: 1px solid #DDD; border-radius: 8px; font-size: 1rem;
 }
 
-.btn-red {
-    width: 100%; padding: 16px; background-color: var(--primary);
-    color: white; border: none; border-radius: 8px; font-weight: bold;
-    cursor: pointer; transition: 0.3s; font-size: 1rem;
+.btn-main { 
+    width: 100%; padding: 16px; background: var(--red); color: white; 
+    border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
 }
-.btn-red:hover { background-color: #A00000; transform: translateY(-2px); }
-
-/* --- LAYOUT PRINCIPAL (APP) --- */
-.app-container { display: flex; min-height: 100vh; }
+.btn-main:hover { background: #B71C1C; transform: translateY(-2px); }
 
 /* SIDEBAR */
-.sidebar {
-    width: 260px; height: 100vh; background-color: var(--white);
-    border-right: 1px solid var(--border); position: fixed;
-    padding: 30px 20px; display: flex; flex-direction: column;
+.sidebar { 
+    width: 280px; height: 100vh; position: fixed; left: 0; top: 0;
+    background: var(--white); border-right: 1px solid #EEE; padding: 30px 20px; z-index: 100;
 }
+.sidebar h2 span { color: var(--red); }
 
-.sidebar .logo { font-size: 1.5rem; font-weight: 900; margin-bottom: 40px; }
-.sidebar .logo span { color: var(--primary); }
-
-.nav-item {
-    width: 100%; padding: 14px 18px; border: none; background: none;
-    text-align: left; cursor: pointer; font-weight: 600; color: #666;
-    border-radius: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
-    transition: 0.2s;
+.nav-item { 
+    width: 100%; padding: 15px; border: none; background: none; text-align: left;
+    font-weight: bold; color: var(--gray); cursor: pointer; border-radius: 10px;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
 }
-
-.nav-item i { width: 20px; font-size: 1.1rem; }
-.nav-item:hover { background-color: #F9F9F9; color: var(--primary); }
-.nav-item.active { background-color: #FFF2F2; color: var(--primary); border-left: 4px solid var(--primary); }
-
-.btn-sair { margin-top: auto; color: #999; }
-.btn-sair:hover { color: var(--primary); }
+.nav-item.active { background: #FFF5F5; color: var(--red); border-left: 5px solid var(--red); }
+.logout { margin-top: 50px; color: #999; }
 
 /* CONTEÚDO */
-.main-content { margin-left: 260px; padding: 40px; width: 100%; }
-h2 { font-size: 1.8rem; margin-bottom: 30px; font-weight: 800; }
-h2 span { color: var(--gold); }
+.main-content { margin-left: 280px; padding: 50px; }
+.page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
 
-/* GRID DE VEÍCULOS */
-.card-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;
-}
-
-.car-card {
-    background: var(--white); border-radius: 15px; border: 1px solid var(--border);
-    overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s;
-}
-.car-card:hover { transform: translateY(-5px); border-color: var(--gold); }
-
-.car-img { height: 190px; background-size: cover; background-position: center; background-color: #EEE; }
-
+/* CARDS */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+.car-card { background: white; border-radius: 15px; border: 1px solid #EEE; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+.car-img { height: 180px; background-size: cover; background-position: center; background-color: #EEE; }
 .car-info { padding: 20px; }
-.car-info h3 { font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase; }
-.car-price { color: var(--gold); font-size: 1.3rem; font-weight: 800; }
+.car-info h3 { font-size: 1.1rem; margin-bottom: 10px; }
+.car-price { color: var(--gold); font-size: 1.4rem; font-weight: 800; }
 
-.btn-del {
-    background: none; border: none; color: #FF4444; font-size: 0.8rem;
-    cursor: pointer; margin-top: 15px; font-weight: 600;
-}
+/* FUNNEL */
+.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.funnel-col { background: #F1F1F1; border-radius: 15px; padding: 15px; min-height: 500px; }
+.col-title { font-weight: 800; text-transform: uppercase; font-size: 0.8rem; text-align: center; margin-bottom: 20px; }
+.t-gold { color: var(--gold); }
+.t-red { color: var(--red); }
+.t-green { color: #2E7D32; }
 
-/* FORMULÁRIOS */
-.form-container { max-width: 600px; background: white; padding: 30px; border-radius: 15px; border: 1px solid var(--border); }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+/* FORM */
+.form-card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #EEE; max-width: 600px; }
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+.slot { aspect-ratio: 1; border: 2px dashed #DDD; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
 
-.upload-slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
-.slot {
-    aspect-ratio: 1; border: 2px dashed #DDD; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: #AAA; font-size: 1.2rem; overflow: hidden;
-}
+/* MOBILE */
+.mobile-header { display: none; }
+.menu-close { display: none; border: none; background: none; font-size: 2rem; }
 
-/* RESPONSIVIDADE */
 @media (max-width: 900px) {
-    .sidebar { transform: translateX(-100%); width: 100%; z-index: 1000; }
+    .sidebar { transform: translateX(-100%); transition: 0.3s; width: 100%; }
     .sidebar.open { transform: translateX(0); }
-    .main-content { margin-left: 0; padding: 20px; }
+    .main-content { margin-left: 0; padding: 100px 20px; }
+    .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: white; position: fixed; top: 0; width: 100%; z-index: 90; border-bottom: 1px solid #EEE; }
+    .funnel { grid-template-columns: 1fr; }
+    .menu-close { display: block; }
 }
