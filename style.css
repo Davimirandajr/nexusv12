@@ -1,58 +1,45 @@
-:root {
-    --y: #ffcc00; --r: #cc0000; --bg: #0d0d0d; --card: #1a1a1a;
-}
-
-* { box-sizing: border-box; transition: all 0.3s ease; }
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; }
+:root { --y: #ffcc00; --r: #cc0000; --bg: #0d0d0d; --c: #1a1a1a; }
+* { box-sizing: border-box; transition: 0.3s; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; overflow-x: hidden; }
 .hidden { display: none !important; }
 
-/* MENU LATERAL */
 aside {
     width: 260px; background: #000; height: 100vh; padding: 20px;
-    position: fixed; left: 0; top: 0; z-index: 1000;
-    border-right: 1px solid #222; display: flex; flex-direction: column;
+    position: fixed; left: 0; top: 0; z-index: 1000; border-right: 1px solid #222;
+    display: flex; flex-direction: column;
 }
 
 #toggle-menu {
-    position: fixed; left: 20px; top: 20px; z-index: 1100;
+    position: fixed; left: 15px; top: 15px; z-index: 1100;
     background: var(--y); border: none; width: 45px; height: 45px; border-radius: 8px;
-    cursor: pointer; font-size: 1.2rem; display: none; /* Só aparece no celular */
+    cursor: pointer; display: none; align-items: center; justify-content: center;
 }
 
 main { margin-left: 260px; padding: 40px; min-height: 100vh; }
 
-/* RESPONSIVIDADE */
 @media (max-width: 768px) {
-    #toggle-menu { display: flex; align-items: center; justify-content: center; }
+    #toggle-menu { display: flex; }
     aside { left: -260px; padding-top: 80px; }
     aside.active { left: 0; }
     main { margin-left: 0; padding: 80px 15px; }
 }
 
-/* CARDS SHOWROOM */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.card { background: var(--card); border-radius: 12px; border: 1px solid #333; overflow: hidden; }
-.card:hover { border-color: var(--y); transform: translateY(-5px); }
-.img-v { height: 190px; background-size: cover; background-position: center; transition: 0.5s; }
+.card { background: var(--c); border-radius: 12px; border: 1px solid #333; overflow: hidden; }
+.img-v { height: 180px; background-size: cover; background-position: center; transition: 0.5s; }
 .info { padding: 15px; }
-.price { color: var(--y); font-size: 1.4rem; font-weight: bold; margin: 5px 0; }
+.price { color: var(--y); font-size: 1.4rem; font-weight: bold; }
 
-/* CRM */
-.card-client { border-left: 5px solid #444; background: var(--card); padding: 15px; margin-bottom: 15px; border-radius: 8px; }
-.lead-quente { border-left-color: var(--r); }
-.lead-morno { border-left-color: var(--y); }
-
-/* BOTÕES E INPUTS */
-.btn-primary { background: var(--y); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+.btn-primary { background: var(--y); color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
 .nav-btn { background: transparent; border: none; color: #888; padding: 15px; width: 100%; text-align: left; cursor: pointer; display: flex; align-items: center; }
-.nav-btn i { margin-right: 10px; }
 .nav-btn:hover { color: var(--y); background: #111; }
 .stats-sidebar { background: var(--r); padding: 15px; border-radius: 10px; margin-top: auto; text-align: center; }
 
 input, select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; margin-bottom: 10px; border-radius: 6px; }
 .page { display: none; }
-.page.active { display: block; }
+.page.active { display: block; animation: fadeIn 0.4s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* LOADER */
 #loader { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.bar { width: 100px; height: 3px; background: var(--y); margin-top: 10px; border-radius: 5px; }
+.bar { width: 100px; height: 3px; background: var(--y); border-radius: 5px; animation: load 2s infinite; }
+@keyframes load { 0% { width: 0; } 100% { width: 150px; } }
