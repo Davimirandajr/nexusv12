@@ -15,45 +15,56 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- MENU TOGGLE ---
+// MENU & NAVEGAÇÃO
 window.toggleSidebar = () => {
     const sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("active");
-    const icon = document.querySelector("#toggle-menu i");
-    icon.className = sidebar.classList.contains("active") ? "fa fa-times" : "fa fa-bars";
+    document.querySelector("#toggle-menu i").className = sidebar.classList.contains("active") ? "fa fa-times" : "fa fa-bars";
 };
 
-// --- NAVEGAÇÃO ---
 window.nav = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if (window.innerWidth <= 768) {
-        document.getElementById("sidebar").classList.remove("active");
-        document.querySelector("#toggle-menu i").className = "fa fa-bars";
-    }
+    if (window.innerWidth <= 768) window.toggleSidebar();
 };
 
-// --- AUTENTICAÇÃO ---
+// AUTH
 window.handleLogin = async () => {
-    const email = document.getElementById("email-login").value;
-    const senha = document.getElementById("senha-login").value;
-    try { await signInWithEmailAndPassword(auth, email, senha); } 
-    catch (e) { alert("Acesso negado!"); }
+    const e = document.getElementById("email-login").value;
+    const s = document.getElementById("senha-login").value;
+    try { await signInWithEmailAndPassword(auth, e, s); } catch { alert("Erro de Login!"); }
 };
 window.handleLogout = () => signOut(auth);
 
 onAuthStateChanged(auth, user => {
     document.getElementById("login").classList.toggle("hidden", !!user);
     document.getElementById("app").classList.toggle("hidden", !user);
-    if(user) { 
-        document.getElementById("loader").style.display = "none";
-        sync(); 
-    }
+    if(user) { document.getElementById("loader").style.display="none"; sync(); syncVendedores(); }
 });
 
-// --- SINCRONIZAÇÃO EM TEMPO REAL ---
+// VENDEDORES
+window.addVendedor = async () => {
+    const nome = document.getElementById("v-nome").value;
+    const whats = document.getElementById("v-whats").value.replace(/\D/g,'');
+    await addDoc(collection(db, "vendedores"), { nome, whats });
+    alert("Vendedor Salvo!");
+};
+
+function syncVendedores() {
+    onSnapshot(collection(db, "vendedores"), snap => {
+        const vends = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        document.getElementById("vendedor-select").innerHTML = vends.map(v => `<option value="${v.whats}">${v.nome}</option>`).join('');
+        document.getElementById("listaVendedores").innerHTML = vends.map(v => `
+            <div class="card-client" style="border-left: 4px solid var(--y)">
+                <h4>${v.nome}</h4><p>Whats: ${v.whats}</p>
+                <button onclick="window.removerVend('${v.id}')" style="color:red;background:none;border:none;cursor:pointer">Excluir</button>
+            </div>`).join('');
+    });
+}
+window.removerVend = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "vendedores", id)); };
+
+// ESTOQUE
 function sync() {
-    // Carros
     onSnapshot(query(collection(db, "carros"), orderBy("data", "desc")), snap => {
         const grid = document.getElementById("listaCarros");
         const carros = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -63,83 +74,52 @@ function sync() {
                 <div class="img-v" style="background-image: url('${c.fotos[0]}')"></div>
                 <div class="info">
                     <h3>${c.modelo}</h3>
-                    <p class="price">R$ ${c.preco.toLocaleString('pt-BR')}</p>
-                    <p>${c.km} KM | ${c.cambio}</p>
-                    <button onclick="window.removerCarro('${c.id}')" style="background:none; border:none; color:red; cursor:pointer;">Excluir</button>
+                    <p class="price">R$ ${c.preco.toLocaleString()}</p>
+                    <p style="font-size:0.8rem">${c.vendedorNome || 'Sem vendedor'}</p>
+                    <button onclick="window.removerCarro('${c.id}')" style="color:red;background:none;border:none;cursor:pointer">Remover</button>
                 </div>
-            </div>
-        `).join('');
-        const total = carros.reduce((acc, cur) => acc + (cur.preco || 0), 0);
-        document.getElementById("stat-total").innerText = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-    });
-
-    // CRM
-    onSnapshot(query(collection(db, "clientes"), orderBy("timestamp", "desc")), snap => {
-        const crmList = document.getElementById("listaClientes");
-        crmList.innerHTML = snap.docs.map(doc => {
-            const l = doc.data();
-            return `<div class="card-client lead-${l.situacao}">
-                <h4>${l.nome}</h4>
-                <p>${l.obs}</p>
-                <button onclick="window.open('https://wa.me/${l.fone.replace(/\D/g,'')}')" class="btn-primary" style="padding: 5px; font-size: 0.8rem;">WhatsApp</button>
-            </div>`;
-        }).join('');
+            </div>`).join('');
+        const total = carros.reduce((a,b) => a + (b.preco || 0), 0);
+        document.getElementById("stat-total").innerText = total.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
     });
 }
 
-// --- SALVAR VEÍCULO COM COMPRESSÃO ---
 window.salvarVeiculo = async () => {
     const btn = document.getElementById("btn-salvar");
-    btn.innerText = "PROCESSANDO IMAGENS...";
-    btn.disabled = true;
-
-    try {
-        const f1 = await compress(document.getElementById("fotoFrente").files[0]);
-        const f2 = await compress(document.getElementById("fotoTraseira").files[0]);
-        const f3 = await compress(document.getElementById("fotoInterior").files[0]);
-        const fotos = [f1, f2, f3].filter(f => f !== "");
-
-        await addDoc(collection(db, "carros"), {
-            modelo: document.getElementById("modelo").value,
-            preco: parseFloat(document.getElementById("preco").value),
-            km: document.getElementById("km").value,
-            cambio: document.getElementById("cambio").value,
-            descricao: document.getElementById("descricao").value,
-            fotos: fotos,
-            data: new Date().toISOString()
-        });
-        window.nav('showroom');
-    } catch (e) { alert("Erro ao salvar."); }
-    btn.innerText = "SALVAR NO SISTEMA";
-    btn.disabled = false;
-};
-
-window.addCliente = async () => {
-    await addDoc(collection(db, "clientes"), {
-        nome: document.getElementById("c-nome").value,
-        fone: document.getElementById("c-fone").value,
-        situacao: document.getElementById("c-situacao").value,
-        obs: document.getElementById("c-obs").value,
-        timestamp: new Date().toISOString()
+    btn.innerText = "Processando...";
+    const sel = document.getElementById("vendedor-select");
+    const f1 = await compress(document.getElementById("fotoFrente").files[0]);
+    const f2 = await compress(document.getElementById("fotoTraseira").files[0]);
+    const f3 = await compress(document.getElementById("fotoInterior").files[0]);
+    
+    await addDoc(collection(db, "carros"), {
+        modelo: document.getElementById("modelo").value,
+        preco: parseFloat(document.getElementById("preco").value),
+        km: document.getElementById("km").value,
+        cambio: document.getElementById("cambio").value,
+        vendedorWhats: sel.value,
+        vendedorNome: sel.options[sel.selectedIndex].text,
+        fotos: [f1, f2, f3].filter(f => f !== ""),
+        data: new Date().toISOString()
     });
-    alert("Lead salvo!");
+    window.nav('showroom');
+    btn.innerText = "SALVAR NO SISTEMA";
 };
 
 window.removerCarro = async (id) => { if(confirm("Remover?")) await deleteDoc(doc(db, "carros", id)); };
 
-// COMPRESSOR DE IMAGEM (600px de largura)
 async function compress(file) {
     if(!file) return "";
     return new Promise(res => {
-        const reader = new FileReader(); reader.readAsDataURL(file);
-        reader.onload = e => {
+        const r = new FileReader(); r.readAsDataURL(file);
+        r.onload = e => {
             const img = new Image(); img.src = e.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = 600; canvas.height = (img.height * 600) / img.width;
                 canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
                 res(canvas.toDataURL('image/jpeg', 0.6));
-            };
-        };
+            }
+        }
     });
 }
