@@ -1,88 +1,63 @@
 :root {
-    --red: #D32F2F;
-    --gold: #C5A021;
+    --red: #CC0000;
+    --gold: #B8860B;
     --white: #FFFFFF;
     --bg: #F8F9FA;
-    --dark: #1A1A1A;
-    --gray: #666666;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+* { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
 
 /* REGRAS DE ESTADO */
 .hidden { display: none !important; }
 .tab-content { display: none !important; }
 .tab-content.active { display: block !important; }
 
-body { background: var(--bg); color: var(--dark); }
+body { background: var(--bg); color: #333; }
 
 /* LOGIN */
-#login.active { display: flex !important; align-items: center; justify-content: center; height: 100vh; background: var(--white); }
-.login-box { width: 100%; max-width: 380px; text-align: center; padding: 20px; }
-.txt-red { color: var(--red); }
-.txt-gold { color: var(--gold); }
-.login-box h1 { font-size: 2.8rem; font-weight: 900; margin-bottom: 10px; }
+#login.active { display: flex; align-items: center; justify-content: center; height: 100vh; background: white; }
+.login-box { width: 320px; text-align: center; }
+.v12 { color: var(--red); font-weight: 900; }
+input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
 
-input, select { 
-    width: 100%; padding: 14px; margin-bottom: 15px; 
-    border: 1px solid #DDD; border-radius: 8px; font-size: 1rem;
-}
-
-.btn-main { 
-    width: 100%; padding: 16px; background: var(--red); color: white; 
-    border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
-}
-.btn-main:hover { background: #B71C1C; transform: translateY(-2px); }
+/* BOTÕES */
+.btn-primary { background: var(--red); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.btn-primary:hover { background: #A00000; }
+.btn-cancel { background: #666; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer; }
 
 /* SIDEBAR */
-.sidebar { 
-    width: 280px; height: 100vh; position: fixed; left: 0; top: 0;
-    background: var(--white); border-right: 1px solid #EEE; padding: 30px 20px; z-index: 100;
+#app { display: flex; min-height: 100vh; }
+.sidebar { width: 260px; background: white; border-right: 1px solid #eee; padding: 30px 20px; position: fixed; height: 100vh; }
+.main-content { margin-left: 260px; padding: 40px; width: 100%; }
+
+.nav-item { width: 100%; padding: 14px; border: none; background: none; text-align: left; cursor: pointer; font-weight: bold; color: #666; border-radius: 8px; margin-bottom: 5px; }
+.nav-item.active { background: #FFF5F5; color: var(--red); border-left: 4px solid var(--red); }
+
+/* SHOWROOM E EFEITO DE MOVIMENTO */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.car-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; transition: 0.5s; cursor: pointer; }
+
+.car-img { 
+    height: 180px; background-size: cover; background-position: center; 
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
 }
-.sidebar h2 span { color: var(--red); }
 
-.nav-item { 
-    width: 100%; padding: 15px; border: none; background: none; text-align: left;
-    font-weight: bold; color: var(--gray); cursor: pointer; border-radius: 10px;
-    margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+/* O EFEITO PEDIDO: A foto se mexe ao passar o mouse */
+.car-card:hover .car-img {
+    transform: scale(1.15) rotate(1deg);
 }
-.nav-item.active { background: #FFF5F5; color: var(--red); border-left: 5px solid var(--red); }
-.logout { margin-top: 50px; color: #999; }
-
-/* CONTEÚDO */
-.main-content { margin-left: 280px; padding: 50px; }
-.page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-
-/* CARDS */
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-.car-card { background: white; border-radius: 15px; border: 1px solid #EEE; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-.car-img { height: 180px; background-size: cover; background-position: center; background-color: #EEE; }
-.car-info { padding: 20px; }
-.car-info h3 { font-size: 1.1rem; margin-bottom: 10px; }
-.car-price { color: var(--gold); font-size: 1.4rem; font-weight: 800; }
-
-/* FUNNEL */
-.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.funnel-col { background: #F1F1F1; border-radius: 15px; padding: 15px; min-height: 500px; }
-.col-title { font-weight: 800; text-transform: uppercase; font-size: 0.8rem; text-align: center; margin-bottom: 20px; }
-.t-gold { color: var(--gold); }
-.t-red { color: var(--red); }
-.t-green { color: #2E7D32; }
-
-/* FORM */
-.form-card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #EEE; max-width: 600px; }
-.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-.slot { aspect-ratio: 1; border: 2px dashed #DDD; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
-
-/* MOBILE */
-.mobile-header { display: none; }
-.menu-close { display: none; border: none; background: none; font-size: 2rem; }
-
-@media (max-width: 900px) {
-    .sidebar { transform: translateX(-100%); transition: 0.3s; width: 100%; }
-    .sidebar.open { transform: translateX(0); }
-    .main-content { margin-left: 0; padding: 100px 20px; }
-    .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: white; position: fixed; top: 0; width: 100%; z-index: 90; border-bottom: 1px solid #EEE; }
-    .funnel { grid-template-columns: 1fr; }
-    .menu-close { display: block; }
+.car-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-color: var(--gold);
 }
+
+.car-info { padding: 15px; }
+.car-price { color: var(--gold); font-weight: 800; font-size: 1.3rem; }
+
+/* EQUIPE */
+.v-list-item { background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+/* SLOTS FOTOS */
+.upload-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.slot { aspect-ratio: 1; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+.slot img { width: 100%; height: 100%; object-fit: cover; }
