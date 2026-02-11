@@ -1,38 +1,62 @@
-:root { --black: #000; --gold: #ffcc00; --red: #ff0000; --dark: #111; --text: #fff; }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+:root {
+    --black: #000000;
+    --dark: #0d0d0d;
+    --gold: #ffcc00;
+    --red: #ff0000;
+    --text: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+
 body { background: var(--black); color: var(--text); overflow-x: hidden; }
 
-.hidden { display: none !important; }
-.page { display: none; }
-.page.active { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-.page-content { display: none; }
-.page-content.active { display: block; animation: fadeIn 0.3s; }
+/* ESTADO INICIAL: TUDO SUMIDO */
+.page-content, #app, #login { display: none !important; }
 
-/* Sidebar Responsiva */
-.sidebar { width: 250px; height: 100vh; background: #080808; position: fixed; border-right: 1px solid #222; padding: 20px; z-index: 1000; transition: 0.3s; }
-.content { margin-left: 250px; padding: 40px; }
+/* MOSTRAR APENAS O QUE TEM A CLASSE ACTIVE */
+.active { display: block !important; }
+#login.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
 
-/* Menu Mobile */
-.mobile-toggle { display: none; position: fixed; top: 15px; left: 15px; background: var(--gold); border: none; padding: 10px; border-radius: 5px; z-index: 2000; }
+/* SIDEBAR FIXA */
+.sidebar { 
+    width: 250px; height: 100vh; position: fixed; 
+    background: #050505; border-right: 1px solid #222; 
+    padding: 20px; z-index: 1000; 
+}
 
+.content { margin-left: 250px; padding: 40px; min-height: 100vh; }
+
+/* MENU CELULAR */
+.mobile-toggle { 
+    display: none; position: fixed; top: 15px; left: 15px; 
+    background: var(--gold); border: none; padding: 12px; 
+    border-radius: 5px; z-index: 2000; cursor: pointer;
+}
+
+/* RESPONSIVIDADE */
 @media (max-width: 900px) {
-    .sidebar { transform: translateX(-100%); width: 260px; }
+    .sidebar { transform: translateX(-100%); transition: 0.3s; }
     .sidebar.open { transform: translateX(0); }
     .content { margin-left: 0; padding: 70px 20px; }
     .mobile-toggle { display: block; }
     .funnel { grid-template-columns: 1fr !important; }
 }
 
-/* Estilo V12 */
-.logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 30px; text-align: center; }
-.logo span { color: var(--gold); }
-.nav-btn { width: 100%; padding: 15px; background: none; border: none; color: #666; text-align: left; cursor: pointer; border-radius: 8px; font-weight: bold; margin-bottom: 5px; }
-.nav-btn.active { background: #1a1a1a; color: var(--gold); }
-.btn-sair { color: var(--red) !important; margin-top: 30px; }
-.btn-gold { width: 100%; padding: 15px; background: var(--gold); border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
-.upload-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 15px 0; }
-.slot { aspect-ratio: 1; background: #222; border: 1px dashed #444; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+/* DESIGN V12 */
+.nav-btn { 
+    width: 100%; padding: 15px; background: none; border: none; 
+    color: #666; text-align: left; cursor: pointer; font-weight: bold; 
+}
+.nav-btn.active { color: var(--gold); background: #1a1a1a; border-radius: 8px; }
+.btn-gold { 
+    background: var(--gold); color: #000; border: none; 
+    padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%;
+}
+.upload-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
+.slot { 
+    aspect-ratio: 1; background: #111; border: 1px dashed #444; 
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
 .slot img { width: 100%; height: 100%; object-fit: cover; }
-.funnel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-.funnel-col { background: #0a0a0a; padding: 15px; border-radius: 10px; border-top: 2px solid var(--gold); min-height: 400px; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.funnel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.funnel-col { background: #0a0a0a; padding: 15px; border-radius: 10px; border-top: 3px solid var(--gold); min-height: 400px; }
