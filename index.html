@@ -3,124 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus V12 | Gestão Automotiva</title>
+    <title>Nexus V12 | Gestão Elite</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="loader">
-        <div class="bar"></div>
-    </div>
+    <div id="loader"><div class="bar"></div></div>
 
     <section id="login" class="hidden">
-        <div class="login-box">
-            <h1>NEXUS <span>V12</span></h1>
-            <p style="color: var(--text-dim); margin-bottom: 20px;">Acesso ao Painel da Loja</p>
-            
-            <input id="email-login" type="email" placeholder="Seu e-mail profissional">
-            <input id="senha-login" type="password" placeholder="Sua senha secreta">
-            
-            <button onclick="window.handleLogin()" class="btn-primary" style="width: 100%;">
-                ENTRAR NO SISTEMA
-            </button>
+        <div class="step-container" style="margin-top: 100px; text-align: center;">
+            <h1 style="font-family: 'Syncopate'; color: var(--primary);">NEXUS V12</h1>
+            <input id="email-login" type="email" placeholder="E-mail" style="width: 100%; padding: 15px; margin-top: 30px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px;">
+            <input id="senha-login" type="password" placeholder="Senha" style="width: 100%; padding: 15px; margin-top: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px;">
+            <button onclick="window.handleLogin()" class="nav-btn active" style="margin-top: 20px; text-align: center;">ENTRAR NO PAINEL</button>
         </div>
     </section>
 
     <div id="app" class="hidden">
-        
-        <aside id="sidebar">
-            <h2>NEXUS <span>V12</span></h2>
+        <aside>
+            <h2 style="font-family: 'Syncopate'; font-size: 1rem; color: var(--primary); margin-bottom: 40px;">NEXUS V12</h2>
             <nav>
-                <button onclick="window.nav('showroom')" class="nav-btn active">
-                    <i class="fa fa-car"></i> <span>Meu Estoque</span>
-                </button>
-                <button onclick="window.nav('novo')" class="nav-btn">
-                    <i class="fa fa-plus-circle"></i> <span>Novo Veículo</span>
-                </button>
-                <button onclick="window.nav('vendedores')" class="nav-btn">
-                    <i class="fa fa-user-tie"></i> <span>Vendedores</span>
-                </button>
-                
-                <button onclick="window.handleLogout()" class="nav-btn logout">
-                    <i class="fa fa-power-off"></i> <span>Sair da Conta</span>
-                </button>
+                <button onclick="window.nav('showroom')" class="nav-btn active"><i class="fa fa-car"></i> Estoque</button>
+                <button onclick="window.nav('funil')" class="nav-btn"><i class="fa fa-filter"></i> Funil de Vendas</button>
+                <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus-circle"></i> Adicionar Carro</button>
+                <button onclick="window.nav('vendedores')" class="nav-btn"><i class="fa fa-users"></i> Equipe</button>
+                <button onclick="window.handleLogout()" class="nav-btn" style="margin-top: 50px; color: #ff4444;"><i class="fa fa-sign-out"></i> Sair</button>
             </nav>
         </aside>
 
         <main>
-            
             <section id="showroom" class="page active">
-                <div class="header-flex">
-                    <div>
-                        <h1>Painel de Vendas</h1>
-                        <p style="color: var(--text-dim);">Gerencie os veículos da sua unidade</p>
-                    </div>
-                    <button onclick="window.gerarLinkShowroom()" class="btn-share">
-                        <i class="fa fa-share-nodes"></i> Copiar Link do Portal
-                    </button>
+                <div style="display:flex; justify-content: space-between; align-items: center;">
+                    <h1>Estoque Geral</h1>
+                    <button onclick="window.gerarLinkShowroom()" class="nav-btn active" style="width: auto;">Copiar Link Portal</button>
                 </div>
-                
-                <div id="listaCarros" class="grid">
-                    </div>
+                <div id="listaCarros" class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 30px;"></div>
+            </section>
+
+            <section id="funil" class="page">
+                <h1>Funil de Vendas</h1>
+                <div class="funnel-container">
+                    <div class="funnel-column"><h3><i class="fa fa-info-circle"></i> Leads / Novos</h3><div id="col-leads"></div></div>
+                    <div class="funnel-column"><h3><i class="fa fa-comments"></i> Em Negociação</h3><div id="col-negociacao"></div></div>
+                    <div class="funnel-column"><h3><i class="fa fa-check-circle"></i> Vendidos</h3><div id="col-vendidos"></div></div>
+                </div>
             </section>
 
             <section id="novo" class="page">
-                <div class="header-flex">
-                    <h1>Cadastrar Veículo</h1>
-                </div>
-                
-                <div class="form-container">
-                    <label>Modelo do Veículo</label>
-                    <input id="modelo" type="text" placeholder="Ex: Porsche 911 Carrera S">
-                    
-                    <label>Preço de Venda (R$)</label>
-                    <input id="preco" type="number" placeholder="Ex: 850000">
-                    
-                    <label>Responsável pela Venda</label>
-                    <select id="vendedor-select">
-                        <option value="">Selecione um vendedor...</option>
-                    </select>
-                    
-                    <label>Foto Principal</label>
-                    <input id="foto-principal" type="file" accept="image/*">
-                    
-                    <div style="margin-top: 20px;">
-                        <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary">
-                            SALVAR NO ESTOQUE
-                        </button>
-                        <button onclick="window.nav('showroom')" style="background: none; border: none; color: #888; margin-left: 20px; cursor: pointer;">
-                            Cancelar
-                        </button>
+                <div class="step-container">
+                    <div id="step1" class="step active">
+                        <h3>Passo 1: Identificação</h3>
+                        <input id="modelo" placeholder="Marca e Modelo" style="width: 100%; padding: 15px; margin: 20px 0; background: #000; border: 1px solid #333; color: #fff;">
+                        <button onclick="window.nextStep(2)" class="nav-btn active" style="text-align: center;">PRÓXIMO</button>
+                    </div>
+                    <div id="step2" class="step">
+                        <h3>Passo 2: Valor e Vendedor</h3>
+                        <input id="preco" type="number" placeholder="Valor (R$)" style="width: 100%; padding: 15px; margin: 20px 0; background: #000; border: 1px solid #333; color: #fff;">
+                        <select id="vendedor-select" style="width: 100%; padding: 15px; background: #000; border: 1px solid #333; color: #fff;"></select>
+                        <div style="margin-top: 20px; display: flex; gap: 10px;">
+                            <button onclick="window.nextStep(1)" class="nav-btn">VOLTAR</button>
+                            <button onclick="window.nextStep(3)" class="nav-btn active">PRÓXIMO</button>
+                        </div>
+                    </div>
+                    <div id="step3" class="step">
+                        <h3>Passo 3: Fotos (Até 5)</h3>
+                        <div class="photo-grid">
+                            <input type="file" id="f-1" hidden onchange="window.preview(this, 'p1')"><div class="photo-slot" onclick="document.getElementById('f-1').click()" id="p1">+</div>
+                            <input type="file" id="f-2" hidden onchange="window.preview(this, 'p2')"><div class="photo-slot" onclick="document.getElementById('f-2').click()" id="p2">+</div>
+                            <input type="file" id="f-3" hidden onchange="window.preview(this, 'p3')"><div class="photo-slot" onclick="document.getElementById('f-3').click()" id="p3">+</div>
+                            <input type="file" id="f-4" hidden onchange="window.preview(this, 'p4')"><div class="photo-slot" onclick="document.getElementById('f-4').click()" id="p4">+</div>
+                            <input type="file" id="f-5" hidden onchange="window.preview(this, 'p5')"><div class="photo-slot" onclick="document.getElementById('f-5').click()" id="p5">+</div>
+                        </div>
+                        <button id="btn-salvar" onclick="window.salvarVeiculo()" class="nav-btn active" style="text-align: center;">FINALIZAR CADASTRO</button>
                     </div>
                 </div>
             </section>
-
-            <section id="vendedores" class="page">
-                <div class="header-flex">
-                    <h1>Sua Equipe</h1>
-                </div>
-
-                <div class="form-container" style="margin-bottom: 40px;">
-                    <h3>Novo Vendedor</h3>
-                    <p style="color: var(--text-dim); margin-bottom: 20px;">Adicione vendedores para vincular aos carros.</p>
-                    
-                    <input id="v-nome" type="text" placeholder="Nome completo">
-                    <input id="v-whats" type="text" placeholder="WhatsApp (DDD + Número)">
-                    
-                    <button onclick="window.addVendedor()" class="btn-primary">
-                        CADASTRAR VENDEDOR
-                    </button>
-                </div>
-
-                <div id="listaVendedores" class="grid-crm">
-                    </div>
-            </section>
-
         </main>
     </div>
-
     <script type="module" src="script.js"></script>
-
 </body>
 </html>
