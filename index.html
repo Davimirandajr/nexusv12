@@ -10,25 +10,23 @@
 <body>
     <div id="loader"><div class="bar"></div></div>
 
-    <section id="login">
+    <section id="login" class="hidden">
         <div class="login-box">
             <h1>NEXUS <span>V12</span></h1>
-            <input id="email-login" type="email" placeholder="E-mail da Loja">
+            <input id="email-login" type="email" placeholder="E-mail">
             <input id="senha-login" type="password" placeholder="Senha">
-            <button onclick="window.handleLogin()" class="btn-primary">ACESSAR PAINEL</button>
+            <button onclick="window.handleLogin()" class="btn-primary">ENTRAR</button>
         </div>
     </section>
 
     <div id="app" class="hidden">
-        <button id="toggle-menu" onclick="window.toggleSidebar()"><i class="fa fa-bars"></i></button>
         <aside id="sidebar">
             <h2>NEXUS <span>V12</span></h2>
             <nav>
                 <button onclick="window.nav('showroom')" class="nav-btn"><i class="fa fa-car"></i> Estoque</button>
                 <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus"></i> Novo Veículo</button>
                 <button onclick="window.nav('vendedores')" class="nav-btn"><i class="fa fa-user-tie"></i> Vendedores</button>
-                <button onclick="window.nav('clientes')" class="nav-btn"><i class="fa fa-users"></i> Leads</button>
-                <button onclick="window.handleLogout()" class="nav-btn" style="color:var(--r)"><i class="fa fa-power-off"></i> Sair</button>
+                <button onclick="window.handleLogout()" class="nav-btn logout"><i class="fa fa-power-off"></i> Sair</button>
             </nav>
         </aside>
 
@@ -36,7 +34,7 @@
             <section id="showroom" class="page active">
                 <div class="header-flex">
                     <h1>Meu Estoque</h1>
-                    <button onclick="window.gerarLinkShowroom()" class="btn-share"><i class="fa fa-share-alt"></i> Copiar Link do Showroom</button>
+                    <button onclick="window.gerarLinkShowroom()" class="btn-share">Copiar Link do Portal</button>
                 </div>
                 <div id="listaCarros" class="grid"></div>
             </section>
@@ -44,31 +42,24 @@
             <section id="novo" class="page">
                 <h1>Cadastrar Veículo</h1>
                 <div class="form-container">
-                    <input id="modelo" placeholder="Modelo">
-                    <input id="preco" type="number" placeholder="Preço">
-                    <input id="km" type="number" placeholder="KM">
-                    <select id="cambio"><option>Automático</option><option>Manual</option></select>
-                    <select id="vendedor-select"><option>Carregando vendedores...</option></select>
-                    <textarea id="descricao" placeholder="Descrição"></textarea>
-                    <input type="file" id="f1"> <input type="file" id="f2"> <input type="file" id="f3">
+                    <input id="modelo" placeholder="Modelo do Carro">
+                    <input id="preco" type="number" placeholder="Preço (R$)">
+                    <select id="vendedor-select"><option>Carregando...</option></select>
+                    <input type="file" id="foto-principal">
                     <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary">SALVAR</button>
                 </div>
             </section>
 
             <section id="vendedores" class="page">
                 <h1>Equipe</h1>
-                <input id="v-nome" placeholder="Nome">
-                <input id="v-whats" placeholder="WhatsApp (55...)">
+                <input id="v-nome" placeholder="Nome do Vendedor">
+                <input id="v-whats" placeholder="WhatsApp (Ex: 5511999999999)">
                 <button onclick="window.addVendedor()" class="btn-primary">ADD VENDEDOR</button>
-                <div id="listaVendedores" class="grid-crm"></div>
-            </section>
-
-            <section id="clientes" class="page">
-                <h1>Leads</h1>
-                <div id="listaClientes" class="grid-crm"></div>
+                <div id="listaVendedores" class="grid-vends"></div>
             </section>
         </main>
     </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
