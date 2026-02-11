@@ -15,145 +15,126 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let fotosArray = ["", "", "", "", ""]; // Armazena as 5 fotos
+let fotosData = ["", "", "", "", ""];
 
-// --- CONTROLE DE ACESSO ---
+// AUTH MONITOR
 onAuthStateChanged(auth, (user) => {
-    const loader = document.getElementById("loader");
-    const loginSec = document.getElementById("login");
-    const appSec = document.getElementById("app");
-
+    document.getElementById("loader").style.display = "none";
     if (user) {
-        loginSec.classList.remove("active");
-        appSec.classList.remove("hidden");
-        window.nav('showroom');
-        syncEstoque();
-        syncVendedores();
+        document.getElementById("login").classList.remove("active");
+        document.getElementById("app").classList.remove("hidden");
+        syncData();
     } else {
-        loginSec.classList.add("active");
-        appSec.classList.add("hidden");
+        document.getElementById("login").classList.add("active");
+        document.getElementById("app").classList.add("hidden");
     }
-    if(loader) loader.style.display = "none";
 });
 
-// --- NAVEGAÇÃO DE PÁGINAS ---
+// NAVEGAÇÃO RÍGIDA
 window.nav = (pageId) => {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
     document.getElementById(pageId).classList.add('active');
-    const btn = document.querySelector(`[onclick="window.nav('${pageId}')"]`);
-    if(btn) btn.classList.add('active');
+    event.currentTarget.classList.add('active');
 };
 
-// --- NAVEGAÇÃO DE ETAPAS (CADASTRO) ---
-window.nextStep = (step) => {
-    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-    document.getElementById('step' + step).classList.add('active');
-};
-
-// --- PREVIEW E COMPRESSÃO DE FOTOS ---
+// PREVIEW FOTOS
 window.preview = async (input, slotId) => {
     const file = input.files[0];
     if (file) {
-        const base64 = await compress(file);
-        const index = parseInt(slotId.replace('p', '')) - 1;
-        fotosArray[index] = base64;
-        document.getElementById(slotId).innerHTML = `<img src="${base64}">`;
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const index = parseInt(slotId.replace('p', '')) - 1;
+            fotosData[index] = e.target.result;
+            document.getElementById(slotId).innerHTML = `<img src="${e.target.result}">`;
+        };
     }
 };
 
-// --- SINCRONIZAÇÃO EM TEMPO REAL ---
-function syncEstoque() {
+// SYNC
+function syncData() {
     if (!auth.currentUser) return;
     const q = query(collection(db, "carros"), where("lojaId", "==", auth.currentUser.uid));
-
+    
     onSnapshot(q, (snap) => {
         const grid = document.getElementById("listaCarros");
         const cLeads = document.getElementById("col-leads");
         const cNegoc = document.getElementById("col-negociacao");
-        const cVenda = document.getElementById("col-vendidos");
+        const cVend = document.getElementById("col-vendidos");
 
-        grid.innerHTML = ""; cLeads.innerHTML = ""; cNegoc.innerHTML = ""; cVenda.innerHTML = "";
+        grid.innerHTML = ""; cLeads.innerHTML = ""; cNegoc.innerHTML = ""; cVend.innerHTML = "";
 
         snap.forEach(docSnap => {
             const c = docSnap.data();
-            const id = docSnap.id;
             const card = `
-                <div class="car-card">
-                    <div class="car-img" style="background-image:url(${c.fotos[0]})"></div>
-                    <div class="car-info">
-                        <h4>${c.modelo}</h4>
-                        <p>R$ ${c.preco.toLocaleString('pt-BR')}</p>
-                        <button onclick="window.delCarro('${id}')" style="background:none; border:none; color:red; cursor:pointer; font-size:10px; margin-top:5px;">EXCLUIR</button>
+                <div class="card">
+                    <div class="card-img" style="background-image:url(${c.fotos[0]})"></div>
+                    <div class="card-body">
+                        <h3>${c.modelo}</h3>
+                        <p class="price">R$ ${Number(c.preco).toLocaleString()}</p>
+                        <button onclick="window.delCarro('${docSnap.id}')" style="background:none; border:none; color:red; cursor:pointer; font-size:12px; margin-top:10px;">EXCLUIR</button>
                     </div>
                 </div>`;
             
             grid.innerHTML += card;
             if (c.status === 'leads') cLeads.innerHTML += card;
             else if (c.status === 'negociacao') cNegoc.innerHTML += card;
-            else if (c.status === 'vendidos') cVenda.innerHTML += card;
+            else if (c.status === 'vendidos') cVend.innerHTML += card;
         });
     });
-}
 
-function syncVendedores() {
-    const q = query(collection(db, "vendedores"), where("lojaId", "==", auth.currentUser.uid));
-    onSnapshot(q, snap => {
+    // Sync Vendedores
+    onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", auth.currentUser.uid)), snap => {
         const sel = document.getElementById("vendedor-select");
-        sel.innerHTML = `<option value="">Selecione um Vendedor</option>`;
+        const lista = document.getElementById("listaVendedores");
+        sel.innerHTML = ""; lista.innerHTML = "";
         snap.forEach(d => {
-            sel.innerHTML += `<option value="${d.data().whats}">${d.data().nome}</option>`;
+            const v = d.data();
+            sel.innerHTML += `<option value="${v.whats}">${v.nome}</option>`;
+            lista.innerHTML += `<p style="padding:10px; border-bottom:1px solid #222;">${v.nome} - ${v.whats}</p>`;
         });
     });
 }
 
-// --- AÇÕES ---
+// SALVAR
 window.salvarVeiculo = async () => {
     const btn = document.getElementById("btn-salvar");
-    const validPhotos = fotosArray.filter(f => f !== "");
-    
-    if(validPhotos.length === 0) return alert("Adicione pelo menos 1 foto!");
-
     btn.innerText = "SALVANDO...";
-    btn.disabled = true;
+    const validPhotos = fotosData.filter(f => f !== "");
+    
+    await addDoc(collection(db, "carros"), {
+        lojaId: auth.currentUser.uid,
+        modelo: document.getElementById("modelo").value,
+        preco: parseFloat(document.getElementById("preco").value),
+        vendedorWhats: document.getElementById("vendedor-select").value,
+        fotos: validPhotos,
+        status: 'leads',
+        data: new Date().toISOString()
+    });
+    
+    alert("Veículo Adicionado!");
+    window.nav('showroom');
+    btn.innerText = "SALVAR VEÍCULO";
+};
 
-    try {
-        await addDoc(collection(db, "carros"), {
-            lojaId: auth.currentUser.uid,
-            modelo: document.getElementById("modelo").value,
-            preco: parseFloat(document.getElementById("preco").value),
-            vendedorWhats: document.getElementById("vendedor-select").value,
-            fotos: validPhotos,
-            status: 'leads',
-            data: new Date().toISOString()
-        });
-        alert("Sucesso!");
-        location.reload();
-    } catch (e) { alert("Erro ao salvar."); btn.disabled = false; }
+window.addVendedor = async () => {
+    await addDoc(collection(db, "vendedores"), {
+        lojaId: auth.currentUser.uid,
+        nome: document.getElementById("v-nome").value,
+        whats: document.getElementById("v-whats").value
+    });
+    alert("Vendedor Cadastrado!");
 };
 
 window.handleLogin = () => {
-    const e = document.getElementById("email-login").value;
-    const s = document.getElementById("senha-login").value;
-    signInWithEmailAndPassword(auth, e, s).catch(() => alert("Acesso Negado"));
+    signInWithEmailAndPassword(auth, document.getElementById("email-login").value, document.getElementById("senha-login").value);
 };
-
 window.handleLogout = () => signOut(auth);
-
-window.delCarro = (id) => confirm("Apagar veículo?") && deleteDoc(doc(db, "carros", id));
-
-async function compress(file) {
-    return new Promise(res => {
-        const r = new FileReader(); r.readAsDataURL(file);
-        r.onload = e => {
-            const img = new Image(); img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 600; canvas.height = (img.height * 600) / img.width;
-                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-                res(canvas.toDataURL('image/jpeg', 0.6));
-            }
-        }
-    });
-}
+window.delCarro = (id) => confirm("Apagar?") && deleteDoc(doc(db, "carros", id));
+window.gerarLinkShowroom = () => {
+    const link = window.location.origin + "/portal.html?loja=" + auth.currentUser.uid;
+    navigator.clipboard.writeText(link);
+    alert("Link do seu Showroom Copiado!");
+};
