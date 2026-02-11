@@ -1,62 +1,105 @@
+/* NEXUS V12 - CSS BLINDADO 
+   Este código garante que apenas UMA tela apareça por vez.
+*/
+
 :root {
-    --black: #000000;
-    --dark: #0d0d0d;
     --gold: #ffcc00;
+    --black: #000000;
+    --dark: #0a0a0a;
+    --grey: #1a1a1a;
     --red: #ff0000;
-    --text: #ffffff;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+/* --- RESET E ESTRUTURA --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { background: var(--black); color: #fff; overflow-x: hidden; }
 
-body { background: var(--black); color: var(--text); overflow-x: hidden; }
-
-/* ESTADO INICIAL: TUDO SUMIDO */
-.page-content, #app, #login { display: none !important; }
-
-/* MOSTRAR APENAS O QUE TEM A CLASSE ACTIVE */
-.active { display: block !important; }
-#login.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-
-/* SIDEBAR FIXA */
-.sidebar { 
-    width: 250px; height: 100vh; position: fixed; 
-    background: #050505; border-right: 1px solid #222; 
-    padding: 20px; z-index: 1000; 
+/* --- SISTEMA DE ABAS (O SEGREDO DO "ATROPELAMENTO") --- */
+/* Forçamos TODAS as seções a ficarem escondidas por padrão */
+.page-content, .tab-content, section[id] {
+    display: none !important;
 }
 
-.content { margin-left: 250px; padding: 40px; min-height: 100vh; }
-
-/* MENU CELULAR */
-.mobile-toggle { 
-    display: none; position: fixed; top: 15px; left: 15px; 
-    background: var(--gold); border: none; padding: 12px; 
-    border-radius: 5px; z-index: 2000; cursor: pointer;
+/* Apenas a que tiver a classe .active ou for o login inicial aparece */
+.active, #login.active {
+    display: block !important;
 }
 
-/* RESPONSIVIDADE */
+/* Seção de login centralizada */
+#login.active {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* --- LAYOUT DO APP --- */
+#app { display: flex; min-height: 100vh; }
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    background: var(--dark);
+    border-right: 1px solid var(--grey);
+    padding: 20px;
+    z-index: 1000;
+}
+
+.main-content, .content {
+    margin-left: 250px;
+    padding: 40px;
+    width: 100%;
+}
+
+/* --- ESTILO V12 --- */
+.logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 30px; text-align: center; }
+.logo span { color: var(--gold); }
+
+.nav-btn {
+    width: 100%;
+    padding: 15px;
+    background: none;
+    border: none;
+    color: #888;
+    text-align: left;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.nav-btn.active, .nav-btn:hover {
+    background: var(--grey);
+    color: var(--gold);
+}
+
+.btn-gold {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* --- GRID E FUNIL --- */
+.grid-carros, .grid-v12 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.funnel-col { background: var(--dark); padding: 15px; border-radius: 10px; border-top: 3px solid var(--gold); min-height: 500px; }
+
+/* --- RESPONSIVIDADE CELULAR --- */
 @media (max-width: 900px) {
     .sidebar { transform: translateX(-100%); transition: 0.3s; }
     .sidebar.open { transform: translateX(0); }
-    .content { margin-left: 0; padding: 70px 20px; }
-    .mobile-toggle { display: block; }
-    .funnel { grid-template-columns: 1fr !important; }
+    .main-content { margin-left: 0; padding: 70px 20px; }
+    .funnel { grid-template-columns: 1fr; }
 }
-
-/* DESIGN V12 */
-.nav-btn { 
-    width: 100%; padding: 15px; background: none; border: none; 
-    color: #666; text-align: left; cursor: pointer; font-weight: bold; 
-}
-.nav-btn.active { color: var(--gold); background: #1a1a1a; border-radius: 8px; }
-.btn-gold { 
-    background: var(--gold); color: #000; border: none; 
-    padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%;
-}
-.upload-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
-.slot { 
-    aspect-ratio: 1; background: #111; border: 1px dashed #444; 
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.slot img { width: 100%; height: 100%; object-fit: cover; }
-.funnel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-.funnel-col { background: #0a0a0a; padding: 15px; border-radius: 10px; border-top: 3px solid var(--gold); min-height: 400px; }
