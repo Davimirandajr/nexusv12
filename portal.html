@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Showroom | Nexus V12</title>
+    <meta charset="UTF-8"><title>Portal de Vendas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body { background: #0d0d0d; color: #fff; font-family: sans-serif; text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
-        .card { background: #1a1a1a; border-radius: 15px; overflow: hidden; border: 1px solid #333; }
-        .img { height: 200px; background-size: cover; background-position: center; }
-        .btn-w { background: #25D366; color: #fff; padding: 10px; display: block; text-decoration: none; font-weight: bold; }
+        body { background:#000; color:#fff; font-family:sans-serif; text-align:center; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px; padding:20px; }
+        .card { background:#111; border-radius:10px; overflow:hidden; border:1px solid #333; }
+        .img { height:200px; background-size:cover; background-position:center; }
+        .btn { background:#25D366; color:#fff; display:block; padding:15px; text-decoration:none; font-weight:bold; }
     </style>
 </head>
 <body>
@@ -19,25 +19,21 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { /* MESMO CONFIG */ };
+        const firebaseConfig = { /* SEU CONFIG */ };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const params = new URLSearchParams(window.location.search);
-        const lojaId = params.get('loja');
+        const idLoja = new URLSearchParams(window.location.search).get('loja');
 
-        if(lojaId) {
-            const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
+        if(idLoja) {
+            const q = query(collection(db, "carros"), where("lojaId", "==", idLoja));
             onSnapshot(q, snap => {
                 document.getElementById("grid").innerHTML = snap.docs.map(d => {
                     const c = d.data();
                     return `<div class="card">
                         <div class="img" style="background-image:url(${c.fotos[0]})"></div>
-                        <div class="info">
-                            <h3>${c.modelo}</h3>
-                            <p>R$ ${c.preco.toLocaleString()}</p>
-                            <a href="https://wa.me/${c.vendedorWhats}" class="btn-w">FALAR COM ${c.vendedorNome}</a>
-                        </div>
+                        <div class="info"><h3>${c.modelo}</h3><p>R$ ${c.preco.toLocaleString()}</p></div>
+                        <a href="https://wa.me/${c.vendedorWhats}" class="btn">CONTATO</a>
                     </div>`;
                 }).join('');
             });
