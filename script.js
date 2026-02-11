@@ -1,168 +1,112 @@
-// 1. IMPORTS CORRETOS (Usando a versão estável 10.7.1)
+// script.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 2. SUA CONFIGURAÇÃO (Verificada)
 const firebaseConfig = {
-  apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
-  authDomain: "nexus-v12.firebaseapp.com",
-  projectId: "nexus-v12",
-  storageBucket: "nexus-v12.firebasestorage.app",
-  messagingSenderId: "587840382224",
-  appId: "1:587840382224:web:61c0f1890c7c395dc77195",
-  measurementId: "G-VE69B1WNC1"
+    apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
+    authDomain: "nexus-v12.firebaseapp.com",
+    projectId: "nexus-v12",
+    storageBucket: "nexus-v12.firebasestorage.app",
+    messagingSenderId: "587840382224",
+    appId: "1:587840382224:web:61c0f1890c7c395dc77195"
 };
 
-// 3. INICIALIZAÇÃO
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- MONITOR DE ACESSO (O QUE MATA O LOOP) ---
+// Global Variables para fotos
+let fotosData = ["", "", "", "", ""];
+
+// Mata o Loop
 onAuthStateChanged(auth, (user) => {
-    const loader = document.getElementById("loader");
-    const loginSec = document.getElementById("login");
-    const appSec = document.getElementById("app");
-
-    console.log("Nexus V12: Verificando autenticação...");
-
+    document.getElementById("loader").style.display = "none";
     if (user) {
-        // Logado: Mostra Painel
-        if(loginSec) loginSec.classList.add("hidden");
-        if(appSec) appSec.classList.remove("hidden");
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
         syncEstoque();
         syncVendedores();
     } else {
-        // Deslogado: Mostra Login
-        if(loginSec) loginSec.classList.remove("hidden");
-        if(appSec) appSec.classList.add("hidden");
-    }
-
-    // FORÇA O LOADER A SUMIR (Anti-Loop)
-    if(loader) {
-        setTimeout(() => {
-            loader.style.opacity = "0";
-            setTimeout(() => loader.style.display = "none", 500);
-        }, 1000);
+        document.getElementById("login").classList.remove("hidden");
+        document.getElementById("app").classList.add("hidden");
     }
 });
 
-// --- FUNÇÃO DE LOGIN ---
-window.handleLogin = async () => {
-    const email = document.getElementById("email-login").value;
-    const senha = document.getElementById("senha-login").value;
-    
-    if(!email || !senha) return alert("Preencha os campos!");
+// Navegação entre Etapas de Cadastro
+window.nextStep = (step) => {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
+};
 
-    try {
-        await signInWithEmailAndPassword(auth, email, senha);
-    } catch (err) {
-        console.error("Erro ao logar:", err.code);
-        alert("Falha no login: Verifique e-mail e senha.");
+// Preview de Fotos
+window.preview = async (input, slotId) => {
+    const file = input.files[0];
+    if (file) {
+        const base64 = await compress(file);
+        const index = parseInt(slotId.replace('p', '')) - 1;
+        fotosData[index] = base64;
+        document.getElementById(slotId).innerHTML = `<img src="${base64}">`;
     }
 };
 
-window.handleLogout = () => signOut(auth).then(() => window.location.reload());
-
-// --- BUSCA DE DADOS ---
+// Sincronização
 function syncEstoque() {
-    if(!auth.currentUser) return;
-
-    // Filtro por Loja
-    const q = query(
-        collection(db, "carros"), 
-        where("lojaId", "==", auth.currentUser.uid)
-    );
-
+    const q = query(collection(db, "carros"), where("lojaId", "==", auth.currentUser.uid));
     onSnapshot(q, (snap) => {
         const grid = document.getElementById("listaCarros");
-        if(!grid) return;
-
         grid.innerHTML = snap.docs.map(d => {
             const c = d.data();
             return `
-                <div class="card">
-                    <div class="img-v" style="background-image:url(${c.fotos ? c.fotos[0] : ''})"></div>
-                    <div class="info">
+                <div class="car-card">
+                    <div class="car-img" style="background-image:url(${c.fotos[0]})"></div>
+                    <div class="car-info">
                         <h3>${c.modelo}</h3>
-                        <span class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</span>
-                        <button onclick="window.delCarro('${d.id}')" class="btn-del">Remover</button>
+                        <p style="color:var(--primary)">R$ ${c.preco.toLocaleString()}</p>
+                        <button onclick="window.delCarro('${d.id}')" style="background:none; border:none; color:red; cursor:pointer; margin-top:10px;">Excluir</button>
                     </div>
-                </div>`;
+                </div>
+            `;
         }).join('');
-    }, (error) => {
-        console.log("Erro no Firestore (Estoque):", error.message);
     });
 }
 
-function syncVendedores() {
-    if(!auth.currentUser) return;
-    const q = query(collection(db, "vendedores"), where("lojaId", "==", auth.currentUser.uid));
-    onSnapshot(q, snap => {
-        const sel = document.getElementById("vendedor-select");
-        if(sel) {
-            const vends = snap.docs.map(d => d.data());
-            sel.innerHTML = `<option value="">Selecione...</option>` + 
-                            vends.map(v => `<option value="${v.whats}">${v.nome}</option>`).join('');
-        }
-    });
-}
-
-// --- SALVAMENTO ---
+// Salvar Veículo (5 fotos)
 window.salvarVeiculo = async () => {
     const btn = document.getElementById("btn-salvar");
-    btn.innerText = "Aguarde...";
+    btn.innerText = "Processando...";
     btn.disabled = true;
 
     try {
-        const sel = document.getElementById("vendedor-select");
-        const file = document.getElementById("foto-principal").files[0];
-        const fotoFinal = await compress(file);
-
+        const validPhotos = fotosData.filter(f => f !== "");
         await addDoc(collection(db, "carros"), {
             lojaId: auth.currentUser.uid,
             modelo: document.getElementById("modelo").value,
             preco: parseFloat(document.getElementById("preco").value),
-            vendedorWhats: sel.value,
-            vendedorNome: sel.options[sel.selectedIndex].text,
-            fotos: [fotoFinal],
+            vendedorWhats: document.getElementById("vendedor-select").value,
+            fotos: validPhotos,
+            status: 'leads',
             data: new Date().toISOString()
         });
-
-        window.nav('showroom');
-    } catch (e) {
-        alert("Erro ao salvar.");
-    } finally {
-        btn.innerText = "SALVAR";
-        btn.disabled = false;
-    }
+        alert("Veículo cadastrado!");
+        location.reload();
+    } catch (e) { alert("Erro ao salvar."); }
 };
 
-window.addVendedor = async () => {
-    await addDoc(collection(db, "vendedores"), {
-        lojaId: auth.currentUser.uid,
-        nome: document.getElementById("v-nome").value,
-        whats: document.getElementById("v-whats").value
-    });
-    alert("Vendedor Salvo!");
-};
-
-window.delCarro = (id) => confirm("Excluir?") && deleteDoc(doc(db, "carros", id));
-
+// Auxiliares
 window.nav = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 };
 
-window.gerarLinkShowroom = () => {
-    const link = window.location.origin + "/portal.html?loja=" + auth.currentUser.uid;
-    navigator.clipboard.writeText(link);
-    alert("Link copiado!");
+window.handleLogin = () => {
+    signInWithEmailAndPassword(auth, document.getElementById("email-login").value, document.getElementById("senha-login").value)
+    .catch(() => alert("Erro no login"));
 };
 
+window.handleLogout = () => signOut(auth);
+
 async function compress(file) {
-    if(!file) return "";
     return new Promise(res => {
         const r = new FileReader(); r.readAsDataURL(file);
         r.onload = e => {
@@ -176,4 +120,3 @@ async function compress(file) {
         }
     });
 }
-
