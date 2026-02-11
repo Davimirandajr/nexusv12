@@ -3,25 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Showroom V12</title>
+    <title>NEXUS V12 | Showroom</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
-        h1 { color: #ffcc00; text-align: center; margin-bottom: 40px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 10px; overflow: hidden; padding-bottom: 15px; }
-        .img { height: 200px; background-size: cover; background-position: center; }
-        .info { padding: 15px; }
-        .price { color: #ffcc00; font-weight: bold; font-size: 1.2rem; }
-        .btn-whats { display: block; background: #25d366; color: #fff; text-align: center; padding: 12px; margin: 15px; border-radius: 5px; text-decoration: none; font-weight: bold; }
+        :root { --red: #CC0000; --gold: #B8860B; --dark: #111; --white: #FFF; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f9f9f9; color: var(--dark); }
+
+        header { background: var(--dark); color: white; padding: 40px 20px; text-align: center; border-bottom: 4px solid var(--red); }
+        header h1 { font-size: 2.5rem; letter-spacing: -1px; }
+        header h1 span { color: var(--red); }
+        header p { color: #888; margin-top: 5px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        /* GRID DE CARROS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.4s; position: relative; border: 1px solid #eee; }
+        .card:hover { transform: translateY(-10px); border-color: var(--gold); }
+
+        /* EFEITO DE MOVIMENTO NA FOTO */
+        .img-container { height: 220px; overflow: hidden; position: relative; }
+        .car-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.8s ease; }
+        .card:hover .car-img { transform: scale(1.1); }
+
+        .info { padding: 25px; }
+        .info h3 { font-size: 1.4rem; margin-bottom: 10px; text-transform: uppercase; font-weight: 800; }
+        .price { color: var(--gold); font-size: 1.6rem; font-weight: 900; margin-bottom: 15px; }
+        .desc { color: #666; font-size: 0.9rem; line-height: 1.4; margin-bottom: 20px; height: 40px; overflow: hidden; }
+
+        .btn-whats { 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: #25D366; color: white; text-decoration: none; padding: 15px;
+            border-radius: 10px; font-weight: bold; transition: 0.3s;
+        }
+        .btn-whats:hover { background: #128C7E; }
+
+        /* ESTILO DO VENDEDOR */
+        .vendedor-tag { font-size: 0.75rem; color: #999; margin-bottom: 10px; display: block; }
+
+        footer { text-align: center; padding: 60px 20px; color: #aaa; font-size: 0.8rem; }
+
+        /* LOADING */
+        #loader { text-align: center; padding: 50px; font-weight: bold; color: var(--gold); }
     </style>
 </head>
 <body>
-    <h1>SHOWROOM <span>V12</span></h1>
-    <div id="grid" class="grid">Carregando estoque...</div>
+
+    <header>
+        <h1>NEXUS <span>V12</span></h1>
+        <p>Seleção de Veículos Premium</p>
+    </header>
+
+    <div class="container">
+        <div id="loader">Carregando estoque exclusivo...</div>
+        <div id="showroom" class="grid"></div>
+    </div>
+
+    <footer>
+        &copy; 2026 NEXUS V12 - Gestão Inteligente para Lojas de Veículos.
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
@@ -34,24 +80,53 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const urlParams = new URLSearchParams(window.location.search);
-        const lojaId = urlParams.get('loja');
 
-        if(lojaId) {
+        // PEGA O ID DA LOJA PELA URL (?loja=ID)
+        const params = new URLSearchParams(window.location.search);
+        const lojaId = params.get('loja');
+
+        if (!lojaId) {
+            document.getElementById('loader').innerHTML = "Erro: Loja não identificada.";
+        } else {
             const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
-            onSnapshot(q, snap => {
-                const grid = document.getElementById("grid");
-                grid.innerHTML = "";
+            
+            onSnapshot(q, (snap) => {
+                const showroom = document.getElementById("showroom");
+                const loader = document.getElementById("loader");
+                showroom.innerHTML = "";
+                loader.style.display = "none";
+
+                if (snap.empty) {
+                    loader.style.display = "block";
+                    loader.innerHTML = "Nenhum veículo disponível no momento.";
+                    return;
+                }
+
                 snap.forEach(d => {
                     const c = d.data();
-                    grid.innerHTML += `
+                    // Só mostra se NÃO for vendido (opcional, pode mostrar todos)
+                    if (c.status === 'vendido') return;
+
+                    const foto = c.fotos && c.fotos[0] ? c.fotos[0] : 'https://via.placeholder.com/600x400?text=Nexus+V12';
+                    
+                    // Monta o link do WhatsApp com o modelo do carro
+                    const msg = encodeURIComponent(`Olá, vi o anúncio do ${c.modelo} no portal e gostaria de mais informações.`);
+                    const whatsLink = `https://wa.me/55${c.vendedor || ''}?text=${msg}`;
+
+                    showroom.innerHTML += `
                         <div class="card">
-                            <div class="img" style="background-image:url(${c.fotos[0]})"></div>
-                            <div class="info">
-                                <h3>${c.modelo}</h3>
-                                <p class="price">R$ ${c.preco}</p>
+                            <div class="img-container">
+                                <div class="car-img" style="background-image: url('${foto}')"></div>
                             </div>
-                            <a href="https://wa.me/${c.vendedorWhats}?text=Tenho interesse no ${c.modelo}" class="btn-whats">CHAMAR NO WHATSAPP</a>
+                            <div class="info">
+                                <span class="vendedor-tag"><i class="fa fa-user"></i> Consultor Disponível</span>
+                                <h3>${c.modelo}</h3>
+                                <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
+                                <div class="desc">${c.descricao || 'Veículo premium com procedência garantida e alto padrão de conservação.'}</div>
+                                <a href="${whatsLink}" target="_blank" class="btn-whats">
+                                    <i class="fab fa-whatsapp"></i> TENHO INTERESSE
+                                </a>
+                            </div>
                         </div>
                     `;
                 });
