@@ -16,55 +16,76 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 let fotosData = ["","","","",""];
 
-// NAVEGAÇÃO
+// FUNÇÃO DE NAVEGAÇÃO (CORRIGIDA)
 window.nav = (id) => {
-    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    const btn = document.querySelector(`[onclick="window.nav('${id}')"]`);
-    if(btn) btn.classList.add('active');
+    // 1. Esconde TODAS as páginas de conteúdo
+    const pages = document.querySelectorAll('.page-content');
+    pages.forEach(p => p.classList.remove('active'));
+
+    // 2. Remove destaque de todos os botões
+    const btns = document.querySelectorAll('.nav-btn');
+    btns.forEach(b => b.classList.remove('active'));
+
+    // 3. Mostra a página certa
+    const target = document.getElementById(id);
+    if(target) {
+        target.classList.add('active');
+    }
+
+    // 4. Fecha o menu no celular
     document.getElementById("sidebar").classList.remove("open");
+    console.log("Navegou para:", id);
 };
 
 window.toggleMenu = () => document.getElementById("sidebar").classList.toggle("open");
 
-// AUTH
+// MONITOR DE LOGIN
 onAuthStateChanged(auth, (user) => {
     document.getElementById("loader").style.display = "none";
     if (user) {
         document.getElementById("login").classList.remove("active");
-        document.getElementById("app").classList.remove("hidden");
-        window.nav('showroom');
+        document.getElementById("app").style.display = "block"; // Mostra o container do App
+        window.nav('showroom'); // Vai direto para o estoque
         syncData();
     } else {
         document.getElementById("login").classList.add("active");
-        document.getElementById("app").classList.add("hidden");
+        document.getElementById("app").style.display = "none";
     }
 });
 
-// SYNC
-function syncData() {
-    const q = query(collection(db, "carros"), where("lojaId", "==", auth.currentUser.uid));
-    onSnapshot(q, (snap) => {
-        const list = document.getElementById("listaCarros");
-        const l1 = document.getElementById("col-leads");
-        list.innerHTML = ""; l1.innerHTML = "";
-        snap.forEach(d => {
-            const c = d.data();
-            const html = `<div style="background:#0a0a0a; padding:10px; border-radius:10px; margin-bottom:10px; border:1px solid #222">
-                <img src="${c.fotos[0]}" style="width:100%; border-radius:5px">
-                <h4>${c.modelo}</h4>
-                <p style="color:var(--gold)">R$ ${c.preco}</p>
-            </div>`;
-            list.innerHTML += html;
-            if(c.status === 'leads') l1.innerHTML += html;
-        });
-    });
-}
+// LOGIN E LOGOUT
+window.handleLogin = () => {
+    const email = document.getElementById("email-login").value;
+    const senha = document.getElementById("senha-login").value;
+    signInWithEmailAndPassword(auth, email, senha).catch(e => alert("Erro: " + e.message));
+};
 
-// FUNÇÕES GLOBAIS
-window.handleLogin = () => signInWithEmailAndPassword(auth, document.getElementById("email-login").value, document.getElementById("senha-login").value);
 window.handleLogout = () => signOut(auth);
+
+// CADASTRAR VEÍCULO
+window.salvarVeiculo = async () => {
+    const btn = document.getElementById("btn-salvar");
+    btn.innerText = "CADASTRANDO...";
+    
+    try {
+        await addDoc(collection(db, "carros"), {
+            lojaId: auth.currentUser.uid,
+            modelo: document.getElementById("modelo").value,
+            preco: document.getElementById("preco").value,
+            fotos: fotosData.filter(f => f !== ""),
+            status: 'leads',
+            data: new Date().toISOString()
+        });
+        alert("Veículo salvo com sucesso!");
+        window.nav('showroom');
+    } catch (e) {
+        alert("Erro ao salvar: " + e.message);
+    } finally {
+        btn.innerText = "SALVAR VEÍCULO";
+    }
+};
+
+// PREVIEW DAS FOTOS
 window.preview = (input, id) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -74,14 +95,26 @@ window.preview = (input, id) => {
     };
     reader.readAsDataURL(input.files[0]);
 };
-window.salvarVeiculo = async () => {
-    await addDoc(collection(db, "carros"), {
-        lojaId: auth.currentUser.uid,
-        modelo: document.getElementById("modelo").value,
-        preco: document.getElementById("preco").value,
-        fotos: fotosData.filter(f => f !== ""),
-        status: 'leads'
+
+// PUXAR DADOS DO FIREBASE
+function syncData() {
+    const q = query(collection(db, "carros"), where("lojaId", "==", auth.currentUser.uid));
+    onSnapshot(q, (snap) => {
+        const list = document.getElementById("listaCarros");
+        const lLeads = document.getElementById("col-leads");
+        
+        list.innerHTML = ""; lLeads.innerHTML = "";
+        
+        snap.forEach(d => {
+            const c = d.data();
+            const card = `
+                <div style="background:#111; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #222">
+                    <img src="${c.fotos[0]}" style="width:100%; border-radius:5px; height:150px; object-fit:cover">
+                    <h4 style="margin-top:10px">${c.modelo}</h4>
+                    <p style="color:var(--gold)">R$ ${c.preco}</p>
+                </div>`;
+            list.innerHTML += card;
+            if(c.status === 'leads') lLeads.innerHTML += card;
+        });
     });
-    alert("Salvo!");
-    window.nav('showroom');
-};
+}
