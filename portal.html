@@ -1,128 +1,47 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Showroom | Nexus V12</title>
+    <meta charset="UTF-8"><title>Showroom | Nexus V12</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --p: #ffcc00; --bg: #0d0d0d; --c: #1a1a1a; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 0; }
-        
-        header { text-align: center; padding: 50px 20px; border-bottom: 1px solid #222; }
-        header h1 { color: var(--p); font-size: 2.5rem; letter-spacing: 4px; margin: 0; }
-        header span { color: #fff; }
-
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-
-        .card { 
-            background: var(--c); border-radius: 15px; overflow: hidden; 
-            border: 1px solid #333; transition: 0.4s; 
-        }
-        .card:hover { border-color: var(--p); transform: translateY(-10px); }
-
-        .img-box { 
-            height: 220px; background-size: cover; background-position: center; 
-            transition: 0.5s ease; 
-        }
-
-        .info { padding: 20px; }
-        .info h3 { margin: 0; font-size: 1.3rem; text-transform: uppercase; }
-        .price { color: var(--p); font-size: 1.7rem; font-weight: bold; margin: 10px 0; }
-        
-        .specs { 
-            display: flex; justify-content: space-between; 
-            color: #888; font-size: 0.85rem; margin-bottom: 20px;
-            border-top: 1px solid #222; padding-top: 15px;
-        }
-
-        .vendedor-tag {
-            font-size: 0.75rem; color: #555; text-transform: uppercase;
-            margin-bottom: 10px; display: block;
-        }
-
-        .btn-whats { 
-            background: #25D366; color: #fff; text-decoration: none; 
-            display: flex; align-items: center; justify-content: center; 
-            padding: 12px; border-radius: 8px; font-weight: bold; transition: 0.3s;
-        }
-        .btn-whats:hover { background: #128C7E; }
-        .btn-whats i { margin-right: 8px; font-size: 1.2rem; }
-
-        #loading { text-align: center; padding: 50px; color: var(--p); }
+        body { background: #0d0d0d; color: #fff; font-family: sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
+        .card { background: #1a1a1a; border-radius: 15px; overflow: hidden; border: 1px solid #333; }
+        .img { height: 200px; background-size: cover; background-position: center; }
+        .btn-w { background: #25D366; color: #fff; padding: 10px; display: block; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>NEXUS <span>V12</span></h1>
-        <p style="color: #666; font-size: 0.9rem;">ESTOQUE EXCLUSIVO</p>
-    </header>
-
-    <div class="container">
-        <div id="loading">Carregando estoque...</div>
-        <div id="showroom-publico" class="grid"></div>
-    </div>
+    <h1>NEXUS <span>V12</span></h1>
+    <div id="grid" class="grid">Carregando estoque...</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
-            authDomain: "nexus-v12.firebaseapp.com",
-            projectId: "nexus-v12",
-            storageBucket: "nexus-v12.firebasestorage.app",
-            messagingSenderId: "587840382224",
-            appId: "1:587840382224:web:61c0f1890c7c395dc77195"
-        };
-
+        const firebaseConfig = { /* MESMO CONFIG */ };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const grid = document.getElementById("showroom-publico");
-        const loading = document.getElementById("loading");
+        const params = new URLSearchParams(window.location.search);
+        const lojaId = params.get('loja');
 
-        // Escuta o banco de dados em tempo real
-        onSnapshot(query(collection(db, "carros"), orderBy("data", "desc")), (snap) => {
-            loading.style.display = "none";
-            grid.innerHTML = snap.docs.map(doc => {
-                const c = doc.data();
-                
-                // Configura as fotos (Principal e Hover)
-                const f1 = c.fotos[0] || 'https://via.placeholder.com/600x400?text=Nexus+V12';
-                const f2 = c.fotos[1] || f1;
-
-                // Monta o link do WhatsApp dinâmico para o vendedor do carro
-                const msg = encodeURIComponent(`Olá! Vi o ${c.modelo} no site. Gostaria de mais informações.`);
-                const linkWhats = `https://wa.me/${c.vendedorWhats}?text=${msg}`;
-
-                return `
-                    <div class="card">
-                        <div class="img-box" 
-                             style="background-image: url('${f1}')"
-                             onmouseenter="this.style.backgroundImage='url(${f2})'"
-                             onmouseleave="this.style.backgroundImage='url(${f1})'">
-                        </div>
+        if(lojaId) {
+            const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
+            onSnapshot(q, snap => {
+                document.getElementById("grid").innerHTML = snap.docs.map(d => {
+                    const c = d.data();
+                    return `<div class="card">
+                        <div class="img" style="background-image:url(${c.fotos[0]})"></div>
                         <div class="info">
-                            <span class="vendedor-tag">Consultor: ${c.vendedorNome || 'Loja'}</span>
                             <h3>${c.modelo}</h3>
-                            <p class="price">R$ ${c.preco.toLocaleString('pt-BR')}</p>
-                            
-                            <div class="specs">
-                                <span><i class="fa fa-road"></i> ${c.km} KM</span>
-                                <span><i class="fa fa-cog"></i> ${c.cambio}</span>
-                            </div>
-
-                            <a href="${linkWhats}" target="_blank" class="btn-whats">
-                                <i class="fab fa-whatsapp"></i> FALAR COM VENDEDOR
-                            </a>
+                            <p>R$ ${c.preco.toLocaleString()}</p>
+                            <a href="https://wa.me/${c.vendedorWhats}" class="btn-w">FALAR COM ${c.vendedorNome}</a>
                         </div>
-                    </div>
-                `;
-            }).join('');
-        });
+                    </div>`;
+                }).join('');
+            });
+        }
     </script>
 </body>
 </html>
