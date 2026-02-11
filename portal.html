@@ -1,41 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Portal de Vendas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showroom V12</title>
     <style>
-        body { background:#000; color:#fff; font-family:sans-serif; text-align:center; }
-        .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px; padding:20px; }
-        .card { background:#111; border-radius:10px; overflow:hidden; border:1px solid #333; }
-        .img { height:200px; background-size:cover; background-position:center; }
-        .btn { background:#25D366; color:#fff; display:block; padding:15px; text-decoration:none; font-weight:bold; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        h1 { color: #ffcc00; text-align: center; margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 10px; overflow: hidden; padding-bottom: 15px; }
+        .img { height: 200px; background-size: cover; background-position: center; }
+        .info { padding: 15px; }
+        .price { color: #ffcc00; font-weight: bold; font-size: 1.2rem; }
+        .btn-whats { display: block; background: #25d366; color: #fff; text-align: center; padding: 12px; margin: 15px; border-radius: 5px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>NEXUS <span>V12</span></h1>
+    <h1>SHOWROOM <span>V12</span></h1>
     <div id="grid" class="grid">Carregando estoque...</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { /* SEU CONFIG */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
+            authDomain: "nexus-v12.firebaseapp.com",
+            projectId: "nexus-v12",
+            storageBucket: "nexus-v12.firebasestorage.app",
+            messagingSenderId: "587840382224",
+            appId: "1:587840382224:web:61c0f1890c7c395dc77195"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const urlParams = new URLSearchParams(window.location.search);
+        const lojaId = urlParams.get('loja');
 
-        const idLoja = new URLSearchParams(window.location.search).get('loja');
-
-        if(idLoja) {
-            const q = query(collection(db, "carros"), where("lojaId", "==", idLoja));
+        if(lojaId) {
+            const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
             onSnapshot(q, snap => {
-                document.getElementById("grid").innerHTML = snap.docs.map(d => {
+                const grid = document.getElementById("grid");
+                grid.innerHTML = "";
+                snap.forEach(d => {
                     const c = d.data();
-                    return `<div class="card">
-                        <div class="img" style="background-image:url(${c.fotos[0]})"></div>
-                        <div class="info"><h3>${c.modelo}</h3><p>R$ ${c.preco.toLocaleString()}</p></div>
-                        <a href="https://wa.me/${c.vendedorWhats}" class="btn">CONTATO</a>
-                    </div>`;
-                }).join('');
+                    grid.innerHTML += `
+                        <div class="card">
+                            <div class="img" style="background-image:url(${c.fotos[0]})"></div>
+                            <div class="info">
+                                <h3>${c.modelo}</h3>
+                                <p class="price">R$ ${c.preco}</p>
+                            </div>
+                            <a href="https://wa.me/${c.vendedorWhats}?text=Tenho interesse no ${c.modelo}" class="btn-whats">CHAMAR NO WHATSAPP</a>
+                        </div>
+                    `;
+                });
             });
         }
     </script>
