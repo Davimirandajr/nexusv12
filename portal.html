@@ -65,73 +65,88 @@
         &copy; 2026 NEXUS V12 - Gestão Inteligente para Lojas de Veículos.
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  Entendido! O erro no seu código atual é que ele está tentando buscar c.vendedor, mas no novo sistema nós salvamos como c.vendedorWhats. Além disso, falta a limpeza do número para o link não quebrar.
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
-            authDomain: "nexus-v12.firebaseapp.com",
-            projectId: "nexus-v12",
-            storageBucket: "nexus-v12.firebasestorage.app",
-            messagingSenderId: "587840382224",
-            appId: "1:587840382224:web:61c0f1890c7c395dc77195"
-        };
+Aqui está o script do portal.html 100% corrigido e alinhado com o seu painel de controle:
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+JavaScript
 
-        // PEGA O ID DA LOJA PELA URL (?loja=ID)
-        const params = new URLSearchParams(window.location.search);
-        const lojaId = params.get('loja');
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        if (!lojaId) {
-            document.getElementById('loader').innerHTML = "Erro: Loja não identificada.";
-        } else {
-            const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
-            
-            onSnapshot(q, (snap) => {
-                const showroom = document.getElementById("showroom");
-                const loader = document.getElementById("loader");
-                showroom.innerHTML = "";
-                loader.style.display = "none";
+    const firebaseConfig = {
+        apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
+        authDomain: "nexus-v12.firebaseapp.com",
+        projectId: "nexus-v12",
+        storageBucket: "nexus-v12.firebasestorage.app",
+        messagingSenderId: "587840382224",
+        appId: "1:587840382224:web:61c0f1890c7c395dc77195"
+    };
 
-                if (snap.empty) {
-                    loader.style.display = "block";
-                    loader.innerHTML = "Nenhum veículo disponível no momento.";
-                    return;
-                }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-                snap.forEach(d => {
-                    const c = d.data();
-                    // Só mostra se NÃO for vendido (opcional, pode mostrar todos)
-                    if (c.status === 'vendido') return;
+    const params = new URLSearchParams(window.location.search);
+    const lojaId = params.get('loja');
 
-                    const foto = c.fotos && c.fotos[0] ? c.fotos[0] : 'https://via.placeholder.com/600x400?text=Nexus+V12';
-                    
-                    // Monta o link do WhatsApp com o modelo do carro
-                    const msg = encodeURIComponent(`Olá, vi o anúncio do ${c.modelo} no portal e gostaria de mais informações.`);
-                    const whatsLink = `https://wa.me/55${c.vendedor || ''}?text=${msg}`;
+    if (!lojaId) {
+        document.getElementById('loader').innerHTML = "Erro: Loja não identificada.";
+    } else {
+        const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
+        
+        onSnapshot(q, (snap) => {
+            const showroom = document.getElementById("showroom");
+            const loader = document.getElementById("loader");
+            showroom.innerHTML = "";
+            loader.style.display = "none";
 
-                    showroom.innerHTML += `
-                        <div class="card">
-                            <div class="img-container">
-                                <div class="car-img" style="background-image: url('${foto}')"></div>
-                            </div>
-                            <div class="info">
-                                <span class="vendedor-tag"><i class="fa fa-user"></i> Consultor Disponível</span>
-                                <h3>${c.modelo}</h3>
-                                <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
-                                <div class="desc">${c.descricao || 'Veículo premium com procedência garantida e alto padrão de conservação.'}</div>
-                                <a href="${whatsLink}" target="_blank" class="btn-whats">
-                                    <i class="fab fa-whatsapp"></i> TENHO INTERESSE
-                                </a>
-                            </div>
+            if (snap.empty) {
+                loader.style.display = "block";
+                loader.innerHTML = "Nenhum veículo disponível no momento.";
+                return;
+            }
+
+            snap.forEach(d => {
+                const c = d.data();
+                if (c.status === 'vendido') return;
+
+                // 1. Pega a primeira foto ou placeholder
+                const foto = c.fotos && c.fotos[0] ? c.fotos[0] : 'https://via.placeholder.com/600x400';
+                
+                // 2. CORREÇÃO DO WHATSAPP: Limpa o número (remove espaços, parênteses, etc)
+                // Usamos 'vendedorWhats' que é o nome do campo que salvamos no admin
+                const numeroLimpo = c.vendedorWhats ? c.vendedorWhats.replace(/\D/g, '') : "";
+                
+                // 3. Monta a mensagem personalizada
+                const msg = encodeURIComponent(`Olá! Vi o anúncio do *${c.modelo}* no portal Nexus V12 e gostaria de mais informações.`);
+                
+                // 4. Link final (55 é o código do Brasil)
+                const whatsLink = `https://wa.me/55${numeroLimpo}?text=${msg}`;
+
+                showroom.innerHTML += `
+                    <div class="card">
+                        <div class="img-container">
+                            <div class="car-img" style="background-image: url('${foto}')"></div>
                         </div>
-                    `;
-                });
+                        <div class="info">
+                            <span class="vendedor-tag">
+                                <i class="fa fa-user"></i> Consultor: ${c.vendedorNome || 'Equipe Nexus'}
+                            </span>
+                            <h3>${c.modelo}</h3>
+                            <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
+                            <div class="desc">${c.descricao || 'Veículo premium com procedência garantida.'}</div>
+                            
+                            <a href="${whatsLink}" target="_blank" class="btn-whats">
+                                <i class="fab fa-whatsapp"></i> TENHO INTERESSE
+                            </a>
+                        </div>
+                    </div>
+                `;
             });
-        }
-    </script>
+        });
+    }
+</script>
 </body>
 </html>
+
