@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Admin</title>
+    <title>NEXUS V12 | Gestão Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -23,7 +23,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="logo">NEXUS <span>V12</span></div>
             <nav>
-                <button onclick="window.nav('showroom')" class="nav-btn active"><i class="fa fa-car"></i> ESTOQUE</button>
+                <button onclick="window.nav('showroom')" class="nav-btn active"><i class="fa fa-car"></i> SHOWROOM</button>
                 <button onclick="window.nav('leads')" class="nav-btn"><i class="fa fa-users"></i> LEADS / FUNIL</button>
                 <button onclick="window.nav('adicionar')" class="nav-btn"><i class="fa fa-plus-circle"></i> ADD VEÍCULO</button>
                 <button onclick="window.nav('equipe')" class="nav-btn"><i class="fa fa-user-tie"></i> EQUIPE</button>
@@ -35,7 +35,7 @@
             <section id="showroom" class="page-content">
                 <div class="header-flex">
                     <h2>ESTOQUE ATUAL</h2>
-                    <button onclick="window.copyPortalLink()" class="btn-red">COPIAR LINK PORTAL</button>
+                    <button onclick="window.copyPortalLink()" class="btn-copy">COPIAR LINK PORTAL</button>
                 </div>
                 <div id="listaCarros" class="grid-carros"></div>
             </section>
@@ -67,13 +67,13 @@
             </section>
 
             <section id="equipe" class="page-content">
-                <h2>GERENCIAR EQUIPE</h2>
+                <h2>EQUIPE</h2>
                 <div class="form-v12">
-                    <input id="v-nome" type="text" placeholder="Nome do Vendedor">
-                    <input id="v-whats" type="text" placeholder="WhatsApp (ex: 11999999999)">
+                    <input id="v-nome" type="text" placeholder="Nome">
+                    <input id="v-whats" type="text" placeholder="WhatsApp">
                     <button onclick="window.addVendedor()" class="btn-gold">ADD VENDEDOR</button>
                 </div>
-                <div id="listaVendedores" class="lista-vends"></div>
+                <div id="listaVendedores"></div>
             </section>
         </main>
     </div>
