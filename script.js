@@ -18,16 +18,7 @@ const db = getFirestore(app);
 let fotosData = ["", "", "", ""];
 let editId = null;
 
-// NAVEGAÇÃO
-window.nav = (id) => {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    const btn = document.querySelector(`[onclick="window.nav('${id}')"]`);
-    if(btn) btn.classList.add('active');
-};
-
-// ACESSO
+// NAVEGAÇÃO E ACESSO
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById("login").classList.remove("active");
@@ -40,9 +31,14 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// SYNC REALTIME
+window.nav = (id) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+};
+
+// SINCRONIZAÇÃO EM TEMPO REAL
 function startSync(uid) {
-    // Carros
+    // Sincronizar Carros
     onSnapshot(query(collection(db, "carros"), where("lojaId", "==", uid)), (snap) => {
         const grid = document.getElementById("listaCarros");
         grid.innerHTML = "";
@@ -50,68 +46,81 @@ function startSync(uid) {
             const c = d.data();
             grid.innerHTML += `
                 <div class="car-card">
-                    <div class="car-img" style="background-image:url('${c.fotos[0] || ''}')"></div>
+                    <div class="img-container"><div class="car-img" style="background-image:url('${c.fotos[0] || ''}')"></div></div>
                     <div class="car-info">
                         <h3>${c.modelo}</h3>
                         <p class="car-price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</p>
+                        <p style="font-size:0.75rem; color:gray;">Resp: ${c.vendedorNome || 'Nenhum'}</p>
                         <div style="margin-top:10px;">
-                            <button onclick='window.prepararEdicao("${d.id}", ${JSON.stringify(c)})' style="color:blue; border:none; background:none; cursor:pointer;">Editar</button>
-                            <button onclick="window.excluirCarro('${d.id}')" style="color:red; border:none; background:none; cursor:pointer; margin-left:15px;">Excluir</button>
+                            <button onclick='window.prepararEdicao("${d.id}", ${JSON.stringify(c).replace(/'/g, "&apos;")})' class="btn-edit">Editar</button>
+                            <button onclick="window.excluirCarro('${d.id}')" class="btn-del">Excluir</button>
                         </div>
                     </div>
                 </div>`;
         });
     });
 
-    // Equipe
+    // Sincronizar Equipe no Lista e no Select
     onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", uid)), (snap) => {
         const list = document.getElementById("listaVendedores");
+        const select = document.getElementById("vendedor-select");
         list.innerHTML = "";
+        select.innerHTML = '<option value="">Selecione o Vendedor</option>';
         snap.forEach(d => {
             const v = d.data();
-            list.innerHTML += `<div class="v-list-item"><span>${v.nome} (${v.whats})</span> <button onclick="window.excluirVendedor('${d.id}')" style="color:red; border:none; background:none; cursor:pointer;">Remover</button></div>`;
+            list.innerHTML += `<div class="v-list-item"><span>${v.nome}</span> <button onclick="window.excluirVendedor('${d.id}')">×</button></div>`;
+            select.innerHTML += `<option value="${v.whats}|${v.nome}">${v.nome}</option>`;
         });
     });
 }
 
-// SALVAR E EDITAR
+// SALVAR/ATUALIZAR (CORREÇÃO DE FOTOS E WHATS)
 window.salvarVeiculo = async () => {
-    const btn = document.getElementById("btn-salvar");
+    const vData = document.getElementById("vendedor-select").value.split('|');
     const dados = {
         lojaId: auth.currentUser.uid,
         modelo: document.getElementById("modelo").value,
         preco: document.getElementById("preco").value,
         descricao: document.getElementById("descricao").value,
-        fotos: fotosData.filter(f => f !== ""),
+        vendedorWhats: vData[0] || "",
+        vendedorNome: vData[1] || "",
+        fotos: fotosData.filter(f => f !== ""), // Só salva fotos que existem
         status: 'leads'
     };
 
-    btn.innerText = "PROCESSANDO...";
+    if(!dados.vendedorWhats) return alert("Selecione um vendedor antes!");
+
     if(editId) {
         await updateDoc(doc(db, "carros", editId), dados);
-        alert("Veículo Atualizado!");
     } else {
         await addDoc(collection(db, "carros"), dados);
-        alert("Veículo Cadastrado!");
     }
+    alert("Dados salvos!");
     window.resetForm();
     window.nav('showroom');
 };
 
-window.prepararEdicao = (id, dados) => {
+// PREPARAR EDIÇÃO (AQUI RESOLVE O PROBLEMA DAS FOTOS NÃO MUDAREM)
+window.prepararEdicao = (id, d) => {
     editId = id;
-    document.getElementById("modelo").value = dados.modelo;
-    document.getElementById("preco").value = dados.preco;
-    document.getElementById("descricao").value = dados.descricao || "";
-    fotosData = dados.fotos || ["","","",""];
+    document.getElementById("modelo").value = d.modelo;
+    document.getElementById("preco").value = d.preco;
+    document.getElementById("descricao").value = d.descricao || "";
     
-    // Atualiza visualmente os slots
-    fotosData.forEach((foto, i) => {
-        if(foto) document.getElementById(`p${i+1}`).innerHTML = `<img src="${foto}">`;
-    });
+    // Reseta e Carrega as fotos do carro selecionado
+    fotosData = ["", "", "", ""]; 
+    for(let i=1; i<=4; i++) {
+        const slot = document.getElementById(`p${i}`);
+        if(d.fotos && d.fotos[i-1]) {
+            fotosData[i-1] = d.fotos[i-1];
+            slot.innerHTML = `<img src="${d.fotos[i-1]}" style="width:100%;height:100%;object-fit:cover;">`;
+        } else {
+            slot.innerHTML = "+";
+        }
+    }
 
-    document.getElementById("form-title").innerText = "Editando Veículo";
-    document.getElementById("btn-salvar").innerText = "ATUALIZAR DADOS";
+    document.getElementById("form-title").innerText = "Editando: " + d.modelo;
+    document.getElementById("btn-salvar").innerText = "ATUALIZAR VEÍCULO";
     document.getElementById("btn-cancelar").classList.remove("hidden");
     window.nav('adicionar');
 };
@@ -121,36 +130,44 @@ window.resetForm = () => {
     document.getElementById("modelo").value = "";
     document.getElementById("preco").value = "";
     document.getElementById("descricao").value = "";
-    fotosData = ["","","",""];
+    fotosData = ["", "", "", ""];
     for(let i=1; i<=4; i++) document.getElementById(`p${i}`).innerHTML = "+";
-    document.getElementById("form-title").innerText = "Cadastrar Veículo";
+    document.getElementById("form-title").innerText = "Novo Veículo";
     document.getElementById("btn-salvar").innerText = "SALVAR NO ESTOQUE";
     document.getElementById("btn-cancelar").classList.add("hidden");
 };
 
-// PORTAL LINK (CORRIGIDO)
-window.copyPortalLink = () => {
-    const link = `${window.location.origin}${window.location.pathname.replace('index.html','')}portal.html?loja=${auth.currentUser.uid}`;
-    navigator.clipboard.writeText(link);
-    alert("Link do Portal Copiado!");
-};
-
-// APOIO
+// PREVIEW DE FOTO
 window.preview = (input, id) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-        fotosData[parseInt(id.replace('p',''))-1] = e.target.result;
-        document.getElementById(id).innerHTML = `<img src="${e.target.result}">`;
+        const index = parseInt(id.replace('p',''))-1;
+        fotosData[index] = e.target.result;
+        document.getElementById(id).innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
     };
     reader.readAsDataURL(input.files[0]);
 };
 
+// OUTRAS FUNÇÕES
 window.addVendedor = async () => {
-    await addDoc(collection(db, "vendedores"), { lojaId: auth.currentUser.uid, nome: document.getElementById("v-nome").value, whats: document.getElementById("v-whats").value });
+    const whatsLimpo = document.getElementById("v-whats").value.replace(/\D/g,'');
+    await addDoc(collection(db, "vendedores"), { 
+        lojaId: auth.currentUser.uid, 
+        nome: document.getElementById("v-nome").value, 
+        whats: whatsLimpo 
+    });
     alert("Vendedor Adicionado!");
+    document.getElementById("v-nome").value = "";
+    document.getElementById("v-whats").value = "";
 };
 
-window.excluirCarro = (id) => confirm("Excluir?") && deleteDoc(doc(db, "carros", id));
-window.excluirVendedor = (id) => confirm("Remover?") && deleteDoc(doc(db, "vendedores", id));
-window.handleLogin = () => signInWithEmailAndPassword(auth, document.getElementById("email-login").value, document.getElementById("senha-login").value).catch(() => alert("Erro no Login!"));
+window.copyPortalLink = () => {
+    const link = `${window.location.origin}${window.location.pathname.replace('index.html','')}portal.html?loja=${auth.currentUser.uid}`;
+    navigator.clipboard.writeText(link);
+    alert("Link do Portal copiado!");
+};
+
+window.excluirCarro = (id) => confirm("Excluir carro?") && deleteDoc(doc(db, "carros", id));
+window.excluirVendedor = (id) => confirm("Remover vendedor?") && deleteDoc(doc(db, "vendedores", id));
+window.handleLogin = () => signInWithEmailAndPassword(auth, document.getElementById("email-login").value, document.getElementById("senha-login").value).catch(e => alert("Erro: " + e.message));
 window.handleLogout = () => signOut(auth);
