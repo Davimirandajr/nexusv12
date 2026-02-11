@@ -1,112 +1,91 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
-    authDomain: "nexus-v12.firebaseapp.com",
-    projectId: "nexus-v12",
-    storageBucket: "nexus-v12.firebasestorage.app",
-    messagingSenderId: "587840382224",
-    appId: "1:587840382224:web:61c0f1890c7c395dc77195"
-};
-
+const firebaseConfig = { /* SEU CONFIG AQUI */ };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// MENU & NAVEGAÇÃO
-window.toggleSidebar = () => {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("active");
-    document.querySelector("#toggle-menu i").className = sidebar.classList.contains("active") ? "fa fa-times" : "fa fa-bars";
+// AUTH & NAV
+window.handleLogin = async () => {
+    try { await signInWithEmailAndPassword(auth, document.getElementById("email-login").value, document.getElementById("senha-login").value); }
+    catch { alert("Erro no login"); }
 };
+window.handleLogout = () => signOut(auth);
+onAuthStateChanged(auth, user => {
+    document.getElementById("login").classList.toggle("hidden", !!user);
+    document.getElementById("app").classList.toggle("hidden", !user);
+    if(user) { sync(); syncVendedores(); document.getElementById("loader").style.display="none"; }
+});
 
 window.nav = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if (window.innerWidth <= 768) window.toggleSidebar();
 };
 
-// AUTH
-window.handleLogin = async () => {
-    const e = document.getElementById("email-login").value;
-    const s = document.getElementById("senha-login").value;
-    try { await signInWithEmailAndPassword(auth, e, s); } catch { alert("Erro de Login!"); }
-};
-window.handleLogout = () => signOut(auth);
-
-onAuthStateChanged(auth, user => {
-    document.getElementById("login").classList.toggle("hidden", !!user);
-    document.getElementById("app").classList.toggle("hidden", !user);
-    if(user) { document.getElementById("loader").style.display="none"; sync(); syncVendedores(); }
-});
-
-// VENDEDORES
-window.addVendedor = async () => {
-    const nome = document.getElementById("v-nome").value;
-    const whats = document.getElementById("v-whats").value.replace(/\D/g,'');
-    await addDoc(collection(db, "vendedores"), { nome, whats });
-    alert("Vendedor Salvo!");
+// LINK EXCLUSIVO DA LOJA
+window.gerarLinkShowroom = () => {
+    const link = window.location.origin + "/portal.html?loja=" + auth.currentUser.uid;
+    navigator.clipboard.writeText(link);
+    alert("Link da sua loja copiado!");
 };
 
-function syncVendedores() {
-    onSnapshot(collection(db, "vendedores"), snap => {
-        const vends = snap.docs.map(d => ({id: d.id, ...d.data()}));
-        document.getElementById("vendedor-select").innerHTML = vends.map(v => `<option value="${v.whats}">${v.nome}</option>`).join('');
-        document.getElementById("listaVendedores").innerHTML = vends.map(v => `
-            <div class="card-client" style="border-left: 4px solid var(--y)">
-                <h4>${v.nome}</h4><p>Whats: ${v.whats}</p>
-                <button onclick="window.removerVend('${v.id}')" style="color:red;background:none;border:none;cursor:pointer">Excluir</button>
-            </div>`).join('');
+// SYNC COM FILTRO DE LOJA
+function sync() {
+    const q = query(collection(db, "carros"), where("lojaId", "==", auth.currentUser.uid));
+    onSnapshot(q, snap => {
+        const grid = document.getElementById("listaCarros");
+        grid.innerHTML = snap.docs.map(d => {
+            const c = d.data();
+            return `<div class="card">
+                <div class="img-v" style="background-image:url(${c.fotos[0]})"></div>
+                <div class="info"><h3>${c.modelo}</h3><p>R$ ${c.preco.toLocaleString()}</p>
+                <button onclick="window.delCarro('${d.id}')">Excluir</button></div>
+            </div>`;
+        }).join('');
     });
 }
-window.removerVend = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "vendedores", id)); };
 
-// ESTOQUE
-function sync() {
-    onSnapshot(query(collection(db, "carros"), orderBy("data", "desc")), snap => {
-        const grid = document.getElementById("listaCarros");
-        const carros = snap.docs.map(d => ({id: d.id, ...d.data()}));
-        grid.innerHTML = carros.map(c => `
-            <div class="card" onmouseenter="this.querySelector('.img-v').style.backgroundImage='url(${c.fotos[1] || c.fotos[0]})'" 
-                              onmouseleave="this.querySelector('.img-v').style.backgroundImage='url(${c.fotos[0]})'">
-                <div class="img-v" style="background-image: url('${c.fotos[0]}')"></div>
-                <div class="info">
-                    <h3>${c.modelo}</h3>
-                    <p class="price">R$ ${c.preco.toLocaleString()}</p>
-                    <p style="font-size:0.8rem">${c.vendedorNome || 'Sem vendedor'}</p>
-                    <button onclick="window.removerCarro('${c.id}')" style="color:red;background:none;border:none;cursor:pointer">Remover</button>
-                </div>
-            </div>`).join('');
-        const total = carros.reduce((a,b) => a + (b.preco || 0), 0);
-        document.getElementById("stat-total").innerText = total.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+function syncVendedores() {
+    const q = query(collection(db, "vendedores"), where("lojaId", "==", auth.currentUser.uid));
+    onSnapshot(q, snap => {
+        const sel = document.getElementById("vendedor-select");
+        const list = document.getElementById("listaVendedores");
+        const vends = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        sel.innerHTML = vends.map(v => `<option value="${v.whats}">${v.nome}</option>`).join('');
+        list.innerHTML = vends.map(v => `<div class="card-client">${v.nome}</div>`).join('');
     });
 }
 
 window.salvarVeiculo = async () => {
     const btn = document.getElementById("btn-salvar");
-    btn.innerText = "Processando...";
+    btn.innerText = "Salvando...";
     const sel = document.getElementById("vendedor-select");
-    const f1 = await compress(document.getElementById("fotoFrente").files[0]);
-    const f2 = await compress(document.getElementById("fotoTraseira").files[0]);
-    const f3 = await compress(document.getElementById("fotoInterior").files[0]);
-    
+    const fotos = [await compress(document.getElementById("f1").files[0]), await compress(document.getElementById("f2").files[0]), await compress(document.getElementById("f3").files[0])].filter(f => f !== "");
+
     await addDoc(collection(db, "carros"), {
+        lojaId: auth.currentUser.uid, // <-- ISOLAMENTO
         modelo: document.getElementById("modelo").value,
         preco: parseFloat(document.getElementById("preco").value),
-        km: document.getElementById("km").value,
-        cambio: document.getElementById("cambio").value,
         vendedorWhats: sel.value,
         vendedorNome: sel.options[sel.selectedIndex].text,
-        fotos: [f1, f2, f3].filter(f => f !== ""),
+        fotos: fotos,
         data: new Date().toISOString()
     });
+    btn.innerText = "SALVAR";
     window.nav('showroom');
-    btn.innerText = "SALVAR NO SISTEMA";
 };
 
-window.removerCarro = async (id) => { if(confirm("Remover?")) await deleteDoc(doc(db, "carros", id)); };
+window.addVendedor = async () => {
+    await addDoc(collection(db, "vendedores"), {
+        lojaId: auth.currentUser.uid, // <-- ISOLAMENTO
+        nome: document.getElementById("v-nome").value,
+        whats: document.getElementById("v-whats").value
+    });
+};
+
+window.delCarro = async (id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, "carros", id)); };
 
 async function compress(file) {
     if(!file) return "";
