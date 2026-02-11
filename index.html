@@ -3,63 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus V12 | Gestão Multi-Loja</title>
+    <title>Nexus V12 | Gestão Automotiva</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="loader"><div class="bar"></div></div>
+
+    <div id="loader">
+        <div class="bar"></div>
+    </div>
 
     <section id="login" class="hidden">
         <div class="login-box">
             <h1>NEXUS <span>V12</span></h1>
-            <input id="email-login" type="email" placeholder="E-mail">
-            <input id="senha-login" type="password" placeholder="Senha">
-            <button onclick="window.handleLogin()" class="btn-primary">ENTRAR</button>
+            <p style="color: var(--text-dim); margin-bottom: 20px;">Acesso ao Painel da Loja</p>
+            
+            <input id="email-login" type="email" placeholder="Seu e-mail profissional">
+            <input id="senha-login" type="password" placeholder="Sua senha secreta">
+            
+            <button onclick="window.handleLogin()" class="btn-primary" style="width: 100%;">
+                ENTRAR NO SISTEMA
+            </button>
         </div>
     </section>
 
     <div id="app" class="hidden">
+        
         <aside id="sidebar">
             <h2>NEXUS <span>V12</span></h2>
             <nav>
-                <button onclick="window.nav('showroom')" class="nav-btn"><i class="fa fa-car"></i> Estoque</button>
-                <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus"></i> Novo Veículo</button>
-                <button onclick="window.nav('vendedores')" class="nav-btn"><i class="fa fa-user-tie"></i> Vendedores</button>
-                <button onclick="window.handleLogout()" class="nav-btn logout"><i class="fa fa-power-off"></i> Sair</button>
+                <button onclick="window.nav('showroom')" class="nav-btn active">
+                    <i class="fa fa-car"></i> <span>Meu Estoque</span>
+                </button>
+                <button onclick="window.nav('novo')" class="nav-btn">
+                    <i class="fa fa-plus-circle"></i> <span>Novo Veículo</span>
+                </button>
+                <button onclick="window.nav('vendedores')" class="nav-btn">
+                    <i class="fa fa-user-tie"></i> <span>Vendedores</span>
+                </button>
+                
+                <button onclick="window.handleLogout()" class="nav-btn logout">
+                    <i class="fa fa-power-off"></i> <span>Sair da Conta</span>
+                </button>
             </nav>
         </aside>
 
         <main>
+            
             <section id="showroom" class="page active">
                 <div class="header-flex">
-                    <h1>Meu Estoque</h1>
-                    <button onclick="window.gerarLinkShowroom()" class="btn-share">Copiar Link do Portal</button>
+                    <div>
+                        <h1>Painel de Vendas</h1>
+                        <p style="color: var(--text-dim);">Gerencie os veículos da sua unidade</p>
+                    </div>
+                    <button onclick="window.gerarLinkShowroom()" class="btn-share">
+                        <i class="fa fa-share-nodes"></i> Copiar Link do Portal
+                    </button>
                 </div>
-                <div id="listaCarros" class="grid"></div>
+                
+                <div id="listaCarros" class="grid">
+                    </div>
             </section>
 
             <section id="novo" class="page">
-                <h1>Cadastrar Veículo</h1>
+                <div class="header-flex">
+                    <h1>Cadastrar Veículo</h1>
+                </div>
+                
                 <div class="form-container">
-                    <input id="modelo" placeholder="Modelo do Carro">
-                    <input id="preco" type="number" placeholder="Preço (R$)">
-                    <select id="vendedor-select"><option>Carregando...</option></select>
-                    <input type="file" id="foto-principal">
-                    <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary">SALVAR</button>
+                    <label>Modelo do Veículo</label>
+                    <input id="modelo" type="text" placeholder="Ex: Porsche 911 Carrera S">
+                    
+                    <label>Preço de Venda (R$)</label>
+                    <input id="preco" type="number" placeholder="Ex: 850000">
+                    
+                    <label>Responsável pela Venda</label>
+                    <select id="vendedor-select">
+                        <option value="">Selecione um vendedor...</option>
+                    </select>
+                    
+                    <label>Foto Principal</label>
+                    <input id="foto-principal" type="file" accept="image/*">
+                    
+                    <div style="margin-top: 20px;">
+                        <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary">
+                            SALVAR NO ESTOQUE
+                        </button>
+                        <button onclick="window.nav('showroom')" style="background: none; border: none; color: #888; margin-left: 20px; cursor: pointer;">
+                            Cancelar
+                        </button>
+                    </div>
                 </div>
             </section>
 
             <section id="vendedores" class="page">
-                <h1>Equipe</h1>
-                <input id="v-nome" placeholder="Nome do Vendedor">
-                <input id="v-whats" placeholder="WhatsApp (Ex: 5511999999999)">
-                <button onclick="window.addVendedor()" class="btn-primary">ADD VENDEDOR</button>
-                <div id="listaVendedores" class="grid-vends"></div>
+                <div class="header-flex">
+                    <h1>Sua Equipe</h1>
+                </div>
+
+                <div class="form-container" style="margin-bottom: 40px;">
+                    <h3>Novo Vendedor</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 20px;">Adicione vendedores para vincular aos carros.</p>
+                    
+                    <input id="v-nome" type="text" placeholder="Nome completo">
+                    <input id="v-whats" type="text" placeholder="WhatsApp (DDD + Número)">
+                    
+                    <button onclick="window.addVendedor()" class="btn-primary">
+                        CADASTRAR VENDEDOR
+                    </button>
+                </div>
+
+                <div id="listaVendedores" class="grid-crm">
+                    </div>
             </section>
+
         </main>
     </div>
 
     <script type="module" src="script.js"></script>
+
 </body>
 </html>
