@@ -3,107 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus V12 | Gestão Elite</title>
+    <title>NEXUS V12 | Gestão Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="loader"><div class="bar"></div></div>
+
+    <div id="loader"><div class="spinner"></div></div>
 
     <section id="login" class="page">
-        <div class="login-container">
-            <h1 class="logo-text">NEXUS <span>V12</span></h1>
-            <div class="form-box">
-                <input id="email-login" type="email" placeholder="E-mail">
-                <input id="senha-login" type="password" placeholder="Senha">
-                <button onclick="window.handleLogin()" class="btn-main">ENTRAR NO SISTEMA</button>
-            </div>
+        <div class="login-box">
+            <h1>NEXUS <span>V12</span></h1>
+            <input id="email-login" type="email" placeholder="E-mail">
+            <input id="senha-login" type="password" placeholder="Senha">
+            <button onclick="window.handleLogin()" class="btn-gold">ENTRAR</button>
         </div>
     </section>
 
     <div id="app" class="hidden">
-        <aside id="sidebar">
-            <h2 class="logo-text-small">NEXUS <span>V12</span></h2>
+        <aside class="sidebar">
+            <div class="logo">NEXUS <span>V12</span></div>
             <nav>
-                <button onclick="window.nav('showroom')" class="nav-link active" id="btn-showroom"><i class="fa fa-car"></i> Estoque</button>
-                <button onclick="window.nav('funil')" class="nav-link" id="btn-funil"><i class="fa fa-filter"></i> Funil de Vendas</button>
-                <button onclick="window.nav('novo')" class="nav-link" id="btn-novo"><i class="fa fa-plus-circle"></i> Adicionar Carro</button>
-                <button onclick="window.nav('vendedores')" class="nav-link" id="btn-equipe"><i class="fa fa-users"></i> Equipe</button>
-                <button onclick="window.handleLogout()" class="nav-link logout"><i class="fa fa-power-off"></i> Sair</button>
+                <button onclick="window.nav('showroom')" class="nav-btn active"><i class="fa fa-car"></i> SHOWROOM</button>
+                <button onclick="window.nav('leads')" class="nav-btn"><i class="fa fa-users"></i> LEADS / FUNIL</button>
+                <button onclick="window.nav('adicionar')" class="nav-btn"><i class="fa fa-plus-circle"></i> ADD VEÍCULO</button>
+                <button onclick="window.nav('equipe')" class="nav-btn"><i class="fa fa-user-tie"></i> EQUIPE</button>
+                <button onclick="window.handleLogout()" class="nav-btn btn-sair"><i class="fa fa-power-off"></i> SAIR</button>
             </nav>
         </aside>
 
-        <main>
-            <section id="showroom" class="page">
-                <div class="header-action">
-                    <h1>Estoque Geral</h1>
-                    <button onclick="window.gerarLinkShowroom()" class="btn-outline">Copiar Link Portal</button>
+        <main class="content">
+            <section id="showroom" class="page-content active">
+                <div class="header">
+                    <h2>ESTOQUE ATUAL</h2>
+                    <button onclick="window.gerarLinkShowroom()" class="btn-red">COPIAR LINK PORTAL</button>
                 </div>
-                <div id="listaCarros" class="car-grid"></div>
+                <div id="listaCarros" class="grid-carros"></div>
             </section>
 
-            <section id="funil" class="page">
-                <h1>Gestão de Leads</h1>
-                <div class="funnel-container">
-                    <div class="funnel-column">
-                        <h3><i class="fa fa-star"></i> Novos / Leads</h3>
-                        <div id="col-leads" class="drop-zone"></div>
-                    </div>
-                    <div class="funnel-column">
-                        <h3><i class="fa fa-comments"></i> Negociação</h3>
-                        <div id="col-negociacao" class="drop-zone"></div>
-                    </div>
-                    <div class="funnel-column">
-                        <h3><i class="fa fa-check-double"></i> Vendidos</h3>
-                        <div id="col-vendidos" class="drop-zone"></div>
-                    </div>
+            <section id="leads" class="page-content">
+                <h2>FUNIL DE VENDAS</h2>
+                <div class="funnel">
+                    <div class="funnel-col"><h3>NOVOS LEADS</h3><div id="col-leads"></div></div>
+                    <div class="funnel-col"><h3>NEGOCIAÇÃO</h3><div id="col-negociacao"></div></div>
+                    <div class="funnel-col"><h3>VENDIDOS</h3><div id="col-vendidos"></div></div>
                 </div>
             </section>
 
-            <section id="novo" class="page">
-                <div class="multi-step-card">
-                    <div id="step1" class="form-step active">
-                        <h2>1. Identificação</h2>
-                        <input id="modelo" type="text" placeholder="Marca e Modelo (ex: Porsche 911)">
-                        <button onclick="window.nextStep(2)" class="btn-main">PRÓXIMO</button>
+            <section id="adicionar" class="page-content">
+                <h2>CADASTRAR VEÍCULO</h2>
+                <div class="form-v12">
+                    <input id="modelo" type="text" placeholder="Marca e Modelo">
+                    <input id="preco" type="number" placeholder="Preço (R$)">
+                    <select id="vendedor-select"><option>Carregando vendedores...</option></select>
+                    
+                    <p>Fotos (Selecione até 5):</p>
+                    <div class="upload-grid">
+                        <div class="slot" id="p1" onclick="document.getElementById('f1').click()">+<input type="file" id="f1" hidden onchange="window.preview(this, 'p1')"></div>
+                        <div class="slot" id="p2" onclick="document.getElementById('f2').click()">+<input type="file" id="f2" hidden onchange="window.preview(this, 'p2')"></div>
+                        <div class="slot" id="p3" onclick="document.getElementById('f3').click()">+<input type="file" id="f3" hidden onchange="window.preview(this, 'p3')"></div>
+                        <div class="slot" id="p4" onclick="document.getElementById('f4').click()">+<input type="file" id="f4" hidden onchange="window.preview(this, 'p4')"></div>
+                        <div class="slot" id="p5" onclick="document.getElementById('f5').click()">+<input type="file" id="f5" hidden onchange="window.preview(this, 'p5')"></div>
                     </div>
-
-                    <div id="step2" class="form-step">
-                        <h2>2. Valores e Vendedor</h2>
-                        <input id="preco" type="number" placeholder="Valor de Venda (R$)">
-                        <select id="vendedor-select"></select>
-                        <div class="btn-group">
-                            <button onclick="window.nextStep(1)" class="btn-back">Voltar</button>
-                            <button onclick="window.nextStep(3)" class="btn-main">PRÓXIMO</button>
-                        </div>
-                    </div>
-
-                    <div id="step3" class="form-step">
-                        <h2>3. Fotos (Máx. 5)</h2>
-                        <p>Selecione as fotos do veículo:</p>
-                        <div class="photo-uploader">
-                            <div class="slot" onclick="document.getElementById('f1').click()" id="p1">+<input type="file" id="f1" hidden onchange="window.preview(this, 'p1')"></div>
-                            <div class="slot" onclick="document.getElementById('f2').click()" id="p2">+<input type="file" id="f2" hidden onchange="window.preview(this, 'p2')"></div>
-                            <div class="slot" onclick="document.getElementById('f3').click()" id="p3">+<input type="file" id="f3" hidden onchange="window.preview(this, 'p3')"></div>
-                            <div class="slot" onclick="document.getElementById('f4').click()" id="p4">+<input type="file" id="f4" hidden onchange="window.preview(this, 'p4')"></div>
-                            <div class="slot" onclick="document.getElementById('f5').click()" id="p5">+<input type="file" id="f5" hidden onchange="window.preview(this, 'p5')"></div>
-                        </div>
-                        <div class="btn-group">
-                            <button onclick="window.nextStep(2)" class="btn-back">Voltar</button>
-                            <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-main">FINALIZAR CADASTRO</button>
-                        </div>
-                    </div>
+                    <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-gold">SALVAR VEÍCULO</button>
                 </div>
             </section>
 
-            <section id="vendedores" class="page">
-                <h1>Gerenciar Equipe</h1>
-                <div class="form-box">
+            <section id="equipe" class="page-content">
+                <h2>GERENCIAR VENDEDORES</h2>
+                <div class="form-v12">
                     <input id="v-nome" type="text" placeholder="Nome do Vendedor">
-                    <input id="v-whats" type="text" placeholder="WhatsApp (com DDD)">
-                    <button onclick="window.addVendedor()" class="btn-main">CADASTRAR</button>
+                    <input id="v-whats" type="text" placeholder="WhatsApp (DDD + Número)">
+                    <button onclick="window.addVendedor()" class="btn-gold">CADASTRAR VENDEDOR</button>
                 </div>
-                <div id="listaVendedores"></div>
+                <div id="listaVendedores" class="lista-vends"></div>
             </section>
         </main>
     </div>
