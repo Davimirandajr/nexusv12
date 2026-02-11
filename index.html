@@ -3,116 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus V12 | Enterprise ERP</title>
+    <title>Nexus V12 | Gestão Multi-Loja</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="loader">
-        <div class="loader-content">
-            <h1 class="glitch">NEXUS <span>V12</span></h1>
-            <div class="bar"></div>
-        </div>
-    </div>
+    <div id="loader"><div class="bar"></div></div>
 
     <section id="login">
         <div class="login-box">
-            <div class="brand">
-                <h1>NEXUS <span>V12</span></h1>
-                <p>Terminal de Comando</p>
-            </div>
-            <div class="input-group">
-                <input id="email-login" type="email" placeholder="E-mail Admin">
-                <input id="senha-login" type="password" placeholder="Senha">
-            </div>
-            <button onclick="window.handleLogin()" class="btn-primary">INICIAR SESSÃO</button>
+            <h1>NEXUS <span>V12</span></h1>
+            <input id="email-login" type="email" placeholder="E-mail da Loja">
+            <input id="senha-login" type="password" placeholder="Senha">
+            <button onclick="window.handleLogin()" class="btn-primary">ACESSAR PAINEL</button>
         </div>
     </section>
 
     <div id="app" class="hidden">
-        <button id="toggle-menu" onclick="window.toggleSidebar()">
-            <i class="fa fa-bars"></i>
-        </button>
-
+        <button id="toggle-menu" onclick="window.toggleSidebar()"><i class="fa fa-bars"></i></button>
         <aside id="sidebar">
-            <div class="logo-area"><h2>NEXUS <span>V12</span></h2></div>
+            <h2>NEXUS <span>V12</span></h2>
             <nav>
-                <button onclick="window.nav('showroom')" class="nav-btn"><i class="fa fa-car"></i> <span>Estoque</span></button>
-                <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus-circle"></i> <span>Novo Veículo</span></button>
-                <button onclick="window.nav('vendedores')" class="nav-btn"><i class="fa fa-user-tie"></i> <span>Vendedores</span></button>
-                <button onclick="window.nav('clientes')" class="nav-btn"><i class="fa fa-users"></i> <span>CRM Leads</span></button>
-                <button onclick="window.handleLogout()" class="nav-btn logout"><i class="fa fa-sign-out-alt"></i> <span>Sair</span></button>
+                <button onclick="window.nav('showroom')" class="nav-btn"><i class="fa fa-car"></i> Estoque</button>
+                <button onclick="window.nav('novo')" class="nav-btn"><i class="fa fa-plus"></i> Novo Veículo</button>
+                <button onclick="window.nav('vendedores')" class="nav-btn"><i class="fa fa-user-tie"></i> Vendedores</button>
+                <button onclick="window.nav('clientes')" class="nav-btn"><i class="fa fa-users"></i> Leads</button>
+                <button onclick="window.handleLogout()" class="nav-btn" style="color:var(--r)"><i class="fa fa-power-off"></i> Sair</button>
             </nav>
-            <div class="stats-sidebar">
-                <p>Patrimônio Total:</p>
-                <h3 id="stat-total">R$ 0,00</h3>
-            </div>
         </aside>
 
-        <main id="main-content">
+        <main>
             <section id="showroom" class="page active">
-                <header class="page-header">
-                    <h1>Showroom Ativo</h1>
-                    <button onclick="window.open('portal.html', '_blank')" class="btn-primary" style="width:auto; padding: 10px 20px;">Abrir Portal Público</button>
-                </header>
+                <div class="header-flex">
+                    <h1>Meu Estoque</h1>
+                    <button onclick="window.gerarLinkShowroom()" class="btn-share"><i class="fa fa-share-alt"></i> Copiar Link do Showroom</button>
+                </div>
                 <div id="listaCarros" class="grid"></div>
             </section>
 
             <section id="novo" class="page">
-                <header class="page-header"><h1>Cadastrar Registro</h1></header>
+                <h1>Cadastrar Veículo</h1>
                 <div class="form-container">
-                    <div class="form-grid">
-                        <input id="modelo" type="text" placeholder="Modelo e Versão">
-                        <input id="preco" type="number" placeholder="Preço (R$)">
-                        <input id="km" type="number" placeholder="KM">
-                        <select id="cambio">
-                            <option value="Automático">Automático</option>
-                            <option value="Manual">Manual</option>
-                        </select>
-                        <div class="form-group" style="grid-column: span 2;">
-                            <label style="display:block; margin-bottom:5px;">Vendedor Responsável</label>
-                            <select id="vendedor-select"><option value="">Carregando...</option></select>
-                        </div>
-                    </div>
-                    <textarea id="descricao" rows="3" placeholder="Opcionais e Detalhes"></textarea>
-                    <div class="upload-grid">
-                        <label>Frente <input type="file" id="fotoFrente"></label>
-                        <label>Traseira <input type="file" id="fotoTraseira"></label>
-                        <label>Interior <input type="file" id="fotoInterior"></label>
-                    </div>
-                    <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary" style="margin-top:20px">SALVAR NO SISTEMA</button>
+                    <input id="modelo" placeholder="Modelo">
+                    <input id="preco" type="number" placeholder="Preço">
+                    <input id="km" type="number" placeholder="KM">
+                    <select id="cambio"><option>Automático</option><option>Manual</option></select>
+                    <select id="vendedor-select"><option>Carregando vendedores...</option></select>
+                    <textarea id="descricao" placeholder="Descrição"></textarea>
+                    <input type="file" id="f1"> <input type="file" id="f2"> <input type="file" id="f3">
+                    <button id="btn-salvar" onclick="window.salvarVeiculo()" class="btn-primary">SALVAR</button>
                 </div>
             </section>
 
             <section id="vendedores" class="page">
-                <header class="page-header"><h1>Gestão da Equipe</h1></header>
-                <div class="form-container">
-                    <div class="form-grid">
-                        <input id="v-nome" type="text" placeholder="Nome do Vendedor">
-                        <input id="v-whats" type="text" placeholder="WhatsApp (55...)">
-                    </div>
-                    <button onclick="window.addVendedor()" class="btn-primary">CADASTRAR VENDEDOR</button>
-                </div>
-                <div id="listaVendedores" class="grid-crm" style="margin-top:20px"></div>
+                <h1>Equipe</h1>
+                <input id="v-nome" placeholder="Nome">
+                <input id="v-whats" placeholder="WhatsApp (55...)">
+                <button onclick="window.addVendedor()" class="btn-primary">ADD VENDEDOR</button>
+                <div id="listaVendedores" class="grid-crm"></div>
             </section>
 
             <section id="clientes" class="page">
-                <header class="page-header"><h1>Leads</h1></header>
-                <div class="crm-container">
-                    <div class="crm-form">
-                        <input id="c-nome" placeholder="Nome">
-                        <input id="c-fone" placeholder="WhatsApp">
-                        <select id="c-situacao">
-                            <option value="quente">🔥 Quente</option>
-                            <option value="morno">⚡ Morno</option>
-                            <option value="frio">❄️ Frio</option>
-                        </select>
-                        <textarea id="c-obs" placeholder="Observações"></textarea>
-                        <button onclick="window.addCliente()" class="btn-primary">SALVAR LEAD</button>
-                    </div>
-                    <div id="listaClientes" class="grid-crm" style="margin-top:20px"></div>
-                </div>
+                <h1>Leads</h1>
+                <div id="listaClientes" class="grid-crm"></div>
             </section>
         </main>
     </div>
