@@ -1,50 +1,59 @@
 :root {
-    --primary: #E31010;
-    --secondary: #0056b3;
-    --bg-light: #f4f7f6;
-    --panel-bg: #ffffff;
-    --border: #e0e6ed;
+    --primary: #e31010;
+    --dark: #0f172a;
+    --bg: #f8fafc;
+    --glass: rgba(255, 255, 255, 0.9);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg-light); font-family: 'Inter', sans-serif; display: flex; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+body { background: var(--bg); display: flex; color: var(--dark); }
 
-#sidebar { 
-    width: 260px; background: #fff; height: 100vh; position: fixed; 
-    border-right: 2px solid var(--secondary); padding: 25px; display: flex; flex-direction: column; 
-}
+/* SIDEBAR */
+#sidebar { width: 260px; height: 100vh; background: #fff; position: fixed; padding: 30px; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+.logo { font-size: 24px; font-weight: 800; margin-bottom: 40px; text-align: center; }
+.logo span { color: var(--primary); }
 
-.sidebar-logo { font-size: 24px; font-weight: 900; margin-bottom: 30px; text-align: center; }
-.sidebar-logo span { color: var(--primary); }
+.share-box { margin-bottom: 30px; }
+.btn-share { width: 100%; padding: 12px; background: var(--dark); color: #fff; border: none; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.3s; }
+.btn-share:hover { background: var(--primary); }
 
-.nav-item {
-    width: 100%; padding: 12px; margin-bottom: 5px; border-radius: 8px; border: none;
-    background: none; text-align: left; cursor: pointer; font-weight: 600; color: #666;
-}
+.nav-item { width: 100%; padding: 14px; margin-bottom: 8px; border: none; background: none; text-align: left; cursor: pointer; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 12px; border-radius: 12px; }
+.nav-item i { font-size: 18px; }
+.nav-item.active { background: #f1f5f9; color: var(--primary); }
 
-.nav-item.active { background: var(--secondary); color: #fff; }
+.btn-out { margin-top: auto; border: none; background: #fff1f2; color: #e11d48; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 700; }
 
-#main-content { margin-left: 260px; padding: 40px; width: 100%; }
+/* MAIN CONTENT */
+#content { margin-left: 260px; padding: 40px; width: 100%; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.stats-mini { display: flex; gap: 15px; }
+.s-card { background: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; border: 1px solid #e2e8f0; }
 
-.funnel-dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
-.stat-card { background: #fff; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-.stat-card span { display: block; font-size: 24px; font-weight: 900; color: var(--primary); }
+.glass-box { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
 
-.glass-card { background: #fff; padding: 25px; border-radius: 15px; border: 1px solid var(--border); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+input, select, textarea { padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; outline: none; }
+textarea { width: 100%; height: 100px; resize: none; margin-bottom: 20px; }
 
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px; }
-input, select, textarea { padding: 10px; border: 1px solid var(--border); border-radius: 5px; width: 100%; }
+.photo-uploader { display: flex; gap: 15px; margin-bottom: 20px; }
+.slot { width: 120px; height: 100px; border: 2px dashed #cbd5e1; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fff; transition: 0.3s; }
+.slot:hover { border-color: var(--primary); color: var(--primary); }
 
-.photo-grid { display: flex; gap: 10px; margin-bottom: 15px; }
-.photo-slot { width: 100px; height: 80px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+.btn-main { background: var(--primary); color: #fff; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.3s; }
+.btn-main:hover { opacity: 0.9; transform: translateY(-2px); }
 
-.btn-primary { background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+/* LISTAS */
+.grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+.card-item { background: #f8fafc; padding: 12px; border-radius: 15px; display: flex; align-items: center; gap: 15px; border: 1px solid #e2e8f0; }
+.card-item img { width: 60px; height: 50px; border-radius: 8px; object-fit: cover; }
+.card-item .btns { margin-left: auto; display: flex; gap: 8px; }
+.card-item button { border: none; background: #fff; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-.item-admin-card { display: flex; align-items: center; gap: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 5px; }
+.crm-list { display: grid; gap: 10px; }
+.crm-card { background: #fff; padding: 20px; border-radius: 15px; border-left: 5px solid #22c55e; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; border-left: 6px solid #22c55e; }
 
-.hidden { display: none !important; }
-
-#login-screen { position: fixed; inset: 0; background: #f4f7f6; z-index: 999; display: flex; align-items: center; justify-content: center; }
+/* LOGIN */
+#login-screen { position: fixed; inset: 0; background: #f1f5f9; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.login-card { background: #fff; padding: 50px; border-radius: 30px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+.hidden { display: none; }
