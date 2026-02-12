@@ -3,69 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Gestão Operacional</title>
+    <title>NEXUS V12 | Dashboard Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-container" style="background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
-            <h1 class="sidebar-logo">NEXUS <span>V12</span></h1>
+        <div class="login-card">
+            <h1 class="logo">NEXUS<span>V12</span></h1>
             <div id="login-form" class="hidden">
-                <input type="email" id="email-login" placeholder="E-mail Administrativo" style="margin-bottom: 10px; display: block; width: 100%;">
-                <input type="password" id="pass-login" placeholder="Senha" style="margin-bottom: 20px; display: block; width: 100%;">
-                <button class="btn-primary" onclick="window.fazerLogin()" style="width: 100%;">ACESSAR SISTEMA</button>
+                <input type="email" id="email-login" placeholder="E-mail">
+                <input type="password" id="pass-login" placeholder="Senha">
+                <button class="btn-main" onclick="window.fazerLogin()">ACESSAR PORTAL</button>
             </div>
-            <p id="auth-status" style="margin-top: 15px; font-size: 13px; color: #666;">Iniciando camadas de segurança...</p>
+            <p id="auth-status">Verificando credenciais...</p>
         </div>
     </div>
 
     <aside id="sidebar">
-        <div class="sidebar-logo">NX<span>V12</span></div>
+        <div class="logo">NX<span>V12</span></div>
         
-        <button onclick="window.copiarLinkPortal()" class="btn-primary" style="margin-bottom: 20px; padding: 12px; font-size: 11px; background: var(--secondary);">
-            <i class="fa fa-share-nodes"></i> COPIAR LINK PORTAL
-        </button>
+        <div class="share-box">
+            <button onclick="window.copiarLinkPortal()" class="btn-share">
+                <i class="fa fa-copy"></i> LINK DO PORTAL
+            </button>
+        </div>
 
         <nav>
             <button onclick="window.nav('showroom')" class="nav-item active" id="btn-showroom">
-                <i class="fa fa-car"></i> <span>Estoque</span>
+                <i class="fa fa-th-large"></i> <span>Estoque</span>
             </button>
             <button onclick="window.nav('clientes')" class="nav-item" id="btn-clientes">
-                <i class="fa fa-users"></i> <span>Leads / CRM</span>
+                <i class="fa fa-comment-dots"></i> <span>Leads CRM</span>
             </button>
             <button onclick="window.nav('vendedores')" class="nav-item" id="btn-vendedores">
-                <i class="fa fa-user-tie"></i> <span>Equipe</span>
+                <i class="fa fa-user-tie"></i> <span>Vendedores</span>
             </button>
             <button onclick="window.nav('config')" class="nav-item" id="btn-config">
-                <i class="fa fa-palette"></i> <span>Identidade</span>
+                <i class="fa fa-sliders"></i> <span>Aparência</span>
             </button>
         </nav>
-        <button onclick="window.handleLogout()" class="btn-logout">
-            <i class="fa fa-power-off"></i> Sair
+
+        <button onclick="window.handleLogout()" class="btn-out">
+            <i class="fa fa-arrow-right-from-bracket"></i> Sair
         </button>
     </aside>
 
-    <main id="main-content">
+    <main id="content">
         
         <section id="showroom" class="tab-content active">
-            <div class="funnel-dashboard">
-                <div class="stat-card"> <span id="stat-total-estoque">0</span> <label>Total Estoque</label> </div>
-                <div class="stat-card"> <span id="stat-vendidos-mes">0</span> <label>Vendidos</label> </div>
-                <div class="stat-card"> <span id="stat-valor-estoque">R$ 0</span> <label>Cotação Vendidos</label> </div>
-            </div>
+            <header class="section-header">
+                <h2>Gerenciar Estoque</h2>
+                <div class="stats-mini">
+                    <div class="s-card">Total: <b id="stat-total">0</b></div>
+                    <div class="s-card">Vendidos: <b id="stat-vendidos">0</b></div>
+                </div>
+            </header>
 
-            <div class="glass-card">
-                <h2 id="form-title"><i class="fa fa-car"></i> Gerenciar Veículo</h2>
+            <div class="glass-box">
+                <h3 id="form-title">Novo Veículo</h3>
                 <input type="hidden" id="edit-carro-id">
+                
                 <div class="form-grid">
                     <input id="marca" placeholder="Marca">
                     <input id="modelo" placeholder="Modelo">
-                    <input id="preco" type="number" placeholder="Preço (Ex: 85000)">
+                    <input id="preco" type="number" placeholder="Preço R$">
                     <input id="km" type="number" placeholder="KM">
-                    <input id="ano" placeholder="Ano (Ex: 2023/2024)">
+                    <input id="ano" placeholder="Ano (Ex: 2024)">
                     <select id="cambio">
                         <option value="Automático">Automático</option>
                         <option value="Manual">Manual</option>
@@ -78,56 +84,59 @@
                     </select>
                 </div>
 
-                <div class="photo-grid">
-                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1"><i class="fa fa-plus"></i><input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2"><i class="fa fa-plus"></i><input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3"><i class="fa fa-plus"></i><input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
+                <div class="photo-uploader">
+                    <div class="slot" onclick="document.getElementById('f1').click()" id="p1"><i class="fa fa-camera"></i><input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
+                    <div class="slot" onclick="document.getElementById('f2').click()" id="p2"><i class="fa fa-plus"></i><input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
+                    <div class="slot" onclick="document.getElementById('f3').click()" id="p3"><i class="fa fa-plus"></i><input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
                 </div>
 
-                <textarea id="descricao" placeholder="Descrição do veículo..." rows="3" style="width: 100%; margin-bottom: 15px;"></textarea>
-                <button class="btn-primary" onclick="window.salvarVeiculo()">SALVAR VEÍCULO</button>
-                <button id="btn-cancel-edit" class="hidden" onclick="window.limparFormEstoque()" style="margin-top:10px; background:gray">Cancelar Edição</button>
+                <textarea id="descricao" placeholder="Descrição e detalhes..."></textarea>
+                
+                <div class="actions">
+                    <button class="btn-main" onclick="window.salvarVeiculo()">SALVAR VEÍCULO</button>
+                    <button id="btn-cancel-edit" class="hidden btn-sec" onclick="window.limparFormEstoque()">Cancelar</button>
+                </div>
 
-                <div id="lista-estoque-admin" style="margin-top: 30px;"></div>
+                <hr style="margin: 30px 0; opacity: 0.1;">
+                <div id="lista-estoque-admin" class="grid-list"></div>
             </div>
         </section>
 
         <section id="clientes" class="tab-content">
-            <div class="glass-card">
-                <h2><i class="fa fa-users"></i> Leads Recebidos</h2>
-                <div id="lista-clientes-crm"></div>
-            </div>
+            <header class="section-header">
+                <h2>Leads & Interesses</h2>
+                <button class="btn-main" onclick="window.addLeadManual()">+ Lead Manual</button>
+            </header>
+            <div id="lista-clientes-crm" class="crm-list"></div>
         </section>
 
         <section id="vendedores" class="tab-content">
-            <div class="glass-card">
-                <h2><i class="fa fa-user-plus"></i> Equipe</h2>
+            <header class="section-header"><h2>Minha Equipe</h2></header>
+            <div class="glass-box">
                 <div class="form-grid">
-                    <input id="nome-vendedor" placeholder="Nome">
-                    <input id="whats-vendedor" placeholder="WhatsApp (5511...)">
-                    <button class="btn-primary" onclick="window.addVendedor()">Adicionar</button>
+                    <input id="nome-vendedor" placeholder="Nome do Vendedor">
+                    <input id="whats-vendedor" placeholder="WhatsApp (DDD + Número)">
+                    <button class="btn-main" onclick="window.addVendedor()">ADICIONAR</button>
                 </div>
-                <div id="lista-vendedores" style="margin-top: 20px;"></div>
+                <div id="lista-vendedores" class="grid-list" style="margin-top: 20px;"></div>
             </div>
         </section>
 
         <section id="config" class="tab-content">
-            <div class="glass-card">
-                <h2><i class="fa fa-palette"></i> Identidade Visual</h2>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Logo da Loja</label>
-                        <div class="photo-slot" onclick="document.getElementById('f-logo').click()" id="preview-logo" style="width: 100%; height: 120px;">
-                            <i class="fa fa-upload"></i> Subir Logo
-                        </div>
-                        <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
+            <header class="section-header"><h2>Identidade da Loja</h2></header>
+            <div class="glass-box config-flex">
+                <div class="logo-config">
+                    <label>Logo do Portal</label>
+                    <div class="slot-logo" onclick="document.getElementById('f-logo').click()" id="preview-logo">
+                        <i class="fa fa-cloud-arrow-up"></i>
                     </div>
-                    <div class="input-group">
-                        <label>Cor Principal</label>
-                        <input type="color" id="cor-loja" value="#0056b3" style="height: 120px;">
-                    </div>
+                    <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
                 </div>
-                <button class="btn-primary" onclick="window.salvarConfig()">ATUALIZAR PORTAL</button>
+                <div class="color-config">
+                    <label>Cor do Sistema</label>
+                    <input type="color" id="cor-loja" value="#e31010">
+                    <button class="btn-main" onclick="window.salvarConfig()" style="margin-top: 20px;">APLICAR MUDANÇAS</button>
+                </div>
             </div>
         </section>
     </main>
