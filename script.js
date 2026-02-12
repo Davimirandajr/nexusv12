@@ -234,3 +234,42 @@ window.copiarLinkPortal = () => {
     const link = `${window.location.origin}/portal.html?loja=${auth.currentUser.uid}`;
     navigator.clipboard.writeText(link).then(() => alert("Link copiado!"));
 };
+/* ==========================================================================
+   GESTÃO DE VENDEDORES
+   ========================================================================== */
+window.salvarVendedor = async () => {
+    const nome = document.getElementById('nome-vendedor').value;
+    const whats = document.getElementById('whatsapp-vendedor').value;
+    const email = document.getElementById('email-vendedor').value;
+
+    if(!nome || !whats) return alert("Nome e WhatsApp são obrigatórios!");
+
+    try {
+        await addDoc(collection(db, "vendedores"), {
+            lojaId: auth.currentUser.uid,
+            nome: nome,
+            whatsapp: whats,
+            email: email,
+            dataCadastro: new Date()
+        });
+        alert("Vendedor cadastrado com sucesso!");
+        document.getElementById('nome-vendedor').value = "";
+        document.getElementById('whatsapp-vendedor').value = "";
+        document.getElementById('email-vendedor').value = "";
+    } catch (e) { alert("Erro ao salvar vendedor"); }
+};
+
+// Adicione este monitor dentro da função iniciarMonitores(user):
+onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", user.uid)), (snap) => {
+    const lista = document.getElementById('lista-vendedores');
+    if (!lista) return;
+    lista.innerHTML = '';
+    snap.forEach(d => {
+        const v = d.data();
+        lista.innerHTML += `
+            <div class="card-item" style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="fa fa-user-circle"></i> <b>${v.nome}</b> (${v.whatsapp})</span>
+                <button onclick="window.excluirDoc('vendedores', '${d.id}')" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
+            </div>`;
+    });
+});
