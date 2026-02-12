@@ -1,13 +1,15 @@
-/* PALETA DE CORES NEXUS V12 */
+/* ==========================================================================
+   VARIÁVEIS E BASE
+   ========================================================================== */
 :root {
     --primary: #E31010;        /* Vermelho Nexus */
     --secondary: #0056b3;      /* Azul Royal */
-    --bg-light: #f4f7f6;       /* Fundo Cinza Claro */
-    --panel-bg: #ffffff;       /* Branco Puríssimo */
+    --bg-light: #f4f7f6;       /* Cinza de fundo */
+    --panel-bg: #ffffff;       /* Branco dos painéis */
     --text-dark: #1a1a1c;      /* Texto principal */
     --text-dim: #6c757d;       /* Texto secundário */
-    --border: #e0e6ed;         /* Divisórias */
-    --transition: all 0.3s ease;
+    --border: #e0e6ed;         /* Divisórias suaves */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,17 +20,18 @@ body {
     font-family: 'Inter', sans-serif;
     display: flex;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* ==========================================================================
-   SISTEMA DE ABAS (O QUE RESOLVE O PROBLEMA DE "TUDO NA MESMA TELA")
+   SISTEMA DE ABAS (CRUCIAL PARA NÃO FICAR TUDO NA MESMA TELA)
    ========================================================================== */
 .tab-content {
-    display: none; /* ESCONDE TODAS AS TELAS */
+    display: none !important; /* Esconde todas por padrão */
 }
 
 .tab-content.active {
-    display: block !important; /* MOSTRA APENAS A TELA ATIVA */
+    display: block !important; /* Mostra apenas a ativa */
     animation: fadeIn 0.4s ease;
 }
 
@@ -45,16 +48,19 @@ body {
     background: var(--panel-bg); 
     height: 100vh; 
     position: fixed; 
-    border-right: 2px solid var(--secondary); /* Divisória Azul */
+    border-right: 2px solid var(--secondary); 
     padding: 25px;
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-logo { 
-    font-size: 24px; 
+    font-size: 26px; 
     font-weight: 900; 
     margin-bottom: 40px; 
     color: var(--text-dark);
+    text-align: center;
 }
 
 .sidebar-logo span { color: var(--primary); }
@@ -63,8 +69,8 @@ body {
     width: 100%;
     background: none;
     border: none;
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -75,13 +81,14 @@ body {
     transition: var(--transition);
 }
 
-.nav-item i { color: var(--secondary); } /* Ícones Azuis */
+.nav-item i { width: 20px; color: var(--secondary); }
 
 .nav-item:hover { background: #f0f4f8; color: var(--secondary); }
 
 .nav-item.active { 
     background: var(--secondary); 
     color: #ffffff; 
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2);
 }
 .nav-item.active i { color: #ffffff; }
 
@@ -91,7 +98,8 @@ body {
 #main-content { 
     margin-left: 260px; 
     padding: 40px; 
-    width: calc(100% - 260px); 
+    width: calc(100% - 260px);
+    min-height: 100vh;
 }
 
 .glass-card {
@@ -100,6 +108,7 @@ body {
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     border: 1px solid var(--border);
+    margin-bottom: 30px;
 }
 
 h2 { 
@@ -109,11 +118,11 @@ h2 {
     display: flex; 
     align-items: center; 
     gap: 10px;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid #f0f0f0;
     padding-bottom: 15px;
 }
 
-/* FUNNEL / ESTATÍSTICAS */
+/* DASHBOARD (ESTATÍSTICAS) */
 .funnel-dashboard {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -125,23 +134,25 @@ h2 {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
-    border-left: 5px solid var(--secondary);
+    border-top: 4px solid var(--secondary);
     box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     text-align: center;
+    transition: transform 0.3s ease;
 }
 
-.stat-card span { display: block; font-size: 24px; font-weight: 900; color: var(--primary); }
-.stat-card label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
+.stat-card:hover { transform: translateY(-5px); }
+.stat-card span { display: block; font-size: 26px; font-weight: 900; color: var(--primary); }
+.stat-card label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
 
 /* FORMULÁRIOS */
 .form-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-    gap: 15px; 
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+    gap: 20px; 
     margin-bottom: 20px; 
 }
 
-.input-group label { display: block; font-size: 12px; font-weight: 800; color: var(--secondary); margin-bottom: 5px; }
+.input-group label { display: block; font-size: 11px; font-weight: 800; color: var(--secondary); margin-bottom: 5px; text-transform: uppercase; }
 
 input, select, textarea {
     width: 100%;
@@ -150,82 +161,90 @@ input, select, textarea {
     border: 1px solid var(--border);
     background: #fff;
     color: var(--text-dark);
+    font-family: inherit;
+    transition: 0.2s;
 }
 
-input:focus { border-color: var(--secondary); outline: none; }
+input:focus, select:focus { border-color: var(--secondary); outline: none; box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.05); }
 
 /* GALERIA DE FOTOS */
 .photo-grid { display: flex; gap: 15px; margin: 20px 0; }
 
 .photo-slot {
-    width: 120px;
+    width: 110px;
     height: 80px;
-    border: 2px dashed var(--secondary);
-    border-radius: 10px;
+    border: 2px dashed #cbd5e0;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     overflow: hidden;
     background: #f8f9fa;
+    transition: 0.3s;
 }
 
-.photo-slot img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    transition: transform 0.4s ease; 
-}
-
-.photo-slot:hover img { transform: scale(1.15); }
+.photo-slot:hover { border-color: var(--secondary); background: #eef2f7; }
+.photo-slot img { width: 100%; height: 100%; object-fit: cover; }
 
 /* BOTÕES */
 .btn-primary {
     background: var(--primary);
     color: #fff;
     border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
+    padding: 16px 32px;
+    border-radius: 10px;
     font-weight: 800;
     cursor: pointer;
     transition: 0.3s;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.btn-primary:hover { filter: brightness(1.2); transform: translateY(-2px); }
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(227, 16, 16, 0.3); }
 
 .btn-logout {
     margin-top: auto;
-    background: #f8f9fa;
-    color: #ff4444;
-    border: 1px solid #ffebeb;
+    background: #fff1f1;
+    color: var(--primary);
+    border: 1px solid #ffdbdb;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    width: 100%;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-/* LISTAGEM DE ITENS (CRM E ESTOQUE) */
+/* LISTAGEM ADMIN */
 .item-admin-card {
     display: flex;
     align-items: center;
     gap: 15px;
     background: #fff;
-    padding: 15px;
+    padding: 12px;
     border-radius: 10px;
     border: 1px solid #eee;
     margin-top: 10px;
 }
 
-.badge { 
-    padding: 5px 10px; 
-    border-radius: 5px; 
-    font-size: 10px; 
-    font-weight: 900; 
-}
-
+.badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
 .status-vendido { background: var(--primary); color: #fff; }
 .status-disponivel { background: var(--secondary); color: #fff; }
+.status-destaque { background: #f1c40f; color: #000; }
 
-/* UTILS */
 .hidden { display: none !important; }
+
+/* TELA DE LOGIN */
+#login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-light);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
