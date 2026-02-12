@@ -3,55 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Showroom Digital | NEXUS V12</title>
+    <title>NEXUS V12 | Showroom Digital</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #E31010; --secondary: #0056b3; --bg: #f4f7f6; }
-        
+        :root { --primary: #E31010; --secondary: #0056b3; --bg: #f8f9fa; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: #1a1a1c; font-family: 'Inter', sans-serif; }
 
-        /* HEADER */
-        .header { background: #fff; padding: 20px; text-align: center; border-bottom: 4px solid var(--secondary); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        /* HEADER & LOGO */
+        .header { background: #fff; padding: 15px; text-align: center; border-bottom: 3px solid var(--secondary); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo-img { max-height: 50px; }
 
-        /* FILTROS */
-        .filter-bar { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .search-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; min-width: 250px; }
+        /* FILTROS AVANÇADOS */
+        .filter-section { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .filter-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+        .search-input { padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; width: 100%; font-size: 14px; }
         .search-input:focus { border-color: var(--secondary); }
 
-        /* VITRINE */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        /* GRID DE VEÍCULOS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        .card { background: #fff; border-radius: 15px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .card:hover { transform: translateY(-5px); }
+        .card { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        /* CARROSSEL DE FOTOS */
-        .carrossel { position: relative; width: 100%; aspect-ratio: 4/3; background: #eee; overflow: hidden; }
+        /* FOTOS INTERATIVAS */
+        .carrossel { position: relative; aspect-ratio: 4/3; background: #000; overflow: hidden; }
         .carrossel img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .card:hover .carrossel img { transform: scale(1.05); }
+        .card:hover .carrossel img { transform: scale(1.1); filter: brightness(1.1); }
         
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 10; }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.7); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; z-index: 10; font-size: 12px; }
         .prev { left: 10px; } .next { right: 10px; }
 
         /* BADGES */
-        .badge { position: absolute; top: 10px; left: 10px; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; z-index: 11; text-transform: uppercase; }
+        .badge { position: absolute; top: 12px; left: 12px; padding: 6px 12px; border-radius: 4px; font-size: 10px; font-weight: 900; z-index: 11; text-transform: uppercase; letter-spacing: 1px; }
         .badge-destaque { background: #f1c40f; color: #000; }
         .badge-vendido { background: var(--primary); color: #fff; }
 
-        /* INFO DO CARRO */
-        .info { padding: 15px; }
-        .tags { display: flex; gap: 5px; margin-bottom: 10px; }
-        .tag { background: #f0f4f8; color: var(--secondary); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        /* INFO */
+        .info { padding: 20px; }
+        .tags { display: flex; gap: 8px; margin-bottom: 12px; }
+        .tag { background: #eef2f7; color: var(--secondary); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; }
         
-        .title { font-size: 18px; font-weight: 900; margin-bottom: 5px; color: #333; }
-        .price { font-size: 22px; font-weight: 900; color: var(--secondary); margin-bottom: 15px; }
+        .title { font-size: 18px; font-weight: 900; color: #222; margin-bottom: 8px; }
+        .price { font-size: 24px; font-weight: 900; color: var(--secondary); margin-bottom: 15px; }
         
-        .btn-zap { background: #25d366; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-        .btn-zap:hover { filter: brightness(1.1); }
-
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+        .btn-zap { background: #25d366; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 8px; font-weight: 800; transition: 0.3s; }
+        
+        @media (max-width: 768px) { .filter-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -60,15 +59,28 @@
         <h1 style="color:var(--secondary)">NEXUS <span style="color:var(--primary)">V12</span></h1>
     </header>
 
-    <div class="filter-bar">
-        <input type="text" id="search" class="search-input" placeholder="O que você está procurando?" oninput="window.filtrar()">
+    <div class="filter-section">
+        <div class="filter-grid">
+            <input type="text" id="search" class="search-input" placeholder="Buscar marca ou modelo..." oninput="window.filtrar()">
+            <select id="f-cambio" class="search-input" onchange="window.filtrar()">
+                <option value="">Todos Câmbios</option>
+                <option value="Automático">Automático</option>
+                <option value="Manual">Manual</option>
+            </select>
+            <select id="f-preco" class="search-input" onchange="window.filtrar()">
+                <option value="">Qualquer Preço</option>
+                <option value="60000">Até R$ 60.000</option>
+                <option value="120000">Até R$ 120.000</option>
+                <option value="250000">Até R$ 250.000</option>
+            </select>
+        </div>
     </div>
 
     <div class="grid" id="vitrine"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, query, where, getDoc, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, query, where, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
@@ -81,13 +93,12 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         const urlParams = new URLSearchParams(window.location.search);
         const lojaId = urlParams.get('loja');
 
         window.estoqueLocal = [];
 
-        // 1. CARREGAR IDENTIDADE
+        // 1. CARREGAR CONFIGS DA LOJA
         if(lojaId) {
             onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
                 if(s.exists()){
@@ -98,7 +109,7 @@
             });
         }
 
-        // 2. CARREGAR ESTOQUE (Ordenado por destaques primeiro)
+        // 2. CARREGAR CARROS
         const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
         onSnapshot(q, (snap) => {
             window.estoqueLocal = [];
@@ -108,17 +119,21 @@
 
         window.filtrar = async () => {
             const busca = document.getElementById('search').value.toLowerCase();
+            const cambio = document.getElementById('f-cambio').value;
+            const precoMax = document.getElementById('f-preco').value;
             const vitrine = document.getElementById('vitrine');
+            
             vitrine.innerHTML = '';
 
-            // Filtragem e Ordenação: Destaque > Disponível > Vendido
             const filtrados = window.estoqueLocal.filter(c => {
-                const texto = (c.marca + " " + c.modelo).toLowerCase();
-                return texto.includes(busca);
+                const matchTexto = (c.marca + " " + c.modelo).toLowerCase().includes(busca);
+                const matchCambio = cambio === "" || c.cambio === cambio;
+                const matchPreco = precoMax === "" || c.preco <= Number(precoMax);
+                return matchTexto && matchCambio && matchPreco;
             }).sort((a, b) => {
                 if(a.status === 'destaque') return -1;
                 if(b.status === 'destaque') return 1;
-                return 0;
+                return a.status === 'vendido' ? 1 : -1;
             });
 
             for (const car of filtrados) {
@@ -156,7 +171,6 @@
         window.swapImg = (id, fotos, dir) => {
             const el = document.getElementById('img-'+id);
             let idx = fotos.indexOf(el.src);
-            if(idx === -1) idx = 0;
             let next = (idx + dir + fotos.length) % fotos.length;
             el.src = fotos[next];
         };
@@ -169,7 +183,7 @@
                 vendedorWhats: vWhats,
                 data: new Date()
             });
-            window.open(`https://wa.me/${vWhats}?text=Olá! Vi o ${carro} no portal e quero saber mais.`, '_blank');
+            window.open(`https://wa.me/${vWhats}?text=Vi o ${carro} no portal e quero saber mais.`, '_blank');
         };
     </script>
 </body>
