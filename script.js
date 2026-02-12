@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
@@ -15,81 +15,59 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-window.veiculoFotos = ["", "", "", ""];
-window.logoEmpresa = "";
-
-// LOGIN
-window.fazerLogin = () => {
-    const e = document.getElementById('email-login').value;
-    const s = document.getElementById('pass-login').value;
-    signInWithEmailAndPassword(auth, e, s).catch(err => alert("Acesso Negado!"));
+// --- FUNÇÃO DA SETA (TOGGLE SIDEBAR) ---
+window.toggleSidebar = () => {
+    const body = document.body;
+    const icon = document.getElementById('sidebar-icon');
+    
+    body.classList.toggle('collapsed');
+    
+    if (body.classList.contains('collapsed')) {
+        icon.className = 'fa fa-chevron-right';
+    } else {
+        icon.className = 'fa fa-chevron-left';
+    }
 };
 
-// NAV
+// --- NAVEGAÇÃO ---
 window.nav = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.getElementById('btn-'+id).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    const target = document.getElementById(id);
+    if(target) target.classList.add('active');
+    document.getElementById('btn-' + id).classList.add('active');
 };
 
-// IMAGENS
-window.handlePhoto = (input, slotId, index) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        window.veiculoFotos[index] = e.target.result;
-        document.getElementById(slotId).innerHTML = `<img src="${e.target.result}">`;
-    };
-    reader.readAsDataURL(input.files[0]);
-};
-
-// SALVAR
-window.salvarVeiculo = async () => {
-    await addDoc(collection(db, "carros"), {
-        lojaId: auth.currentUser.uid,
-        marca: document.getElementById('marca').value,
-        modelo: document.getElementById('modelo').value,
-        preco: Number(document.getElementById('preco').value),
-        fotos: window.veiculoFotos.filter(f => f !== ""),
-        vendedor: document.getElementById('vendedor-carro').value
-    });
-    alert("Publicado!");
-    location.reload();
-};
-
-window.salvarConfig = async () => {
-    const cor = document.getElementById('cor-loja').value;
-    await setDoc(doc(db, "configuracoes", auth.currentUser.uid), {
-        corLoja: cor,
-        logoLoja: window.logoEmpresa
-    }, { merge: true });
-    alert("Identidade Salva!");
-};
-
-// AUTH MONITOR
+// --- AUTH ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        document.getElementById('menu-lateral').classList.remove('hidden');
-        sincronizar(user.uid);
+        sincronizarCores(user.uid);
     } else {
         document.getElementById('login-form').classList.remove('hidden');
-        document.getElementById('auth-status').innerText = "Pronto para acesso";
     }
 });
 
-function sincronizar(uid) {
-    onSnapshot(doc(db, "configuracoes", uid), (s) => {
-        if(s.exists() && s.data().corLoja) {
-            document.documentElement.style.setProperty('--primary', s.data().corLoja);
-            document.getElementById('cor-loja').value = s.data().corLoja;
+window.fazerLogin = () => {
+    const e = document.getElementById('email-login').value;
+    const s = document.getElementById('pass-login').value;
+    signInWithEmailAndPassword(auth, e, s).catch(err => alert("Erro no login"));
+};
+
+// --- CORES ---
+window.salvarConfig = async () => {
+    const cor = document.getElementById('cor-loja').value;
+    document.documentElement.style.setProperty('--primary', cor);
+    await setDoc(doc(db, "configuracoes", auth.currentUser.uid), { corLoja: cor }, { merge: true });
+    alert("Layout atualizado!");
+};
+
+function sincronizarCores(uid) {
+    onSnapshot(doc(db, "configuracoes", uid), (snap) => {
+        if (snap.exists() && snap.data().corLoja) {
+            document.documentElement.style.setProperty('--primary', snap.data().corLoja);
+            document.getElementById('cor-loja').value = snap.data().corLoja;
         }
     });
 }
-
-window.copyPortalLink = () => {
-    const link = window.location.href.replace('index.html', '') + "portal.html?loja=" + auth.currentUser.uid;
-    navigator.clipboard.writeText(link);
-    alert("Link do Portal Copiado!");
-};
