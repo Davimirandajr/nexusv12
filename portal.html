@@ -7,68 +7,68 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #E31010; --bg: #0a0a0b; --card: #151517; }
+        :root { --primary: #E31010; --secondary: #0056b3; --bg: #f4f7f6; }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: #1a1a1c; font-family: 'Inter', sans-serif; }
 
         /* HEADER */
-        .header { background: #000; padding: 25px; text-align: center; border-bottom: 3px solid var(--primary); position: sticky; top: 0; z-index: 100; }
-        .logo-img { max-height: 60px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
+        .header { background: #fff; padding: 20px; text-align: center; border-bottom: 4px solid var(--secondary); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo-img { max-height: 50px; }
 
         /* FILTROS */
-        .filter-section { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
-        .search-box, .filter-select { background: #1a1a1c; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 12px; font-size: 16px; outline: none; }
-        .search-box:focus { border-color: var(--primary); }
+        .filter-bar { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .search-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; min-width: 250px; }
+        .search-input:focus { border-color: var(--secondary); }
 
         /* VITRINE */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        .card { background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid #222; transition: transform 0.3s; }
+        .card { background: #fff; border-radius: 15px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .card:hover { transform: translateY(-5px); }
 
-        /* CARROSSEL */
-        .carrossel { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; }
-        .carrossel img { width: 100%; height: 100%; object-fit: cover; }
-        .nav-carrossel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; pointer-events: none; }
-        .nav-carrossel button { background: rgba(0,0,0,0.5); color: #fff; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; pointer-events: auto; backdrop-filter: blur(5px); }
+        /* CARROSSEL DE FOTOS */
+        .carrossel { position: relative; width: 100%; aspect-ratio: 4/3; background: #eee; overflow: hidden; }
+        .carrossel img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .card:hover .carrossel img { transform: scale(1.05); }
+        
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 10; }
+        .prev { left: 10px; } .next { right: 10px; }
 
-        /* INFOS */
-        .info { padding: 20px; }
-        .info h3 { font-size: 20px; margin-bottom: 5px; text-transform: uppercase; }
-        .ano-tag { font-size: 14px; color: #888; background: #222; padding: 4px 10px; border-radius: 6px; }
-        .price { font-size: 26px; font-weight: 900; color: var(--primary); margin: 15px 0; }
-        .desc { font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.4; height: 40px; overflow: hidden; }
+        /* BADGES */
+        .badge { position: absolute; top: 10px; left: 10px; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; z-index: 11; text-transform: uppercase; }
+        .badge-destaque { background: #f1c40f; color: #000; }
+        .badge-vendido { background: var(--primary); color: #fff; }
 
-        /* BOTÃO WHATS */
-        .btn-zap { background: #25d366; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; border-radius: 12px; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        /* INFO DO CARRO */
+        .info { padding: 15px; }
+        .tags { display: flex; gap: 5px; margin-bottom: 10px; }
+        .tag { background: #f0f4f8; color: var(--secondary); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        
+        .title { font-size: 18px; font-weight: 900; margin-bottom: 5px; color: #333; }
+        .price { font-size: 22px; font-weight: 900; color: var(--secondary); margin-bottom: 15px; }
+        
+        .btn-zap { background: #25d366; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 8px; font-weight: bold; transition: 0.3s; }
         .btn-zap:hover { filter: brightness(1.1); }
 
-        @media (max-width: 600px) {
-            .filter-section { grid-template-columns: 1fr; }
-            .grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <header class="header" id="header-content">
-        <h1 id="loja-nome">NEXUS V12</h1>
+        <h1 style="color:var(--secondary)">NEXUS <span style="color:var(--primary)">V12</span></h1>
     </header>
 
-    <div class="filter-section">
-        <input type="text" id="search" class="search-box" placeholder="Busque por marca ou modelo..." oninput="window.filtrar()">
-        <select id="filter-ano" class="filter-select" onchange="window.filtrar()">
-            <option value="">Todos os Anos</option>
-        </select>
+    <div class="filter-bar">
+        <input type="text" id="search" class="search-input" placeholder="O que você está procurando?" oninput="window.filtrar()">
     </div>
 
-    <div class="grid" id="vitrine">
-        </div>
+    <div class="grid" id="vitrine"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, query, where, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, query, where, getDoc, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
@@ -82,82 +82,70 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Pega o ID da loja pela URL (?loja=ID_DA_LOJA)
         const urlParams = new URLSearchParams(window.location.search);
         const lojaId = urlParams.get('loja');
 
-        if(!lojaId) {
-            document.body.innerHTML = "<h2 style='text-align:center; padding:50px;'>Loja não encontrada. Verifique o link.</h2>";
-        }
-
         window.estoqueLocal = [];
 
-        // 1. CARREGAR IDENTIDADE DA LOJA
-        onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
-            if(s.exists()){
-                const d = s.data();
-                document.documentElement.style.setProperty('--primary', d.corLoja);
-                if(d.logo) {
-                    document.getElementById('header-content').innerHTML = `<img src="${d.logo}" class="logo-img">`;
+        // 1. CARREGAR IDENTIDADE
+        if(lojaId) {
+            onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
+                if(s.exists()){
+                    const d = s.data();
+                    document.documentElement.style.setProperty('--secondary', d.corLoja || '#0056b3');
+                    if(d.logo) document.getElementById('header-content').innerHTML = `<img src="${d.logo}" class="logo-img">`;
                 }
-            }
-        });
+            });
+        }
 
-        // 2. CARREGAR ESTOQUE
+        // 2. CARREGAR ESTOQUE (Ordenado por destaques primeiro)
         const q = query(collection(db, "carros"), where("lojaId", "==", lojaId));
         onSnapshot(q, (snap) => {
             window.estoqueLocal = [];
-            const anos = new Set();
-            
-            snap.forEach(d => {
-                const carro = { id: d.id, ...d.data() };
-                window.estoqueLocal.push(carro);
-                anos.add(carro.ano);
-            });
-
-            // Atualiza select de anos
-            const selectAno = document.getElementById('filter-ano');
-            selectAno.innerHTML = '<option value="">Todos os Anos</option>';
-            [...anos].sort().reverse().forEach(ano => {
-                selectAno.innerHTML += `<option value="${ano}">${ano}</option>`;
-            });
-
+            snap.forEach(d => window.estoqueLocal.push({ id: d.id, ...d.data() }));
             window.filtrar();
         });
 
-        // 3. SISTEMA DE FILTRO
         window.filtrar = async () => {
             const busca = document.getElementById('search').value.toLowerCase();
-            const anoSel = document.getElementById('filter-ano').value;
             const vitrine = document.getElementById('vitrine');
             vitrine.innerHTML = '';
 
+            // Filtragem e Ordenação: Destaque > Disponível > Vendido
             const filtrados = window.estoqueLocal.filter(c => {
                 const texto = (c.marca + " " + c.modelo).toLowerCase();
-                return texto.includes(busca) && (anoSel === "" || c.ano === anoSel);
+                return texto.includes(busca);
+            }).sort((a, b) => {
+                if(a.status === 'destaque') return -1;
+                if(b.status === 'destaque') return 1;
+                return 0;
             });
 
             for (const car of filtrados) {
-                // Busca o vendedor vinculado ao carro
                 const vSnap = await getDoc(doc(db, "vendedores", car.vendedorId));
                 const vend = vSnap.exists() ? vSnap.data() : { nome: "Consultor", whats: "" };
+                
+                const badge = car.status === 'vendido' ? '<span class="badge badge-vendido">VENDIDO</span>' : 
+                             (car.status === 'destaque' ? '<span class="badge badge-destaque">★ DESTAQUE</span>' : '');
 
                 vitrine.innerHTML += `
                     <div class="card">
+                        ${badge}
                         <div class="carrossel">
+                            <button class="nav-btn prev" onclick="window.swapImg('${car.id}', ${JSON.stringify(car.fotos).replace(/"/g, '&quot;')}, -1)"><i class="fa fa-chevron-left"></i></button>
                             <img src="${car.fotos[0]}" id="img-${car.id}">
-                            <div class="nav-carrossel">
-                                <button onclick="window.swapImg('${car.id}', ${JSON.stringify(car.fotos).replace(/"/g, '&quot;')}, -1)"><i class="fa fa-chevron-left"></i></button>
-                                <button onclick="window.swapImg('${car.id}', ${JSON.stringify(car.fotos).replace(/"/g, '&quot;')}, 1)"><i class="fa fa-chevron-right"></i></button>
-                            </div>
+                            <button class="nav-btn next" onclick="window.swapImg('${car.id}', ${JSON.stringify(car.fotos).replace(/"/g, '&quot;')}, 1)"><i class="fa fa-chevron-right"></i></button>
                         </div>
                         <div class="info">
-                            <span class="ano-tag">${car.ano}</span>
-                            <h3>${car.marca} ${car.modelo}</h3>
+                            <div class="tags">
+                                <span class="tag">${car.ano}</span>
+                                <span class="tag">${car.cambio}</span>
+                                <span class="tag">${Number(car.km).toLocaleString()} KM</span>
+                            </div>
+                            <h3 class="title">${car.marca} ${car.modelo}</h3>
                             <div class="price">R$ ${car.preco.toLocaleString('pt-BR')}</div>
-                            <p class="desc">${car.descricao || 'Sem descrição adicional.'}</p>
                             <a href="javascript:void(0)" onclick="window.gerarLead('${car.id}', '${car.marca} ${car.modelo}', '${vend.nome}', '${vend.whats}', '${lojaId}')" class="btn-zap">
-                                <i class="fab fa-whatsapp"></i> Falar com ${vend.nome}
+                                <i class="fab fa-whatsapp"></i> Tenho Interesse
                             </a>
                         </div>
                     </div>
@@ -165,7 +153,6 @@
             }
         };
 
-        // 4. LÓGICA DO CARROSSEL
         window.swapImg = (id, fotos, dir) => {
             const el = document.getElementById('img-'+id);
             let idx = fotos.indexOf(el.src);
@@ -174,20 +161,15 @@
             el.src = fotos[next];
         };
 
-        // 5. CAPTURA DE LEAD E REDIRECIONAMENTO
         window.gerarLead = async (id, carro, vNome, vWhats, lId) => {
-            try {
-                // Salva o interesse no banco antes de abrir o zap
-                await addDoc(collection(db, "interesses"), {
-                    lojaId: lId,
-                    carro: carro,
-                    vendedor: vNome,
-                    data: new Date()
-                });
-            } catch (e) { console.error("Erro lead", e); }
-
-            const msg = `Olá! Vi o *${carro}* no portal e gostaria de mais informações.`;
-            window.open(`https://wa.me/${vWhats}?text=${encodeURIComponent(msg)}`, '_blank');
+            await addDoc(collection(db, "interesses"), {
+                lojaId: lId,
+                carro: carro,
+                vendedor: vNome,
+                vendedorWhats: vWhats,
+                data: new Date()
+            });
+            window.open(`https://wa.me/${vWhats}?text=Olá! Vi o ${carro} no portal e quero saber mais.`, '_blank');
         };
     </script>
 </body>
