@@ -18,52 +18,44 @@ const db = getFirestore(app);
 window.fotosCarro = ["", "", ""];
 window.logoBase64 = "";
 
-/* INTERFACE */
+/* NAVEGAÇÃO */
 window.nav = (id) => {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.getElementById('btn-' + id).classList.add('active');
 };
 
+/* UTILITÁRIOS */
 window.copiarLinkPortal = () => {
-    const url = window.location.origin + "/portal.html?loja=" + auth.currentUser.uid;
-    navigator.clipboard.writeText(url).then(() => alert("Link copiado!"));
+    const link = `${window.location.origin}/portal.html?loja=${auth.currentUser.uid}`;
+    navigator.clipboard.writeText(link).then(() => alert("🚀 Link do seu Portal copiado!"));
 };
-
-/* AUTH */
-window.fazerLogin = () => {
-    const e = document.getElementById('email-login').value;
-    const s = document.getElementById('pass-login').value;
-    signInWithEmailAndPassword(auth, e, s).catch(() => alert("Erro no login."));
-};
-window.handleLogout = () => signOut(auth).then(() => location.reload());
 
 /* FOTOS */
 window.handlePhoto = (input, slotId, index) => {
     const reader = new FileReader();
     reader.onload = (e) => {
         window.fotosCarro[index] = e.target.result;
-        document.getElementById(slotId).innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
+        document.getElementById(slotId).innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
     };
-    reader.readAsDataURL(input.files[0]);
+    if(input.files[0]) reader.readAsDataURL(input.files[0]);
 };
 
 window.handleLogo = (input) => {
     const reader = new FileReader();
     reader.onload = (e) => {
         window.logoBase64 = e.target.result;
-        document.getElementById('preview-logo').innerHTML = `<img src="${e.target.result}" style="max-height:100%;max-width:100%;object-fit:contain;">`;
+        document.getElementById('preview-logo').innerHTML = `<img src="${e.target.result}" style="max-height:100%;max-width:100%;">`;
     };
-    reader.readAsDataURL(input.files[0]);
+    if(input.files[0]) reader.readAsDataURL(input.files[0]);
 };
 
 /* ESTOQUE */
 window.salvarVeiculo = async () => {
-    const user = auth.currentUser;
-    const idEdit = document.getElementById('edit-carro-id').value;
+    const id = document.getElementById('edit-carro-id').value;
     const dados = {
-        lojaId: user.uid,
+        lojaId: auth.currentUser.uid,
         marca: document.getElementById('marca').value,
         modelo: document.getElementById('modelo').value,
         preco: Number(document.getElementById('preco').value),
@@ -76,14 +68,18 @@ window.salvarVeiculo = async () => {
         dataUpdate: new Date()
     };
 
-    if (idEdit) {
-        await updateDoc(doc(db, "carros", idEdit), dados);
-    } else {
-        dados.fotos = window.fotosCarro.filter(f => f !== "");
-        dados.dataCriacao = new Date();
-        await addDoc(collection(db, "carros"), dados);
-    }
-    window.limparFormEstoque();
+    try {
+        if(id) {
+            await updateDoc(doc(db, "carros", id), dados);
+            alert("Atualizado!");
+        } else {
+            dados.fotos = window.fotosCarro.filter(f => f !== "");
+            dados.dataCriacao = new Date();
+            await addDoc(collection(db, "carros"), dados);
+            alert("Cadastrado!");
+        }
+        window.limparFormEstoque();
+    } catch(e) { alert("Erro ao salvar."); }
 };
 
 window.prepararEdicaoCarro = (id, dataJson) => {
@@ -92,7 +88,7 @@ window.prepararEdicaoCarro = (id, dataJson) => {
     document.getElementById('modelo').value = c.modelo;
     document.getElementById('marca').value = c.marca;
     document.getElementById('preco').value = c.preco;
-    document.getElementById('form-title').innerText = "Editando " + c.modelo;
+    document.getElementById('form-title').innerText = "Editando: " + c.modelo;
     document.getElementById('btn-cancel-edit').classList.remove('hidden');
     window.nav('showroom');
 };
@@ -101,8 +97,34 @@ window.limparFormEstoque = () => {
     document.getElementById('edit-carro-id').value = "";
     document.querySelectorAll('#showroom input, #showroom textarea').forEach(i => i.value = "");
     window.fotosCarro = ["", "", ""];
-    document.querySelectorAll('.photo-slot').forEach(s => s.innerHTML = '<i class="fa fa-plus"></i>');
+    document.querySelectorAll('.slot').forEach(s => s.innerHTML = '<i class="fa fa-plus"></i>');
+    document.getElementById('form-title').innerText = "Novo Veículo";
     document.getElementById('btn-cancel-edit').classList.add('hidden');
+};
+
+/* CRM & VENDEDORES */
+window.addLeadManual = async () => {
+    const nome = prompt("Nome do Cliente:");
+    const carro = prompt("Carro:");
+    if(nome && carro) {
+        await addDoc(collection(db, "interesses"), { 
+            lojaId: auth.currentUser.uid, nome, carro, vendedor: "Manual", data: new Date() 
+        });
+    }
+};
+
+window.addVendedor = async () => {
+    const nome = document.getElementById('nome-vendedor').value;
+    const whats = document.getElementById('whats-vendedor').value;
+    if(nome && whats) {
+        await addDoc(collection(db, "vendedores"), { lojaId: auth.currentUser.uid, nome, whats });
+        document.getElementById('nome-vendedor').value = "";
+        document.getElementById('whats-vendedor').value = "";
+    }
+};
+
+window.excluirDoc = async (coll, id) => {
+    if(confirm("Deseja excluir permanentemente?")) await deleteDoc(doc(db, coll, id));
 };
 
 /* CONFIG */
@@ -111,82 +133,87 @@ window.salvarConfig = async () => {
         corLoja: document.getElementById('cor-loja').value,
         logo: window.logoBase64
     });
-    alert("Configurações salvas!");
-};
-
-window.excluirDoc = async (coll, id) => {
-    if(confirm("Excluir?")) await deleteDoc(doc(db, coll, id));
-};
-
-window.addVendedor = async () => {
-    const nome = document.getElementById('nome-vendedor').value;
-    const whats = document.getElementById('whats-vendedor').value;
-    await addDoc(collection(db, "vendedores"), { lojaId: auth.currentUser.uid, nome, whats });
+    alert("Identidade Visual Atualizada!");
 };
 
 /* MONITORES */
 const iniciarMonitores = (user) => {
-    // Estoque
+    // Carros
     onSnapshot(query(collection(db, "carros"), where("lojaId", "==", user.uid)), (snap) => {
         const lista = document.getElementById('lista-estoque-admin');
-        let total = 0, vendidos = 0, valorTotal = 0;
+        let total = 0, vendidos = 0;
         lista.innerHTML = '';
         snap.forEach(d => {
             const c = d.data();
             total++;
-            if(c.status === 'vendido') { vendidos++; valorTotal += c.preco; }
+            if(c.status === 'vendido') vendidos++;
             lista.innerHTML += `
-                <div class="item-admin-card">
-                    <img src="${c.fotos[0] || ''}" style="width:50px;height:40px;object-fit:cover;border-radius:5px;">
-                    <div style="flex:1"><strong>${c.modelo}</strong></div>
-                    <button onclick="window.prepararEdicaoCarro('${d.id}', '${encodeURIComponent(JSON.stringify(c))}')">Edit</button>
-                    <button onclick="window.excluirDoc('carros', '${d.id}')" style="color:red">X</button>
+                <div class="card-item">
+                    <img src="${c.fotos[0] || ''}">
+                    <div class="info"><b>${c.modelo}</b><br>R$ ${c.preco.toLocaleString()}</div>
+                    <div class="btns">
+                        <button onclick="window.prepararEdicaoCarro('${d.id}', '${encodeURIComponent(JSON.stringify(c))}')"><i class="fa fa-edit"></i></button>
+                        <button onclick="window.excluirDoc('carros', '${d.id}')" style="color:red"><i class="fa fa-trash"></i></button>
+                    </div>
                 </div>`;
         });
-        document.getElementById('stat-total-estoque').innerText = total;
-        document.getElementById('stat-vendidos-mes').innerText = vendidos;
-        document.getElementById('stat-valor-estoque').innerText = "R$ " + valorTotal.toLocaleString();
+        document.getElementById('stat-total').innerText = total;
+        document.getElementById('stat-vendidos').innerText = vendidos;
     });
 
-    // CRM / Leads
-    onSnapshot(query(collection(db, "interesses"), where("lojaId", "==", user.uid), orderBy("data", "desc")), (snap) => {
+    // CRM
+    const qLeads = query(collection(db, "interesses"), where("lojaId", "==", user.uid), orderBy("data", "desc"));
+    onSnapshot(qLeads, (snap) => {
         const crm = document.getElementById('lista-clientes-crm');
         crm.innerHTML = '';
         snap.forEach(d => {
             const l = d.data();
-            crm.innerHTML += `<div class="item-admin-card">
-                <div><strong>${l.carro}</strong><br>${l.nome}</div>
-                <a href="https://wa.me/${l.vendedorWhats}" target="_blank">Zap</a>
-                <button onclick="window.excluirDoc('interesses', '${d.id}')">OK</button>
-            </div>`;
+            crm.innerHTML += `
+                <div class="crm-card">
+                    <div><b>${l.nome}</b> está interessado em <b>${l.carro}</b></div>
+                    <button onclick="window.excluirDoc('interesses', '${d.id}')" class="btn-check">OK</button>
+                </div>`;
         });
-    }, (err) => console.log("Aguardando Índice..."));
+    }, (err) => console.log("Aguardando índice do Firebase..."));
+
+    // Vendedores
+    onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", user.uid)), (snap) => {
+        const vList = document.getElementById('lista-vendedores');
+        const sel = document.getElementById('vendedor-carro');
+        vList.innerHTML = '';
+        sel.innerHTML = '<option value="">Vendedor Responsável</option>';
+        snap.forEach(v => {
+            const ven = v.data();
+            vList.innerHTML += `<div class="card-item"><b>${ven.nome}</b> <span>${ven.whats}</span> <button onclick="window.excluirDoc('vendedores', '${v.id}')">X</button></div>`;
+            sel.innerHTML += `<option value="${v.id}">${ven.nome}</option>`;
+        });
+    });
 
     // Configs
     onSnapshot(doc(db, "configuracoes", user.uid), (s) => {
         if(s.exists()){
             const d = s.data();
-            document.getElementById('cor-loja').value = d.corLoja || "#0056b3";
-            if(d.logo) document.getElementById('preview-logo').innerHTML = `<img src="${d.logo}" style="max-height:100%;max-width:100%;object-fit:contain;">`;
+            document.getElementById('cor-loja').value = d.corLoja || "#e31010";
+            if(d.logo) document.getElementById('preview-logo').innerHTML = `<img src="${d.logo}" style="max-height:100%;">`;
         }
     });
 };
 
+/* INICIALIZAÇÃO */
+window.fazerLogin = () => {
+    const e = document.getElementById('email-login').value;
+    const s = document.getElementById('pass-login').value;
+    signInWithEmailAndPassword(auth, e, s).catch(() => alert("Credenciais Inválidas"));
+};
+
+window.handleLogout = () => signOut(auth).then(() => location.reload());
+
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('login-screen').style.display = 'none';
         iniciarMonitores(user);
-        onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", user.uid)), (snap) => {
-            const sel = document.getElementById('vendedor-carro');
-            const lista = document.getElementById('lista-vendedores');
-            sel.innerHTML = '<option value="">Vendedor Responsável</option>';
-            lista.innerHTML = '';
-            snap.forEach(v => {
-                sel.innerHTML += `<option value="${v.id}">${v.data().nome}</option>`;
-                lista.innerHTML += `<div class="item-admin-card">${v.data().nome} <button onclick="window.excluirDoc('vendedores', '${v.id}')">X</button></div>`;
-            });
-        });
     } else {
         document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('auth-status').innerText = "Acesso Restrito";
     }
 });
