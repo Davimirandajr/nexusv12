@@ -48,8 +48,7 @@
         <div id="loading">Carregando estoque...</div>
         <div class="grid" id="grid-estoque"></div>
     </div>
-
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, where, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -65,58 +64,67 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // PEGAR ID DA LOJA PELA URL (?loja=ID)
         const params = new URLSearchParams(window.location.search);
         const lojaId = params.get('loja');
 
         if (!lojaId) {
             document.getElementById('loading').innerHTML = "Loja não encontrada. Verifique o link.";
         } else {
-            carregarDados();
+            carregarIdentidade();
+            carregarEstoque();
         }
 
-        async function carregarDados() {
-            // 1. Carregar Configurações (Cor e Logo)
-            const configDoc = await getDoc(doc(db, "configuracoes", lojaId));
-            if (configDoc.exists()) {
-                const conf = configDoc.data();
-                if (conf.corLoja) document.documentElement.style.setProperty('--primary', conf.corLoja);
-                if (conf.logoLoja) document.getElementById('logo-area').innerHTML = `<img src="${conf.logoLoja}" class="logo-img">`;
-            }
+        // 1. CARREGA LOGO E COR (Identidade Visual)
+        async function carregarIdentidade() {
+            // Usamos onSnapshot para que a cor mude na hora se você alterar no painel
+            onSnapshot(doc(db, "configuracoes", lojaId), (docSnap) => {
+                if (docSnap.exists()) {
+                    const conf = docSnap.data();
+                    if (conf.corLoja) {
+                        document.documentElement.style.setProperty('--primary', conf.corLoja);
+                    }
+                    if (conf.logoLoja) {
+                        document.getElementById('logo-area').innerHTML = `<img src="${conf.logoLoja}" class="logo-img">`;
+                    }
+                }
+            });
+        }
 
-            // 2. Carregar Vendedores para o WhatsApp
-            let whatsVendedor = "55"; // Default
-            const vendSnap = await query(collection(db, "vendedores"), where("lojaId", "==", lojaId));
-            // Pega o primeiro vendedor cadastrado para o botão
-            onSnapshot(vendSnap, (s) => {
+        // 2. CARREGA ESTOQUE E VENDEDOR
+        async function carregarEstoque() {
+            let whatsVendedor = "55"; 
+
+            // Busca o vendedor primeiro
+            const qVendedor = query(collection(db, "vendedores"), where("lojaId", "==", lojaId));
+            onSnapshot(qVendedor, (s) => {
                 if(!s.empty) whatsVendedor = s.docs[0].data().whats.replace(/\D/g,'');
             });
 
-            // 3. Carregar Carros
-            onSnapshot(query(collection(db, "carros"), where("lojaId", "==", lojaId), where("status", "==", "disponivel")), (snap) => {
+            // Busca os carros
+            const qCarros = query(collection(db, "carros"), where("lojaId", "==", lojaId), where("status", "==", "disponivel"));
+            onSnapshot(qCarros, (snap) => {
                 const grid = document.getElementById('grid-estoque');
-                const loading = document.getElementById('loading');
-                loading.style.display = 'none';
+                document.getElementById('loading').style.display = 'none';
                 grid.innerHTML = "";
 
                 snap.forEach(d => {
                     const v = d.data();
-                    const fotoPrincipal = v.fotos && v.fotos.length > 0 ? v.fotos[0] : 'https://via.placeholder.com/400x300?text=Sem+Foto';
+                    const foto = (v.fotos && v.fotos.length > 0) ? v.fotos[0] : 'https://via.placeholder.com/400x300?text=Sem+Foto';
                     
                     grid.innerHTML += `
                         <div class="car-card">
                             <div class="img-container">
-                                <img src="${fotoPrincipal}">
-                                <div class="price-badge">R$ ${v.preco.toLocaleString('pt-BR')}</div>
+                                <img src="${foto}">
+                                <div class="price-badge">R$ ${Number(v.preco).toLocaleString('pt-BR')}</div>
                             </div>
                             <div class="info">
                                 <h3>${v.marca} ${v.modelo}</h3>
                                 <div class="specs">
                                     <span><i class="fa fa-calendar"></i> ${v.ano}</span>
-                                    <span><i class="fa fa-tachometer-alt"></i> ${v.km.toLocaleString()} km</span>
-                                    <span><i class="fa fa-cogs"></i> ${v.motor}</span>
+                                    <span><i class="fa fa-tachometer-alt"></i> ${Number(v.km).toLocaleString('pt-BR')} km</span>
+                                    <span><i class="fa fa-cogs"></i> ${v.motor || 'N/A'}</span>
                                     <span><i class="fa fa-shuttle-van"></i> ${v.cambio}</span>
-                                    <span><i class="fa fa-palette"></i> ${v.cor}</span>
+                                    <span><i class="fa fa-palette"></i> ${v.cor || 'N/A'}</span>
                                 </div>
                                 <a href="https://wa.me/${whatsVendedor}?text=Olá! Tenho interesse no ${v.marca} ${v.modelo} que vi no portal." target="_blank" class="btn-whats">
                                     <i class="fab fa-whatsapp"></i> TENHO INTERESSE
@@ -130,3 +138,4 @@
     </script>
 </body>
 </html>
+
