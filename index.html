@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 - Admin</title>
+    <title>NEXUS V12 - Painel Administrativo</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -12,7 +12,7 @@
     <div id="login-screen">
         <div class="login-card">
             <h2>NEXUS <span>V12</span></h2>
-            <p>Acesse seu painel</p><br>
+            <p>Painel de Controle</p><br>
             <input type="email" id="email-login" placeholder="E-mail">
             <input type="password" id="pass-login" placeholder="Senha" style="margin: 10px 0;">
             <button class="btn-main" onclick="window.fazerLogin()" style="width:100%">ENTRAR</button>
@@ -25,9 +25,10 @@
         <nav>
             <button class="nav-item active" id="btn-estoque" onclick="window.nav('estoque')"><i class="fa fa-car"></i> Estoque</button>
             <button class="nav-item" id="btn-crm" onclick="window.nav('crm')"><i class="fa fa-users"></i> Funil de Vendas</button>
+            <button class="nav-item" id="btn-vendedores" onclick="window.nav('vendedores')"><i class="fa fa-user-tie"></i> Equipe/Vendedores</button>
             <button class="nav-item" id="btn-config" onclick="window.nav('config')"><i class="fa fa-cog"></i> Configurações</button>
         </nav>
-        <button onclick="window.handleLogout()" style="background:none; border:none; color:red; cursor:pointer; font-weight:bold; margin-top:auto;">SAIR</button>
+        <button onclick="window.handleLogout()" style="background:none; border:none; color:#ff4444; cursor:pointer; font-weight:bold; margin-top:auto; padding:10px;">SAIR</button>
     </aside>
 
     <main id="content">
@@ -51,7 +52,7 @@
                         <option value="vendido">Vendido</option>
                     </select>
                 </div>
-                <textarea id="descricao" placeholder="Descrição curta do veículo..."></textarea>
+                <textarea id="descricao" placeholder="Descrição curta do veículo..." rows="3"></textarea>
                 
                 <div class="photo-uploader">
                     <div class="slot" id="p1" onclick="document.getElementById('f1').click()"><i class="fa fa-camera"></i></div>
@@ -65,14 +66,32 @@
                 <button class="btn-main" id="btn-save-carro" onclick="window.salvarVeiculo()">SALVAR VEÍCULO</button>
             </div>
 
-            <div class="glass-box" style="margin-top: 20px;">
-                <h3>Seu Estoque</h3>
+            <div class="glass-box" style="margin-top: 25px;">
+                <h3>Veículos no Pátio</h3><br>
                 <div id="lista-estoque-admin"></div>
             </div>
         </section>
 
+        <section id="vendedores" class="tab-content">
+            <div class="glass-box">
+                <h2>Cadastrar Vendedor</h2>
+                <div class="form-grid">
+                    <input type="text" id="nome-vendedor" placeholder="Nome Completo">
+                    <input type="text" id="whatsapp-vendedor" placeholder="WhatsApp (ex: 11999999999)">
+                    <input type="email" id="email-vendedor" placeholder="E-mail de Acesso">
+                </div>
+                <button class="btn-main" onclick="window.salvarVendedor()">CADASTRAR VENDEDOR</button>
+            </div>
+            <div class="glass-box" style="margin-top: 25px;">
+                <h3>Equipe Ativa</h3><br>
+                <div id="lista-vendedores"></div>
+            </div>
+        </section>
+
         <section id="crm" class="tab-content">
-            <h2>Funil de Vendas</h2>
+            <header class="section-header">
+                <h2>Gestão de Leads (CRM)</h2>
+            </header>
             <div class="kanban-board">
                 <div class="kanban-col" id="col-novo"><h3>Novos</h3><div class="kanban-cards"></div></div>
                 <div class="kanban-col" id="col-contato"><h3>Contato</h3><div class="kanban-cards"></div></div>
@@ -83,8 +102,8 @@
 
         <section id="config" class="tab-content">
             <div class="glass-box">
-                <h2>Configurações da Loja</h2><br>
-                <button class="btn-main" onclick="window.copiarLinkPortal()">COPIAR LINK DO PORTAL</button>
+                <h2>Portal da Loja</h2><p>Compartilhe seu estoque com clientes.</p><br>
+                <button class="btn-main" onclick="window.copiarLinkPortal()">COPIAR LINK DO MEU PORTAL</button>
             </div>
         </section>
 
