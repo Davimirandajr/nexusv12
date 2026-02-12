@@ -1,8 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// CONFIGURAÇÃO LIMPA (Sem espaços ou erros)
 const firebaseConfig = {
     apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
     authDomain: "nexus-v12.firebaseapp.com",
@@ -12,120 +11,122 @@ const firebaseConfig = {
     appId: "1:587840382224:web:61c0f1890c7c395dc77195"
 };
 
-// Inicialização
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Variáveis de suporte
-let fotosData = ["", "", "", ""];
-let logoData = "";
+let todosCarros = [];
 
-// --- FUNÇÕES DE NAVEGAÇÃO ---
+// --- LOGIN ---
+window.fazerLogin = () => {
+    const e = document.getElementById('email-login').value;
+    const s = document.getElementById('pass-login').value;
+    signInWithEmailAndPassword(auth, e, s).catch(err => alert("Erro ao entrar."));
+};
+
+// --- NAVEGAÇÃO ---
 window.nav = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const target = document.getElementById(id);
-    if(target) target.classList.add('active');
-    const btn = document.querySelector(`[data-tab="${id}"]`);
-    if(btn) btn.classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('btn-'+id)?.classList.add('active-nav');
 };
 
-// --- COMPRESSÃO DE IMAGENS (Evita erro de cota do Firebase) ---
-const compress = (file, callback, width = 800) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const scale = width / img.width;
-            canvas.width = width;
-            canvas.height = img.height * scale;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            callback(canvas.toDataURL('image/jpeg', 0.7));
-        };
-    };
-    reader.readAsDataURL(file);
+// --- ESTOQUE E FILTRO ---
+window.salvarVeiculo = async () => {
+    await addDoc(collection(db, "carros"), {
+        lojaId: auth.currentUser.uid,
+        marca: document.getElementById('marca').value,
+        modelo: document.getElementById('modelo').value,
+        ano: document.getElementById('ano').value,
+        km: Number(document.getElementById('km').value),
+        cambio: document.getElementById('cambio').value,
+        preco: Number(document.getElementById('preco').value),
+        status: 'disponivel'
+    });
+    alert("Adicionado!");
 };
 
-window.preview = (input, id) => {
-    compress(input.files[0], (data) => {
-        const idx = parseInt(id.replace('p','')) - 1;
-        fotosData[idx] = data;
-        document.getElementById(id).innerHTML = `<img src="${data}" style="width:100%;height:100%;object-fit:cover">`;
+window.filtrarEstoque = () => {
+    const busca = document.getElementById('busca-estoque').value.toLowerCase();
+    const filtrados = todosCarros.filter(c => c.marca.toLowerCase().includes(busca) || c.modelo.toLowerCase().includes(busca));
+    renderEstoque(filtrados);
+};
+
+function renderEstoque(lista) {
+    const div = document.getElementById("listaCarros");
+    div.innerHTML = lista.map(c => `
+        <div class="card" style="display:flex; justify-content:space-between; ${c.status === 'vendido' ? 'opacity:0.5' : ''}">
+            <span><b>${c.marca} ${c.modelo}</b> - R$ ${c.preco.toLocaleString()} (${c.status})</span>
+            <button onclick="window.excluir('${c.id}', 'carros')" style="color:red; border:none; background:none; cursor:pointer">Excluir</button>
+        </div>
+    `).join('');
+}
+
+// --- CRM / FUNIL ---
+window.salvarCliente = async () => {
+    await addDoc(collection(db, "clientes"), {
+        lojaId: auth.currentUser.uid,
+        nome: document.getElementById('c-nome').value,
+        whats: document.getElementById('c-whats').value,
+        veiculo: document.getElementById('c-veiculo').value,
+        etapa: 'novo'
     });
 };
 
-window.handleLogo = (input) => {
-    compress(input.files[0], (data) => {
-        logoData = data;
-        document.getElementById('logo-preview').innerHTML = `<img src="${data}" style="max-width:100%;max-height:100%;object-fit:contain">`;
-    }, 400);
+window.moverEtapa = async (id, novaEtapa, veiculoModelo) => {
+    await updateDoc(doc(db, "clientes", id), { etapa: novaEtapa });
+    if(novaEtapa === 'ganho') {
+        const car = todosCarros.find(c => c.modelo === veiculoModelo);
+        if(car) await updateDoc(doc(db, "carros", car.id), { status: 'vendido' });
+    }
 };
 
-// --- SALVAMENTO ---
-window.salvarConfig = async () => {
-    try {
-        await setDoc(doc(db, "configuracoes", auth.currentUser.uid), {
-            corLoja: document.getElementById('cor-loja').value,
-            logoLoja: logoData,
-            lojaId: auth.currentUser.uid
-        }, { merge: true });
-        alert("Configurações de Identidade Salvas!");
-    } catch(e) { alert("Erro ao salvar config: " + e.message); }
-};
-
-window.salvarVeiculo = async () => {
-    try {
-        const vSel = document.getElementById("vendedor-select")?.value.split('|') || ["", ""];
-        await addDoc(collection(db, "carros"), {
-            lojaId: auth.currentUser.uid,
-            marca: document.getElementById('marca').value,
-            modelo: document.getElementById('modelo').value,
-            ano: document.getElementById('ano').value,
-            km: Number(document.getElementById('km').value),
-            cambio: document.getElementById('cambio').value,
-            preco: Number(document.getElementById('preco').value),
-            descricao: document.getElementById('descricao').value,
-            vendedorWhats: vSel[0],
-            fotos: fotosData.filter(f => f !== ""),
-            status: 'disponivel'
-        });
-        alert("Veículo cadastrado no estoque!");
-        window.nav('showroom');
-    } catch(e) { alert("Erro ao cadastrar carro: " + e.message); }
-};
-
-// --- MONITORAMENTO DE LOGIN E DADOS ---
+// --- SINCRONIZAÇÃO TOTAL ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        document.getElementById("login-screen").classList.add("hidden");
         document.getElementById("app").classList.remove("hidden");
-        
-        // Sincronizar Estoque
+        document.getElementById("menu-lateral").classList.remove("hidden");
+
+        // Sync Carros
         onSnapshot(query(collection(db, "carros"), where("lojaId", "==", user.uid)), (snap) => {
-            const list = document.getElementById("listaCarros");
-            if(list) {
-                list.innerHTML = snap.docs.map(d => {
-                    const c = d.data();
-                    return `
-                    <div class="car-item" style="background:#fff; padding:15px; border-radius:10px; margin-bottom:10px; border-left: 5px solid ${c.status === 'vendido' ? 'gray' : 'red'}">
-                        <b>${c.marca} ${c.modelo}</b> - R$ ${c.preco.toLocaleString()}
-                        <br><small>${c.ano} | ${c.km} KM</small>
-                        <button onclick="window.excluir('${d.id}')" style="float:right; color:red; border:none; background:none; cursor:pointer;">Excluir</button>
+            todosCarros = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            renderEstoque(todosCarros);
+            
+            // Preenche select de veículos no CRM
+            const select = document.getElementById("c-veiculo");
+            select.innerHTML = todosCarros.filter(c => c.status === 'disponivel').map(c => `<option value="${c.modelo}">${c.marca} ${c.modelo}</option>`).join('');
+        });
+
+        // Sync Clientes (Funil)
+        onSnapshot(query(collection(db, "clientes"), where("lojaId", "==", user.uid)), (snap) => {
+            const colNovo = document.getElementById("f-novo");
+            const colNeg = document.getElementById("f-negocio");
+            const colGan = document.getElementById("f-ganho");
+            colNovo.innerHTML = ""; colNeg.innerHTML = ""; colGan.innerHTML = "";
+            
+            snap.forEach(d => {
+                const c = d.data();
+                const card = `
+                    <div class="lead-card">
+                        <b>${c.nome}</b><br><small>${c.veiculo}</small><br>
+                        ${c.etapa !== 'ganho' ? `<button onclick="window.moverEtapa('${d.id}', '${c.etapa === 'novo' ? 'negocio' : 'ganho'}', '${c.veiculo}')">Mover >></button>` : '💰 Venda Feita'}
                     </div>`;
-                }).join('');
-            }
+                if(c.etapa === 'novo') colNovo.innerHTML += card;
+                if(c.etapa === 'negocio') colNeg.innerHTML += card;
+                if(c.etapa === 'ganho') colGan.innerHTML += card;
+            });
         });
     } else {
-        const email = prompt("Nexus V12 - Digite seu email:");
-        const senha = prompt("Digite sua senha:");
-        if(email && senha) {
-            signInWithEmailAndPassword(auth, email, senha).catch(e => alert("Erro: " + e.message));
-        }
+        document.getElementById("login-form").classList.remove("hidden");
     }
 });
 
-window.excluir = (id) => confirm("Deseja apagar este veículo?") && deleteDoc(doc(db, "carros", id));
+window.excluir = (id, col) => confirm("Apagar?") && deleteDoc(doc(db, col, id));
+window.copyPortalLink = () => {
+    const link = window.location.origin + "/portal.html?loja=" + auth.currentUser.uid;
+    navigator.clipboard.writeText(link);
+    alert("Link copiado!");
+};
 window.handleLogout = () => signOut(auth).then(() => location.reload());
