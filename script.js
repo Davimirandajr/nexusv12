@@ -15,11 +15,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let veiculoFotos = ["", "", "", ""];
-let logoEmpresa = "";
+// Variáveis Globais para armazenamento temporário
+window.veiculoFotos = ["", "", "", ""];
+window.logoEmpresa = "";
 let todosVeiculos = [];
 
-// --- GESTÃO DE IMAGENS ---
+// --- GESTÃO DE IMAGENS (COMPRESSÃO) ---
 const compress = (file, callback, size = 800) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -30,7 +31,8 @@ const compress = (file, callback, size = 800) => {
             const scale = size / img.width;
             canvas.width = size;
             canvas.height = img.height * scale;
-            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             callback(canvas.toDataURL('image/jpeg', 0.7));
         };
     };
@@ -38,35 +40,51 @@ const compress = (file, callback, size = 800) => {
 };
 
 window.handlePhoto = (input, slotId, index) => {
-    compress(input.files[0], (data) => {
-        veiculoFotos[index] = data;
-        document.getElementById(slotId).innerHTML = `<img src="${data}">`;
-    });
+    if (input.files && input.files[0]) {
+        compress(input.files[0], (data) => {
+            window.veiculoFotos[index] = data;
+            document.getElementById(slotId).innerHTML = `<img src="${data}">`;
+        });
+    }
 };
 
 window.handleLogo = (input) => {
-    compress(input.files[0], (data) => {
-        logoEmpresa = data;
-        document.getElementById('logo-preview').innerHTML = `<img src="${data}">`;
-    }, 400);
+    if (input.files && input.files[0]) {
+        compress(input.files[0], (data) => {
+            window.logoEmpresa = data;
+            document.getElementById('logo-preview').innerHTML = `<img src="${data}" style="max-height:100%">`;
+        }, 400);
+    }
 };
 
-// --- SALVAMENTO INTEGRADO ---
+// --- SALVAMENTO ---
 window.salvarVeiculo = async () => {
-    await addDoc(collection(db, "carros"), {
-        lojaId: auth.currentUser.uid,
-        marca: document.getElementById('marca').value,
-        modelo: document.getElementById('modelo').value,
-        ano: document.getElementById('ano').value,
-        km: Number(document.getElementById('km').value),
-        cambio: document.getElementById('cambio').value,
-        preco: Number(document.getElementById('preco').value),
-        descricao: document.getElementById('descricao').value,
-        fotos: veiculoFotos.filter(f => f !== ""),
-        status: 'disponivel'
-    });
-    alert("Veículo Publicado!");
-    location.reload(); // Limpa os campos
+    try {
+        const btn = document.querySelector('#showroom .btn');
+        btn.innerText = "Publicando...";
+        btn.disabled = true;
+
+        await addDoc(collection(db, "carros"), {
+            lojaId: auth.currentUser.uid,
+            marca: document.getElementById('marca').value,
+            modelo: document.getElementById('modelo').value,
+            ano: document.getElementById('ano').value,
+            motor: document.getElementById('motor').value,
+            cor: document.getElementById('cor').value,
+            km: Number(document.getElementById('km').value),
+            cambio: document.getElementById('cambio').value,
+            preco: Number(document.getElementById('preco').value),
+            descricao: document.getElementById('descricao').value,
+            fotos: window.veiculoFotos.filter(f => f !== ""),
+            status: 'disponivel',
+            dataCriacao: new Date()
+        });
+        
+        alert("Veículo Publicado com Sucesso!");
+        location.reload(); 
+    } catch (e) {
+        alert("Erro ao publicar: " + e.message);
+    }
 };
 
 window.salvarCliente = async () => {
@@ -92,13 +110,13 @@ window.salvarVendedor = async () => {
 window.salvarConfig = async () => {
     await setDoc(doc(db, "configuracoes", auth.currentUser.uid), {
         corLoja: document.getElementById('cor-loja').value,
-        logoLoja: logoEmpresa,
+        logoLoja: window.logoEmpresa,
         lojaId: auth.currentUser.uid
     }, { merge: true });
-    alert("Identidade Atualizada!");
+    alert("Identidade da Loja Atualizada!");
 };
 
-// --- NAVEGAÇÃO E SYNC ---
+// --- NAVEGAÇÃO ---
 window.nav = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav'));
@@ -106,6 +124,7 @@ window.nav = (id) => {
     document.getElementById('btn-'+id)?.classList.add('active-nav');
 };
 
+// --- MONITOR DE SESSÃO ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById("login-screen").classList.add("hidden");
@@ -113,46 +132,78 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById("menu-lateral").classList.remove("hidden");
         sincronizar(user.uid);
     } else {
+        document.getElementById("login-status").innerText = "Pronto para entrar";
         document.getElementById("login-form").classList.remove("hidden");
     }
 });
 
 function sincronizar(uid) {
-    // Sync Carros + Filtro
+    // Carros e Filtro
     onSnapshot(query(collection(db, "carros"), where("lojaId", "==", uid)), (snap) => {
         todosVeiculos = snap.docs.map(d => ({id: d.id, ...d.data()}));
         renderEstoque(todosVeiculos);
-        document.getElementById("c-veiculo").innerHTML = todosVeiculos.map(v => `<option>${v.marca} ${v.modelo}</option>`).join('');
+        // Atualiza o select de veículos no CRM
+        const select = document.getElementById("c-veiculo");
+        if(select) {
+            select.innerHTML = `<option>Selecione um veículo...</option>` + 
+                todosVeiculos.map(v => `<option value="${v.marca} ${v.modelo}">${v.marca} ${v.modelo}</option>`).join('');
+        }
     });
 
-    // Sync Funil
+    // Funil CRM
     onSnapshot(query(collection(db, "clientes"), where("lojaId", "==", uid)), (snap) => {
         const colNovo = document.getElementById("f-novo");
         const colNeg = document.getElementById("f-negocio");
         const colGan = document.getElementById("f-ganho");
+        if(!colNovo) return;
+
         colNovo.innerHTML = ""; colNeg.innerHTML = ""; colGan.innerHTML = "";
         snap.forEach(d => {
             const c = d.data();
-            const card = `<div class="lead-card"><b>${c.nome}</b><br>${c.veiculo}<br>
-            <button onclick="window.moverEtapa('${d.id}', '${c.etapa === 'novo' ? 'negocio' : 'ganho'}')">Mover >></button></div>`;
+            const btnTexto = c.etapa === 'novo' ? 'Negociar' : 'Vendido';
+            const proxEtapa = c.etapa === 'novo' ? 'negocio' : 'ganho';
+            
+            const card = `
+                <div class="lead-card">
+                    <b>${c.nome}</b><br><small>${c.veiculo}</small><br>
+                    <div style="margin-top:10px; display:flex; gap:5px;">
+                        ${c.etapa !== 'ganho' ? `<button class="btn" style="padding:5px; font-size:10px;" onclick="window.moverEtapa('${d.id}', '${proxEtapa}')">${btnTexto} >></button>` : ''}
+                        <button class="btn" style="padding:5px; font-size:10px; background:#666;" onclick="window.excluir('${d.id}', 'clientes')">Excluir</button>
+                    </div>
+                </div>`;
+            
             if(c.etapa === 'novo') colNovo.innerHTML += card;
-            if(c.etapa === 'negocio') colNeg.innerHTML += card;
-            if(c.etapa === 'ganho') colGan.innerHTML += card;
+            else if(c.etapa === 'negocio') colNeg.innerHTML += card;
+            else if(c.etapa === 'ganho') colGan.innerHTML += card;
         });
     });
 
-    // Sync Vendedores
+    // Vendedores
     onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", uid)), (snap) => {
-        document.getElementById("listaVendedores").innerHTML = snap.docs.map(d => `<div>${d.data().nome} <button onclick="window.excluir('${d.id}', 'vendedores')">X</button></div>`).join('');
+        const lista = document.getElementById("listaVendedores");
+        if(lista) {
+            lista.innerHTML = snap.docs.map(d => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span><b>${d.data().nome}</b> - ${d.data().whats}</span>
+                    <button onclick="window.excluir('${d.id}', 'vendedores')" style="color:red; border:none; background:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
     });
 }
 
 function renderEstoque(lista) {
-    document.getElementById("listaCarros").innerHTML = lista.map(v => `
-        <div class="card" style="display:flex; gap:15px; align-items:center;">
-            <img src="${v.fotos[0] || ''}" style="width:80px; height:60px; object-fit:cover; border-radius:5px;">
-            <div style="flex:1"><b>${v.marca} ${v.modelo}</b><br>R$ ${v.preco.toLocaleString()}</div>
-            <button onclick="window.excluir('${v.id}', 'carros')" style="color:red; background:none; border:none; cursor:pointer;">Excluir</button>
+    const container = document.getElementById("listaCarros");
+    if(!container) return;
+    container.innerHTML = lista.map(v => `
+        <div class="card" style="display:flex; gap:15px; align-items:center; padding:10px;">
+            <img src="${v.fotos[0] || 'https://via.placeholder.com/80'}" style="width:80px; height:60px; object-fit:cover; border-radius:5px;">
+            <div style="flex:1">
+                <b style="text-transform:uppercase;">${v.marca} ${v.modelo}</b><br>
+                <small>${v.ano} | ${v.km.toLocaleString()} km</small><br>
+                <b style="color:var(--primary)">R$ ${v.preco.toLocaleString('pt-BR')}</b>
+            </div>
+            <button onclick="window.excluir('${v.id}', 'carros')" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
         </div>
     `).join('');
 }
@@ -163,11 +214,12 @@ window.filtrarEstoque = () => {
 };
 
 window.moverEtapa = (id, etapa) => updateDoc(doc(db, "clientes", id), { etapa });
-window.excluir = (id, col) => confirm("Apagar?") && deleteDoc(doc(db, col, id));
+window.excluir = (id, col) => confirm("Deseja realmente excluir este item?") && deleteDoc(doc(db, col, id));
 window.fazerLogin = () => signInWithEmailAndPassword(auth, document.getElementById('email-login').value, document.getElementById('pass-login').value);
 window.handleLogout = () => signOut(auth).then(() => location.reload());
+
 window.copyPortalLink = () => {
-    const link = window.location.origin + "/portal.html?loja=" + auth.currentUser.uid;
+    const link = window.location.origin + window.location.pathname.replace('index.html', '') + "portal.html?loja=" + auth.currentUser.uid;
     navigator.clipboard.writeText(link);
-    alert("Link do Portal Copiado!");
+    alert("Link do seu Portal copiado com sucesso!");
 };
