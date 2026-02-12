@@ -6,91 +6,96 @@
     <title>Portal de Vendas | NEXUS V12</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        /* Variáveis Dinâmicas - Serão alteradas pelo Firebase */
         :root { --primary: #e31010; --dark: #1a1a1a; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #f0f2f5; color: var(--dark); }
         
-        /* Header Dinâmico */
-        header { background: #fff; padding: 20px; text-align: center; border-bottom: 5px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .logo-img { max-height: 100px; transition: 0.3s; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f0f2f5; color: var(--dark); }
+        
+        /* Header com Identidade Visual */
+        header { 
+            background: #fff; padding: 20px; text-align: center; 
+            border-bottom: 5px solid var(--primary); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        .logo-img { max-height: 80px; width: auto; transition: 0.3s; }
         
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-        /* Filtro */
+        /* Busca */
         .filter-bar { margin-bottom: 30px; display: flex; justify-content: center; }
         .filter-bar input { 
             width: 100%; max-width: 500px; padding: 15px 25px; 
             border-radius: 50px; border: 2px solid #ddd; font-size: 16px;
             outline: none; transition: 0.3s;
         }
-        .filter-bar input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .filter-bar input:focus { border-color: var(--primary); }
 
-        /* Grid e Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
-        .card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: 0.3s; position: relative; }
-        .card:hover { transform: translateY(-10px); }
+        /* Grid de Veículos */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
 
-        /* Slider de Fotos */
-        .slider { position: relative; width: 100%; height: 230px; background: #eee; overflow: hidden; }
+        /* Slider */
+        .slider { position: relative; width: 100%; height: 220px; background: #ddd; overflow: hidden; }
         .slider img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .slider img.active { display: block; }
         .prev, .next { 
             position: absolute; top: 50%; transform: translateY(-50%); 
             background: rgba(0,0,0,0.5); color: white; border: none; 
-            padding: 10px; cursor: pointer; border-radius: 50%; z-index: 10;
+            padding: 10px; cursor: pointer; border-radius: 50%; z-index: 5;
         }
         .prev { left: 10px; } .next { right: 10px; }
 
         .card-content { padding: 20px; }
-        .card-content h3 { margin: 0 0 10px 0; font-size: 22px; text-transform: uppercase; }
-        .tags { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tag { background: #f0f0f0; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; color: #666; }
+        .card-content h3 { margin: 0; font-size: 20px; text-transform: uppercase; color: #333; }
+        .price { color: var(--primary); font-size: 24px; font-weight: 800; margin: 10px 0; }
         
-        .price { color: var(--primary); font-size: 26px; font-weight: 800; margin-bottom: 15px; }
-        
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .tag { background: #f0f2f5; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #666; }
+
         .btn-contato { 
             display: block; background: var(--primary); color: #fff; text-align: center; 
             padding: 12px; text-decoration: none; border-radius: 8px; font-weight: bold;
             transition: 0.3s; border: none; width: 100%; cursor: pointer;
         }
-        .btn-contato:hover { opacity: 0.9; letter-spacing: 1px; }
 
-        /* Modal Lead */
+        /* Modal */
         #modal-lead { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
             z-index: 100; align-items: center; justify-content: center; padding: 20px;
         }
         .modal-content { background: #fff; padding: 30px; border-radius: 15px; max-width: 400px; width: 100%; text-align: center; }
-        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
     </style>
 </head>
 <body>
 
-    <header id="header-portal">
-        <div id="logo-place"><h1>NEXUS V12</h1></div>
+    <header>
+        <div id="logo-place"><h1 id="loja-nome-fallback">NEXUS V12</h1></div>
     </header>
 
     <div class="container">
         <div class="filter-bar">
-            <input type="text" id="busca" placeholder="🔍 Busque por modelo ou marca..." oninput="window.filtrar()">
+            <input type="text" id="busca" placeholder="🔍 Qual carro você procura?" oninput="window.filtrar()">
         </div>
-
-        <div id="lista-carros" class="grid"></div>
+        <div id="lista-carros" class="grid">
+            </div>
     </div>
 
     <div id="modal-lead">
         <div class="modal-content">
             <h2 id="modal-carro-nome">Tenho Interesse</h2>
-            <p>Deixe seu contato para receber uma oferta!</p>
+            <p>Deixe seu WhatsApp para negociarmos!</p>
             <input type="text" id="lead-nome" placeholder="Seu Nome">
             <input type="tel" id="lead-whats" placeholder="Seu WhatsApp">
-            <button class="btn-contato" onclick="window.enviarInteresse()">ENVIAR AGORA</button>
-            <button style="background:none; border:none; color: #999; margin-top:10px; cursor:pointer" onclick="document.getElementById('modal-lead').style.display='none'">Cancelar</button>
+            <button class="btn-contato" onclick="window.enviarInteresse()">ENVIAR INTERESSE</button>
+            <button style="background:none; border:none; color: #999; margin-top:15px; cursor:pointer" onclick="document.getElementById('modal-lead').style.display='none'">Fechar</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, query, where, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
@@ -107,19 +112,23 @@
         const params = new URLSearchParams(window.location.search);
         const lojaId = params.get('loja');
         let todosCarros = [];
-        let carroSelecionado = "";
+        let carroSelecionadoObj = null;
 
-        if(lojaId) {
-            // 1. Aplica Identidade Visual da Loja
+        if(!lojaId) {
+            document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>Loja não encontrada ou link inválido.</h2>";
+        } else {
+            // 1. CARREGAR CONFIGS (COR E LOGO)
             onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
                 if(s.exists()){
                     const d = s.data();
                     if(d.corLoja) document.documentElement.style.setProperty('--primary', d.corLoja);
-                    if(d.logo) document.getElementById('logo-place').innerHTML = `<img src="${d.logo}" class="logo-img">`;
+                    if(d.logo) {
+                        document.getElementById('logo-place').innerHTML = `<img src="${d.logo}" class="logo-img">`;
+                    }
                 }
             });
 
-            // 2. Carrega Carros e prepara Filtro
+            // 2. CARREGAR CARROS
             const q = query(collection(db, "carros"), where("lojaId", "==", lojaId), where("status", "==", "disponivel"));
             onSnapshot(q, (snap) => {
                 todosCarros = [];
@@ -130,7 +139,7 @@
 
         function renderizar(lista) {
             const grid = document.getElementById('lista-carros');
-            grid.innerHTML = '';
+            grid.innerHTML = lista.length ? '' : '<p style="text-align:center; grid-column: 1/-1;">Nenhum veículo disponível no momento.</p>';
             
             lista.forEach((c, carIdx) => {
                 const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}" data-index="${i}">`).join('');
@@ -145,42 +154,37 @@
                         <div class="card-content">
                             <h3>${c.modelo}</h3>
                             <div class="tags">
-                                <span class="tag">${c.marca}</span>
-                                <span class="tag">${c.ano}</span>
-                                <span class="tag">${c.cambio}</span>
+                                <span class="tag"><i class="fa fa-car"></i> ${c.marca}</span>
+                                <span class="tag"><i class="fa fa-calendar"></i> ${c.ano}</span>
+                                <span class="tag"><i class="fa fa-gauge"></i> ${c.km} KM</span>
                             </div>
                             <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
-                            <button class="btn-contato" onclick="window.abrirModal('${c.modelo}')">TENHO INTERESSE</button>
+                            <button class="btn-contato" onclick='window.abrirModal(${JSON.stringify(c)})'>TENHO INTERESSE</button>
                         </div>
                     </div>`;
             });
         }
 
-        // Sistema de Slider
         window.changeSlide = (carIdx, dir) => {
             const slider = document.getElementById(`slider-${carIdx}`);
             const imgs = slider.querySelectorAll('img');
             let activeIdx = Array.from(imgs).findIndex(img => img.classList.contains('active'));
-            
             imgs[activeIdx].classList.remove('active');
             activeIdx = (activeIdx + dir + imgs.length) % imgs.length;
             imgs[activeIdx].classList.add('active');
         };
 
-        // Sistema de Filtro
         window.filtrar = () => {
             const termo = document.getElementById('busca').value.toLowerCase();
             const filtrados = todosCarros.filter(c => 
-                c.modelo.toLowerCase().includes(termo) || 
-                c.marca.toLowerCase().includes(termo)
+                c.modelo.toLowerCase().includes(termo) || c.marca.toLowerCase().includes(termo)
             );
             renderizar(filtrados);
         };
 
-        // Captura de Lead
-        window.abrirModal = (nomeCarro) => {
-            carroSelecionado = nomeCarro;
-            document.getElementById('modal-carro-nome').innerText = nomeCarro;
+        window.abrirModal = (carro) => {
+            carroSelecionadoObj = carro;
+            document.getElementById('modal-carro-nome').innerText = carro.modelo;
             document.getElementById('modal-lead').style.display = 'flex';
         };
 
@@ -188,18 +192,19 @@
             const nome = document.getElementById('lead-nome').value;
             const whats = document.getElementById('lead-whats').value;
             
-            if(!nome || !whats) return alert("Preencha seus dados!");
+            if(!nome || !whats) return alert("Por favor, preencha nome e WhatsApp.");
 
             await addDoc(collection(db, "interesses"), {
                 lojaId: lojaId,
                 nome: nome,
                 whatsapp: whats,
-                carro: carroSelecionado,
-                statusFunil: 'novo', // Cai direto no seu novo Funil de Vendas
+                carro: carroSelecionadoObj.modelo,
+                vendedorResponsavel: carroSelecionadoObj.vendedorResponsavel || "Direto da Loja", // Aqui o vendedor é linkado no Lead
+                statusFunil: 'novo',
                 data: new Date()
             });
 
-            alert("Solicitação enviada! Em breve entraremos em contato.");
+            alert("Sucesso! O vendedor responsável entrará em contato.");
             document.getElementById('modal-lead').style.display = 'none';
         };
     </script>
