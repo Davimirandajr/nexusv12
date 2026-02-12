@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:,"> </head>
+</head>
 <body>
 
     <div id="login-screen">
@@ -24,6 +24,11 @@
 
     <aside id="sidebar">
         <div class="sidebar-logo">NX<span>V12</span></div>
+        
+        <button onclick="window.copiarLinkPortal()" class="btn-primary" style="margin-bottom: 20px; padding: 12px; font-size: 11px; background: var(--secondary);">
+            <i class="fa fa-share-nodes"></i> COPIAR LINK PORTAL
+        </button>
+
         <nav>
             <button onclick="window.nav('showroom')" class="nav-item active" id="btn-showroom">
                 <i class="fa fa-car"></i> <span>Estoque</span>
@@ -39,7 +44,7 @@
             </button>
         </nav>
         <button onclick="window.handleLogout()" class="btn-logout">
-            <i class="fa fa-power-off"></i> Sair do Sistema
+            <i class="fa fa-power-off"></i> Sair
         </button>
     </aside>
 
@@ -55,57 +60,35 @@
             <div class="glass-card">
                 <h2 id="form-title"><i class="fa fa-car"></i> Gerenciar Veículo</h2>
                 <input type="hidden" id="edit-carro-id">
-                
                 <div class="form-grid">
-                    <div class="input-group"><label>Marca</label><input id="marca" placeholder="Ex: Toyota"></div>
-                    <div class="input-group"><label>Modelo</label><input id="modelo" placeholder="Ex: Corolla"></div>
-                    <div class="input-group"><label>Preço</label><input id="preco" type="number"></div>
-                    <div class="input-group"><label>KM</label><input id="km" type="number"></div>
-                    <div class="input-group"><label>Ano</label><input id="ano" placeholder="2023/2024"></div>
-                    <div class="input-group">
-                        <label>Câmbio</label>
-                        <select id="cambio">
-                            <option value="Automático">Automático</option>
-                            <option value="Manual">Manual</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Vendedor</label>
-                        <select id="vendedor-carro"></select>
-                    </div>
-                    <div class="input-group">
-                        <label>Situação</label>
-                        <select id="status-carro">
-                            <option value="disponivel">Disponível</option>
-                            <option value="vendido">VENDIDO</option>
-                            <option value="destaque">EM DESTAQUE</option>
-                        </select>
-                    </div>
+                    <input id="marca" placeholder="Marca">
+                    <input id="modelo" placeholder="Modelo">
+                    <input id="preco" type="number" placeholder="Preço (Ex: 85000)">
+                    <input id="km" type="number" placeholder="KM">
+                    <input id="ano" placeholder="Ano (Ex: 2023/2024)">
+                    <select id="cambio">
+                        <option value="Automático">Automático</option>
+                        <option value="Manual">Manual</option>
+                    </select>
+                    <select id="vendedor-carro"><option value="">Vendedor Responsável</option></select>
+                    <select id="status-carro">
+                        <option value="disponivel">Disponível</option>
+                        <option value="vendido">Vendido</option>
+                        <option value="destaque">Destaque</option>
+                    </select>
                 </div>
 
-                <label style="font-size: 12px; font-weight: 800; color: var(--secondary);">FOTOS (Mínimo 1)</label>
                 <div class="photo-grid">
-                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1">
-                        <i class="fa fa-plus"></i><input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)">
-                    </div>
-                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2">
-                        <i class="fa fa-plus"></i><input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)">
-                    </div>
-                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3">
-                        <i class="fa fa-plus"></i><input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)">
-                    </div>
+                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1"><i class="fa fa-plus"></i><input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2"><i class="fa fa-plus"></i><input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3"><i class="fa fa-plus"></i><input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
                 </div>
 
-                <div class="input-group">
-                    <label>Descrição</label>
-                    <textarea id="descricao" rows="3"></textarea>
-                </div>
+                <textarea id="descricao" placeholder="Descrição do veículo..." rows="3" style="width: 100%; margin-bottom: 15px;"></textarea>
+                <button class="btn-primary" onclick="window.salvarVeiculo()">SALVAR VEÍCULO</button>
+                <button id="btn-cancel-edit" class="hidden" onclick="window.limparFormEstoque()" style="margin-top:10px; background:gray">Cancelar Edição</button>
 
-                <button class="btn-primary" onclick="window.salvarVeiculo()">SALVAR VEÍCULO NO PORTAL</button>
-                <button id="btn-cancel-edit" class="hidden" onclick="window.limparFormEstoque()">Cancelar</button>
-
-                <div id="lista-estoque-admin" style="margin-top: 30px;">
-                    </div>
+                <div id="lista-estoque-admin" style="margin-top: 30px;"></div>
             </div>
         </section>
 
@@ -118,10 +101,10 @@
 
         <section id="vendedores" class="tab-content">
             <div class="glass-card">
-                <h2><i class="fa fa-user-plus"></i> Gestão de Equipe</h2>
+                <h2><i class="fa fa-user-plus"></i> Equipe</h2>
                 <div class="form-grid">
-                    <input id="nome-vendedor" placeholder="Nome do Vendedor">
-                    <input id="whats-vendedor" placeholder="WhatsApp (Ex: 11999999999)">
+                    <input id="nome-vendedor" placeholder="Nome">
+                    <input id="whats-vendedor" placeholder="WhatsApp (5511...)">
                     <button class="btn-primary" onclick="window.addVendedor()">Adicionar</button>
                 </div>
                 <div id="lista-vendedores" style="margin-top: 20px;"></div>
@@ -129,33 +112,26 @@
         </section>
 
         <section id="config" class="tab-content">
-    <div class="glass-card">
-        <h2><i class="fa fa-palette"></i> Identidade Visual</h2>
-        
-        <div class="form-grid">
-            <div class="input-group">
-                <label>Logo da Loja</label>
-                <div class="photo-slot" onclick="document.getElementById('f-logo').click()" id="preview-logo" style="width: 200px; height: 100px;">
-                    <i class="fa fa-upload"></i> Escolher Logo
+            <div class="glass-card">
+                <h2><i class="fa fa-palette"></i> Identidade Visual</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Logo da Loja</label>
+                        <div class="photo-slot" onclick="document.getElementById('f-logo').click()" id="preview-logo" style="width: 100%; height: 120px;">
+                            <i class="fa fa-upload"></i> Subir Logo
+                        </div>
+                        <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
+                    </div>
+                    <div class="input-group">
+                        <label>Cor Principal</label>
+                        <input type="color" id="cor-loja" value="#0056b3" style="height: 120px;">
+                    </div>
                 </div>
-                <input type="file" id="f-logo" hidden accept="image/*" onchange="window.handleLogo(this)">
+                <button class="btn-primary" onclick="window.salvarConfig()">ATUALIZAR PORTAL</button>
             </div>
-
-            <div class="input-group">
-                <label>Cor Principal do Portal</label>
-                <input type="color" id="cor-loja" value="#0056b3" style="height: 100px; cursor: pointer;">
-            </div>
-        </div>
-
-        <button class="btn-primary" onclick="window.salvarConfig()" style="margin-top: 20px;">
-            ATUALIZAR PORTAL
-        </button>
-    </div>
-</section>
-
+        </section>
     </main>
 
     <script type="module" src="script.js"></script>
 </body>
 </html>
-
