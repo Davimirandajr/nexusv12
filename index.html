@@ -13,12 +13,12 @@
     <div id="login-screen">
         <div class="login-card">
             <h1 class="logo">NEXUS<span>V12</span></h1>
-            <div id="login-form" class="hidden">
+            <div id="login-form">
                 <input type="email" id="email-login" placeholder="E-mail">
                 <input type="password" id="pass-login" placeholder="Senha">
                 <button class="btn-main" onclick="window.fazerLogin()">ACESSAR PORTAL</button>
             </div>
-            <p id="auth-status">Verificando credenciais...</p>
+            <p id="auth-status">Aguardando login...</p>
         </div>
     </div>
 
@@ -94,7 +94,7 @@
                 
                 <div class="actions">
                     <button class="btn-main" onclick="window.salvarVeiculo()">SALVAR VEÍCULO</button>
-                    <button id="btn-cancel-edit" class="hidden btn-sec" onclick="window.limparFormEstoque()">Cancelar</button>
+                    <button id="btn-cancel-edit" class="hidden-element btn-sec" onclick="window.limparFormEstoque()">Cancelar</button>
                 </div>
 
                 <hr style="margin: 30px 0; opacity: 0.1;">
