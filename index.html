@@ -129,17 +129,33 @@
         </section>
 
         <section id="config" class="tab-content">
-            <div class="glass-card">
-                <h2><i class="fa fa-palette"></i> Personalização</h2>
-                <div class="form-grid">
-                    <div class="input-group"><label>Cor Principal</label><input type="color" id="cor-loja" value="#0056b3"></div>
+    <div class="glass-card">
+        <h2><i class="fa fa-palette"></i> Identidade Visual</h2>
+        
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Logo da Loja</label>
+                <div class="photo-slot" onclick="document.getElementById('f-logo').click()" id="preview-logo" style="width: 200px; height: 100px;">
+                    <i class="fa fa-upload"></i> Escolher Logo
                 </div>
-                <button class="btn-primary" onclick="window.salvarConfig()">Salvar Ajustes Visuais</button>
+                <input type="file" id="f-logo" hidden accept="image/*" onchange="window.handleLogo(this)">
             </div>
-        </section>
+
+            <div class="input-group">
+                <label>Cor Principal do Portal</label>
+                <input type="color" id="cor-loja" value="#0056b3" style="height: 100px; cursor: pointer;">
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="window.salvarConfig()" style="margin-top: 20px;">
+            ATUALIZAR PORTAL
+        </button>
+    </div>
+</section>
 
     </main>
 
     <script type="module" src="script.js"></script>
 </body>
 </html>
+
