@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// CONFIGURAÇÃO LIMPA (Sem espaços ou erros)
 const firebaseConfig = {
     apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
     authDomain: "nexus-v12.firebaseapp.com",
@@ -11,121 +12,120 @@ const firebaseConfig = {
     appId: "1:587840382224:web:61c0f1890c7c395dc77195"
 };
 
+// Inicialização
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// NAVEGAÇÃO
+// Variáveis de suporte
+let fotosData = ["", "", "", ""];
+let logoData = "";
+
+// --- FUNÇÕES DE NAVEGAÇÃO ---
 window.nav = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.querySelector(`[data-tab="${id}"]`).classList.add('active');
+    const target = document.getElementById(id);
+    if(target) target.classList.add('active');
+    const btn = document.querySelector(`[data-tab="${id}"]`);
+    if(btn) btn.classList.add('active');
 };
 
-// --- GESTÃO DE ESTOQUE ---
-window.salvarVeiculo = async () => {
-    const user = auth.currentUser;
-    const dados = {
-        lojaId: user.uid,
-        marca: document.getElementById('v-marca').value,
-        modelo: document.getElementById('v-modelo').value,
-        ano: document.getElementById('v-ano').value,
-        km: Number(document.getElementById('v-km').value),
-        cambio: document.getElementById('v-cambio').value,
-        preco: Number(document.getElementById('v-preco').value),
-        descricao: document.getElementById('v-desc').value,
-        status: 'disponivel',
-        fotos: [] // Implementar preview de fotos se desejar
+// --- COMPRESSÃO DE IMAGENS (Evita erro de cota do Firebase) ---
+const compress = (file, callback, width = 800) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const scale = width / img.width;
+            canvas.width = width;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            callback(canvas.toDataURL('image/jpeg', 0.7));
+        };
     };
-    await addDoc(collection(db, "carros"), dados);
-    alert("Carro Adicionado!");
+    reader.readAsDataURL(file);
 };
 
-// --- GESTÃO DE VENDEDORES ---
-window.salvarVendedor = async () => {
-    const user = auth.currentUser;
-    await addDoc(collection(db, "vendedores"), {
-        lojaId: user.uid,
-        nome: document.getElementById('vend-nome').value,
-        whats: document.getElementById('vend-whats').value
-    });
-    alert("Vendedor Cadastrado!");
-};
-
-// --- CRM E FUNIL DE VENDAS ---
-window.salvarCliente = async () => {
-    const user = auth.currentUser;
-    await addDoc(collection(db, "clientes"), {
-        lojaId: user.uid,
-        nome: document.getElementById('c-nome').value,
-        whats: document.getElementById('c-whats').value,
-        veiculoInteresse: document.getElementById('c-veiculo').value,
-        etapa: 'novo', // Etapas: novo, negociacao, ganho
-        data: new Date().toLocaleDateString()
+window.preview = (input, id) => {
+    compress(input.files[0], (data) => {
+        const idx = parseInt(id.replace('p','')) - 1;
+        fotosData[idx] = data;
+        document.getElementById(id).innerHTML = `<img src="${data}" style="width:100%;height:100%;object-fit:cover">`;
     });
 };
 
-window.moverEtapa = async (id, novaEtapa, veiculoId) => {
-    await updateDoc(doc(db, "clientes", id), { etapa: novaEtapa });
-    
-    // Se a venda for ganha, marca o carro como vendido automaticamente
-    if(novaEtapa === 'ganho' && veiculoId) {
-        // Busca o documento do carro pelo modelo ou ID e atualiza
-        const q = query(collection(db, "carros"), where("modelo", "==", veiculoId));
-        onSnapshot(q, (s) => {
-            s.forEach(carDoc => updateDoc(doc(db, "carros", carDoc.id), { status: 'vendido' }));
+window.handleLogo = (input) => {
+    compress(input.files[0], (data) => {
+        logoData = data;
+        document.getElementById('logo-preview').innerHTML = `<img src="${data}" style="max-width:100%;max-height:100%;object-fit:contain">`;
+    }, 400);
+};
+
+// --- SALVAMENTO ---
+window.salvarConfig = async () => {
+    try {
+        await setDoc(doc(db, "configuracoes", auth.currentUser.uid), {
+            corLoja: document.getElementById('cor-loja').value,
+            logoLoja: logoData,
+            lojaId: auth.currentUser.uid
+        }, { merge: true });
+        alert("Configurações de Identidade Salvas!");
+    } catch(e) { alert("Erro ao salvar config: " + e.message); }
+};
+
+window.salvarVeiculo = async () => {
+    try {
+        const vSel = document.getElementById("vendedor-select")?.value.split('|') || ["", ""];
+        await addDoc(collection(db, "carros"), {
+            lojaId: auth.currentUser.uid,
+            marca: document.getElementById('marca').value,
+            modelo: document.getElementById('modelo').value,
+            ano: document.getElementById('ano').value,
+            km: Number(document.getElementById('km').value),
+            cambio: document.getElementById('cambio').value,
+            preco: Number(document.getElementById('preco').value),
+            descricao: document.getElementById('descricao').value,
+            vendedorWhats: vSel[0],
+            fotos: fotosData.filter(f => f !== ""),
+            status: 'disponivel'
         });
-    }
+        alert("Veículo cadastrado no estoque!");
+        window.nav('showroom');
+    } catch(e) { alert("Erro ao cadastrar carro: " + e.message); }
 };
 
-// --- SINCRONIZAÇÃO EM TEMPO REAL ---
+// --- MONITORAMENTO DE LOGIN E DADOS ---
 onAuthStateChanged(auth, (user) => {
-    if(user) {
-        // Sincroniza Estoque
+    if (user) {
+        document.getElementById("app").classList.remove("hidden");
+        
+        // Sincronizar Estoque
         onSnapshot(query(collection(db, "carros"), where("lojaId", "==", user.uid)), (snap) => {
-            const list = document.getElementById("listaEstoque");
-            const select = document.getElementById("c-veiculo");
-            list.innerHTML = ""; select.innerHTML = "";
-            snap.forEach(d => {
-                const c = d.data();
-                if(c.status === 'disponivel') {
-                    select.innerHTML += `<option value="${c.modelo}">${c.marca} ${c.modelo}</option>`;
-                    list.innerHTML += `<div class="card-form"><b>${c.marca} ${c.modelo}</b><br>R$ ${c.preco.toLocaleString()}</div>`;
-                }
-            });
-        });
-
-        // Sincroniza Vendedores
-        onSnapshot(query(collection(db, "vendedores"), where("lojaId", "==", user.uid)), (snap) => {
-            const tb = document.getElementById("tabelaVendedores");
-            tb.innerHTML = "";
-            snap.forEach(d => {
-                const v = d.data();
-                tb.innerHTML += `<tr><td>${v.nome}</td><td>${v.whats}</td><td><button onclick="window.excluir('${d.id}', 'vendedores')">Excluir</button></td></tr>`;
-            });
-        });
-
-        // Sincroniza Funil de Clientes
-        onSnapshot(query(collection(db, "clientes"), where("lojaId", "==", user.uid)), (snap) => {
-            const colNovo = document.getElementById("f-novo");
-            const colNeg = document.getElementById("f-negocio");
-            const colGanho = document.getElementById("f-ganho");
-            colNovo.innerHTML = ""; colNeg.innerHTML = ""; colGanho.innerHTML = "";
-
-            snap.forEach(d => {
-                const c = d.data();
-                const card = `
-                    <div class="customer-card">
-                        <b>${c.nome}</b><br><small>${c.veiculoInteresse}</small><br>
-                        ${c.etapa !== 'ganho' ? `<button onclick="window.moverEtapa('${d.id}', '${c.etapa === 'novo' ? 'negociacao' : 'ganho'}', '${c.veiculoInteresse}')">Mover >> </button>` : '✅ Vendido'}
+            const list = document.getElementById("listaCarros");
+            if(list) {
+                list.innerHTML = snap.docs.map(d => {
+                    const c = d.data();
+                    return `
+                    <div class="car-item" style="background:#fff; padding:15px; border-radius:10px; margin-bottom:10px; border-left: 5px solid ${c.status === 'vendido' ? 'gray' : 'red'}">
+                        <b>${c.marca} ${c.modelo}</b> - R$ ${c.preco.toLocaleString()}
+                        <br><small>${c.ano} | ${c.km} KM</small>
+                        <button onclick="window.excluir('${d.id}')" style="float:right; color:red; border:none; background:none; cursor:pointer;">Excluir</button>
                     </div>`;
-                if(c.etapa === 'novo') colNovo.innerHTML += card;
-                if(c.etapa === 'negociacao') colNeg.innerHTML += card;
-                if(c.etapa === 'ganho') colGanho.innerHTML += card;
-            });
+                }).join('');
+            }
         });
+    } else {
+        const email = prompt("Nexus V12 - Digite seu email:");
+        const senha = prompt("Digite sua senha:");
+        if(email && senha) {
+            signInWithEmailAndPassword(auth, email, senha).catch(e => alert("Erro: " + e.message));
+        }
     }
 });
 
-window.excluir = async (id, col) => confirm("Deseja excluir?") && await deleteDoc(doc(db, col, id));
+window.excluir = (id) => confirm("Deseja apagar este veículo?") && deleteDoc(doc(db, "carros", id));
+window.handleLogout = () => signOut(auth).then(() => location.reload());
