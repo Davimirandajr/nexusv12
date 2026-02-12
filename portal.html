@@ -3,32 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Showroom Oficial</title>
+    <title>Showroom V12</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root { --primary: #E31010; }
-        body { font-family: 'Inter', sans-serif; margin: 0; background: #fafafa; }
-        header { background: #000; padding: 20px; text-align: center; border-bottom: 3px solid var(--primary); }
-        .logo-portal { max-height: 50px; }
-        .hero { padding: 40px 20px; text-align: center; background: #fff; }
-        .container { max-width: 1100px; margin: -40px auto 40px; padding: 0 15px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
-        .car-card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .car-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-        .car-info { padding: 20px; }
-        .price { font-size: 24px; font-weight: 800; color: var(--primary); margin: 10px 0; }
-        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; color: #666; margin-bottom: 20px; }
-        .btn-whats { display: block; background: #25D366; color: #fff; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; }
+        body { margin: 0; background: #f0f0f3; font-family: sans-serif; color: #333; }
+        .nav { background: #000; padding: 20px; text-align: center; border-bottom: 4px solid var(--primary); }
+        .logo { max-height: 50px; }
+        .container { max-width: 1200px; margin: 30px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 15px; }
+        .card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.3s; }
+        .img-box { width: 100%; aspect-ratio: 16/9; position: relative; background: #000; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: none; padding: 10px; cursor: pointer; border-radius: 50%; margin: 0 5px; }
+        .info { padding: 20px; }
+        .price { color: var(--primary); font-size: 24px; font-weight: bold; margin: 10px 0; }
+        .btn-whats { background: #25d366; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <header><div id="logo-area"></div></header>
-    <div class="hero"><h1>Nosso Estoque</h1></div>
-    <div class="container"><div class="grid" id="grid-portal"></div></div>
+    <div class="nav" id="header-logo"></div>
+    <div class="container" id="vitrine"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where, doc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
@@ -41,49 +39,55 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const params = new URLSearchParams(window.location.search);
-        const lojaId = params.get('loja');
+        const lojaId = new URLSearchParams(window.location.search).get('loja');
 
-        if (lojaId) {
-            // Carrega Cores e Logo
-            onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
-                if(s.exists()){
-                    const d = s.data();
-                    document.documentElement.style.setProperty('--primary', d.corLoja);
-                    if(d.logoLoja) document.getElementById('logo-area').innerHTML = `<img src="${d.logoLoja}" class="logo-portal">`;
-                }
-            });
+        // Config Loja
+        onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
+            if(s.exists()){
+                const d = s.data();
+                if(d.corLoja) document.documentElement.style.setProperty('--primary', d.corLoja);
+                if(d.logo) document.getElementById('header-logo').innerHTML = `<img src="${d.logo}" class="logo">`;
+            }
+        });
 
-            // Carrega Carros e Vendedores Relacionados
-            onSnapshot(query(collection(db, "carros"), where("lojaId", "==", lojaId)), async (snap) => {
-                const grid = document.getElementById('grid-portal');
-                grid.innerHTML = "";
-                
-                // Pegar todos os vendedores da loja de uma vez para cruzar os dados
-                const vendSnap = await query(collection(db, "vendedores"), where("lojaId", "==", lojaId));
-                
-                snap.forEach(d => {
-                    const v = d.data();
-                    grid.innerHTML += `
-                        <div class="car-card">
-                            <img src="${v.fotos[0] || ''}" class="car-img">
-                            <div class="car-info">
-                                <h3>${v.marca} ${v.modelo}</h3>
-                                <div class="price">R$ ${v.preco.toLocaleString('pt-BR')}</div>
-                                <div class="specs-grid">
-                                    <span><i class="fa fa-calendar"></i> ${v.ano}</span>
-                                    <span><i class="fa fa-tachometer-alt"></i> ${v.km.toLocaleString()} km</span>
-                                    <span><i class="fa fa-cogs"></i> ${v.motor}</span>
-                                    <span><i class="fa fa-palette"></i> ${v.cor}</span>
-                                </div>
-                                <a href="https://wa.me/${v.vendedorWhats}?text=Tenho interesse no ${v.marca} ${v.modelo}" class="btn-whats">
-                                    FALAR COM ${v.vendedorNome.split(' ')[0].toUpperCase()}
-                                </a>
-                            </div>
-                        </div>`;
-                });
+        // Vitrine
+        onSnapshot(query(collection(db, "carros"), where("lojaId", "==", lojaId)), (snap) => {
+            const v = document.getElementById('vitrine');
+            v.innerHTML = '';
+            snap.forEach(async (d) => {
+                const car = d.data();
+                const vSnap = await getDoc(doc(db, "vendedores", car.vendedorId));
+                const vend = vSnap.exists() ? vSnap.data() : {nome: "Loja", whats: ""};
+
+                v.innerHTML += `
+                <div class="card">
+                    <div class="img-box">
+                        <img src="${car.fotos[0]}" id="img-${d.id}">
+                        <button class="nav-btn" style="left:0" onclick="window.swap('${d.id}', ${JSON.stringify(car.fotos).replace(/"/g, '&quot;')}, -1)"><</button>
+                        <button class="nav-btn" style="right:0" onclick="window.swap('${d.id}', ${JSON.stringify(car.fotos).replace(/"/g, '&quot;')}, 1)">></button>
+                    </div>
+                    <div class="info">
+                        <h3>${car.marca} ${car.modelo}</h3>
+                        <p>${car.ano} | ${car.descricao.substring(0, 50)}...</p>
+                        <div class="price">R$ ${car.preco.toLocaleString()}</div>
+                        <a href="javascript:void(0)" onclick="window.go('${car.marca} ${car.modelo}', '${vend.nome}', '${vend.whats}', '${lojaId}')" class="btn-whats">
+                            <i class="fab fa-whatsapp"></i> Falar com ${vend.nome}
+                        </a>
+                    </div>
+                </div>`;
             });
-        }
+        });
+
+        window.swap = (id, f, dir) => {
+            const img = document.getElementById('img-'+id);
+            let i = f.indexOf(img.src);
+            img.src = f[(i + dir + f.length) % f.length];
+        };
+
+        window.go = async (c, v, w, l) => {
+            await addDoc(collection(db, "interesses"), { lojaId: l, carro: c, vendedor: v, data: new Date() });
+            window.open(`https://wa.me/${w}?text=Interesse: ${c}`, '_blank');
+        };
     </script>
 </body>
 </html>
