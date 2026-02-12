@@ -3,41 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Gestão Completa</title>
+    <title>NEXUS V12 | O melhor que existe</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" href="data:,">
     <style>
-        :root { --primary: #E31010; --bg: #0f0f0f; --card: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; }
-        
-        /* LOGIN */
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; flex-direction: column; }
-        
-        /* SIDEBAR */
-        aside { width: 260px; background: #000; color: #fff; height: 100vh; position: fixed; padding: 20px; box-sizing: border-box; }
-        main { margin-left: 260px; padding: 30px; width: calc(100% - 260px); }
+        :root { --primary: #E31010; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; }
         .hidden { display: none !important; }
         
-        /* NAVEGAÇÃO */
-        .nav-btn { background: none; border: none; color: #888; width: 100%; text-align: left; padding: 15px; cursor: pointer; font-size: 15px; border-radius: 8px; margin-bottom: 5px; transition: 0.3s; }
-        .nav-btn:hover { background: #1a1a1a; }
+        aside { width: 260px; background: #000; color: #fff; height: 100vh; position: fixed; padding: 20px; }
+        main { margin-left: 260px; padding: 30px; width: calc(100% - 260px); }
+        
+        .nav-btn { background: none; border: none; color: #888; width: 100%; text-align: left; padding: 15px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; }
         .active-nav { color: #fff; background: var(--primary); }
 
-        /* CARDS E FORMULÁRIOS */
-        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .tab-content { display: none; }
         .active { display: block; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+
+        /* GRID DE FOTOS */
+        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .photo-slot { aspect-ratio: 1; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+        .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* CRM FUNIL */
+        .funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .funnel-col { background: #e2e4e6; padding: 15px; border-radius: 10px; min-height: 400px; }
+        .lead-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
         .btn { background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* FUNIL DE VENDAS (CRM) */
-        .funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-        .funnel-col { background: #e2e4e6; padding: 15px; border-radius: 10px; min-height: 450px; }
-        .funnel-col h4 { margin-top: 0; color: #555; text-transform: uppercase; font-size: 12px; }
-        .lead-card { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 14px; }
-
-        /* FILTRO NO SHOWROOM */
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-        .filter-bar input { margin: 0; }
+        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; }
     </style>
 </head>
 <body>
@@ -54,11 +51,11 @@
     <aside id="menu-lateral" class="hidden">
         <h2 style="color:var(--primary)">NEXUS V12</h2>
         <nav>
-            <button onclick="window.nav('showroom')" class="nav-btn active-nav" id="btn-showroom"><i class="fa fa-car"></i> Showroom</button>
-            <button onclick="window.nav('crm')" class="nav-btn" id="btn-crm"><i class="fa fa-users"></i> Clientes / Funil</button>
-            <button onclick="window.nav('vendedores')" class="nav-btn" id="btn-vendedores"><i class="fa fa-user-tie"></i> Vendedores</button>
-            <button onclick="window.nav('config')" class="nav-btn" id="btn-config"><i class="fa fa-cog"></i> Minha Loja</button>
-            <button onclick="window.handleLogout()" class="nav-btn" style="color:red; margin-top:30px;"><i class="fa fa-power-off"></i> Sair</button>
+            <button onclick="window.nav('showroom')" class="nav-btn active-nav" id="btn-showroom">Estoque</button>
+            <button onclick="window.nav('crm')" class="nav-btn" id="btn-crm">CRM / Funil</button>
+            <button onclick="window.nav('vendedores')" class="nav-btn" id="btn-vendedores">Equipe</button>
+            <button onclick="window.nav('config')" class="nav-btn" id="btn-config">Minha Loja</button>
+            <button onclick="window.handleLogout()" class="nav-btn" style="color:red; margin-top:20px;">Sair</button>
         </nav>
     </aside>
 
@@ -66,7 +63,7 @@
         
         <section id="showroom" class="tab-content active">
             <div class="card">
-                <h2>Cadastrar Carro</h2>
+                <h2>Anunciar Veículo</h2>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                     <input id="marca" placeholder="Marca">
                     <input id="modelo" placeholder="Modelo">
@@ -75,55 +72,60 @@
                     <select id="cambio"><option value="Automático">Automático</option><option value="Manual">Manual</option></select>
                     <input id="preco" type="number" placeholder="Preço">
                 </div>
-                <button onclick="window.salvarVeiculo()" class="btn">ADICIONAR AO ESTOQUE</button>
+                
+                <p>Fotos do Veículo (Máx 4):</p>
+                <div class="photo-grid">
+                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1">+<input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2">+<input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3">+<input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f4').click()" id="p4">+<input type="file" id="f4" hidden onchange="window.handlePhoto(this, 'p4', 3)"></div>
+                </div>
+
+                <textarea id="descricao" placeholder="Descrição completa e opcionais..."></textarea>
+                <button onclick="window.salvarVeiculo()" class="btn">PUBLICAR NO SHOWROOM</button>
             </div>
 
-            <div class="filter-bar">
-                <input type="text" id="busca-estoque" placeholder="🔍 Filtrar por marca ou modelo..." oninput="window.filtrarEstoque()">
-            </div>
-            <div id="listaCarros"></div>
+            <input type="text" id="busca-estoque" placeholder="🔍 Buscar no estoque..." oninput="window.filtrarEstoque()">
+            <div id="listaCarros" style="margin-top:20px;"></div>
         </section>
 
         <section id="crm" class="tab-content">
             <div class="card">
-                <h2>Novo Lead (Cliente)</h2>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                    <input id="c-nome" placeholder="Nome do Cliente">
-                    <input id="c-whats" placeholder="WhatsApp">
-                    <select id="c-veiculo"></select> </div>
-                <button onclick="window.salvarCliente()" class="btn">CRIAR OPORTUNIDADE</button>
+                <h2>Novo Cliente</h2>
+                <input id="c-nome" placeholder="Nome do Cliente">
+                <input id="c-whats" placeholder="WhatsApp">
+                <select id="c-veiculo"></select>
+                <button onclick="window.salvarCliente()" class="btn">CADASTRAR LEAD</button>
             </div>
-
-            
             <div class="funnel">
                 <div class="funnel-col"><h4>Aguardando</h4><div id="f-novo"></div></div>
-                <div class="funnel-col"><h4>Em Negociação</h4><div id="f-negocio"></div></div>
-                <div class="funnel-col" style="background:#d4edda"><h4>Vendido ✅</h4><div id="f-ganho"></div></div>
+                <div class="funnel-col"><h4>Negociação</h4><div id="f-negocio"></div></div>
+                <div class="funnel-col"><h4>Vendido ✅</h4><div id="f-ganho"></div></div>
             </div>
         </section>
 
         <section id="vendedores" class="tab-content">
             <div class="card">
-                <h2>Gerenciar Equipe</h2>
-                <input id="v-nome" placeholder="Nome do Vendedor">
-                <input id="v-whats" placeholder="WhatsApp do Vendedor">
-                <button onclick="window.salvarVendedor()" class="btn">CADASTRAR VENDEDOR</button>
+                <h2>Vendedores</h2>
+                <input id="v-nome" placeholder="Nome">
+                <input id="v-whats" placeholder="WhatsApp">
+                <button onclick="window.salvarVendedor()" class="btn">SALVAR VENDEDOR</button>
             </div>
             <div id="listaVendedores"></div>
         </section>
 
         <section id="config" class="tab-content">
             <div class="card">
-                <h2>Identidade Visual</h2>
-                <button onclick="window.copyPortalLink()" class="btn" style="background:#222; margin-bottom: 20px;">COPIAR LINK DO MEU PORTAL</button>
-                <label>Logo da Empresa:</label>
-                <input type="file" onchange="window.handleLogo(this)">
-                <label>Cor do Portal:</label>
+                <h2>Configurações da Loja</h2>
+                <button onclick="window.copyPortalLink()" class="btn" style="background:#222; margin-bottom:15px;">LINK DO MEU PORTAL</button>
+                <label>Logo:</label>
+                <div class="photo-slot" style="width:150px" onclick="document.getElementById('f-logo').click()" id="logo-preview">Logo</div>
+                <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
+                <label>Cor Principal:</label>
                 <input type="color" id="cor-loja" value="#E31010">
-                <button onclick="window.salvarConfig()" class="btn" style="margin-top:10px;">SALVAR</button>
+                <button onclick="window.salvarConfig()" class="btn">SALVAR IDENTIDADE</button>
             </div>
         </section>
-
     </main>
 
     <script type="module" src="script.js"></script>
