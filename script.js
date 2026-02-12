@@ -16,6 +16,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Variáveis de Estado
 window.fotosCarro = ["", "", ""];
 window.logoBase64 = "";
 
@@ -32,9 +33,10 @@ window.nav = (id) => {
     if (targetTab) targetTab.classList.add('active');
     if (targetBtn) targetBtn.classList.add('active');
 
-    // Fecha sidebar no mobile automaticamente ao clicar em um item
-    if(window.innerWidth < 900) {
-        document.getElementById('sidebar').style.transform = "translateX(-100%)";
+    // Fechar sidebar no mobile (se houver a classe mobile-open no CSS)
+    const sidebar = document.getElementById('sidebar');
+    if(window.innerWidth < 900 && sidebar) {
+        sidebar.style.transform = "translateX(-100%)";
     }
 };
 
@@ -46,27 +48,27 @@ window.fazerLogin = () => {
     const pass = document.getElementById('pass-login').value;
     const status = document.getElementById('auth-status');
 
-    if(!email || !pass) return alert("Preencha E-mail e Senha.");
+    if(!email || !pass) return alert("Preencha todos os campos.");
 
-    status.innerText = "Autenticando...";
-    signInWithEmailAndPassword(auth, email, pass).catch((error) => {
-        status.innerText = "Erro ao acessar.";
-        alert("Falha: " + error.message);
+    if(status) status.innerText = "Autenticando...";
+    signInWithEmailAndPassword(auth, email, pass).catch(err => {
+        if(status) status.innerText = "Erro no login.";
+        alert("Falha: " + err.message);
     });
 };
 
 window.handleLogout = () => signOut(auth).then(() => location.reload());
 
 /* ==========================================================================
-   PROCESSAMENTO DE IMAGENS (PREVINE ERRO DE 1MB)
+   PROCESSAMENTO DE IMAGENS (PREVINE ERRO DE TAMANHO)
    ========================================================================== */
 const comprimirImagem = (file, maxWidth) => {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = (event) => {
+        reader.onload = (e) => {
             const img = new Image();
-            img.src = event.target.result;
+            img.src = e.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const scale = maxWidth / img.width;
@@ -74,7 +76,7 @@ const comprimirImagem = (file, maxWidth) => {
                 canvas.height = img.height * scale;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.7)); // Qualidade 70%
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
             };
         };
     });
@@ -82,21 +84,23 @@ const comprimirImagem = (file, maxWidth) => {
 
 window.handlePhoto = async (input, slotId, index) => {
     if (input.files[0]) {
-        const base64 = await comprimirImagem(input.files[0], 800);
-        window.fotosCarro[index] = base64;
-        document.getElementById(slotId).innerHTML = `<img src="${base64}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+        const b64 = await comprimirImagem(input.files[0], 800);
+        window.fotosCarro[index] = b64;
+        const slot = document.getElementById(slotId);
+        if(slot) slot.innerHTML = `<img src="${b64}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
     }
 };
 
 window.handleLogo = async (input) => {
     if (input.files[0]) {
         window.logoBase64 = await comprimirImagem(input.files[0], 400);
-        document.getElementById('preview-logo').innerHTML = `<img src="${window.logoBase64}" style="max-height:80px;">`;
+        const preview = document.getElementById('preview-logo');
+        if(preview) preview.innerHTML = `<img src="${window.logoBase64}" style="max-height:80px;">`;
     }
 };
 
 /* ==========================================================================
-   ESTOQUE (SALVAR E EDITAR)
+   GESTÃO DE ESTOQUE
    ========================================================================== */
 window.salvarVeiculo = async () => {
     const idEdit = document.getElementById('edit-carro-id').value;
@@ -113,12 +117,11 @@ window.salvarVeiculo = async () => {
         status: document.getElementById('status-carro').value,
         descricao: document.getElementById('descricao').value,
         fotos: window.fotosCarro.filter(f => f !== ""),
-        vendedorId: document.getElementById('vendedor-carro').value,
         dataUpdate: new Date()
     };
 
     try {
-        btn.innerText = "SALVANDO...";
+        if(btn) btn.innerText = "SALVANDO...";
         if (idEdit) {
             await updateDoc(doc(db, "carros", idEdit), dados);
             alert("Veículo atualizado!");
@@ -127,50 +130,42 @@ window.salvarVeiculo = async () => {
             alert("Veículo cadastrado!");
         }
         window.limparFormEstoque();
-    } catch (e) { alert("Erro ao salvar: " + e.message); }
-    btn.innerText = "SALVAR VEÍCULO";
+    } catch (e) { alert("Erro: " + e.message); }
+    if(btn) btn.innerText = "SALVAR VEÍCULO";
 };
 
 window.prepararEdicaoCarro = (id, c) => {
     document.getElementById('edit-carro-id').value = id;
-    document.getElementById('marca').value = c.marca;
-    document.getElementById('modelo').value = c.modelo;
-    document.getElementById('preco').value = c.preco;
-    document.getElementById('status-carro').value = c.status;
-    document.getElementById('form-title').innerText = "Editando " + c.modelo;
+    document.getElementById('marca').value = c.marca || "";
+    document.getElementById('modelo').value = c.modelo || "";
+    document.getElementById('preco').value = c.preco || "";
+    document.getElementById('status-carro').value = c.status || "disponivel";
     
-    // Carrega fotos existentes na memória do script
+    const titulo = document.getElementById('form-title');
+    if(titulo) titulo.innerText = "Editando " + c.modelo;
+    
     window.fotosCarro = c.fotos || ["","",""];
     window.fotosCarro.forEach((f, i) => {
-        if(f) document.getElementById('p'+(i+1)).innerHTML = `<img src="${f}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+        const slot = document.getElementById('p' + (i + 1));
+        if(slot && f) slot.innerHTML = `<img src="${f}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 window.limparFormEstoque = () => {
     document.getElementById('edit-carro-id').value = "";
-    document.getElementById('form-title').innerText = "Novo Veículo";
+    const titulo = document.getElementById('form-title');
+    if(titulo) titulo.innerText = "Novo Veículo";
     document.querySelectorAll('#showroom input, #showroom textarea').forEach(i => i.value = "");
     window.fotosCarro = ["", "", ""];
     document.querySelectorAll('.slot').forEach(s => s.innerHTML = '<i class="fa fa-camera"></i>');
 };
 
 /* ==========================================================================
-   CRM E FUNIL DE VENDAS
+   CRM (FUNIL DE VENDAS)
    ========================================================================== */
 window.moverLead = async (id, novoStatus) => {
     await updateDoc(doc(db, "interesses", id), { statusFunil: novoStatus });
-};
-
-window.addLeadManual = async () => {
-    const nome = prompt("Nome do Cliente:");
-    const carro = prompt("Carro de interesse:");
-    if(nome && carro) {
-        await addDoc(collection(db, "interesses"), {
-            lojaId: auth.currentUser.uid,
-            nome, carro, statusFunil: 'novo', data: new Date()
-        });
-    }
 };
 
 window.excluirDoc = async (coll, id) => {
@@ -178,7 +173,7 @@ window.excluirDoc = async (coll, id) => {
 };
 
 /* ==========================================================================
-   CONFIGURAÇÕES DA LOJA
+   CONFIGURAÇÕES E PORTAL
    ========================================================================== */
 window.salvarConfig = async () => {
     const cor = document.getElementById('cor-loja').value;
@@ -186,62 +181,72 @@ window.salvarConfig = async () => {
         corLoja: cor,
         logo: window.logoBase64
     }, { merge: true });
-    alert("Identidade da loja salva!");
+    alert("Identidade salva!");
 };
 
 window.copiarLinkPortal = () => {
     const link = `${window.location.origin}/portal.html?loja=${auth.currentUser.uid}`;
-    navigator.clipboard.writeText(link).then(() => alert("Link copiado para o WhatsApp!"));
+    navigator.clipboard.writeText(link).then(() => alert("Link copiado!"));
 };
 
 /* ==========================================================================
-   MONITORES EM TEMPO REAL
+   MONITORES EM TEMPO REAL (PROTEGIDOS)
    ========================================================================== */
 const iniciarMonitores = (user) => {
     // Monitor Estoque
     onSnapshot(query(collection(db, "carros"), where("lojaId", "==", user.uid)), (snap) => {
         const lista = document.getElementById('lista-estoque-admin');
+        if (!lista) return;
+        
         let total = 0, vendidos = 0;
         lista.innerHTML = '';
         snap.forEach(d => {
             const c = d.data();
             total++; if(c.status === 'vendido') vendidos++;
             lista.innerHTML += `
-                <div class="card-item" style="background:var(--dark-accent); margin-bottom:10px; padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                    <span><b>${c.modelo}</b></span>
+                <div class="card-item" style="background:rgba(255,255,255,0.05); margin-bottom:8px; padding:10px; border-radius:10px; display:flex; justify-content:space-between;">
+                    <span>${c.modelo}</span>
                     <div>
-                        <button onclick='window.prepararEdicaoCarro("${d.id}", ${JSON.stringify(c)})' style="background:none; border:none; color:var(--primary); cursor:pointer; margin-right:15px;"><i class="fa fa-edit"></i></button>
-                        <button onclick="window.excluirDoc('carros', '${d.id}')" style="background:none; border:none; color:red; cursor:pointer;"><i class="fa fa-trash"></i></button>
+                        <button onclick='window.prepararEdicaoCarro("${d.id}", ${JSON.stringify(c)})' style="color:var(--primary); background:none; border:none; cursor:pointer; margin-right:10px;"><i class="fa fa-edit"></i></button>
+                        <button onclick="window.excluirDoc('carros', '${d.id}')" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
                     </div>
                 </div>`;
         });
-        document.getElementById('stat-total').innerText = total;
-        document.getElementById('stat-vendidos').innerText = vendidos;
+        const sTotal = document.getElementById('stat-total');
+        const sVend = document.getElementById('stat-vendidos');
+        if(sTotal) sTotal.innerText = total;
+        if(sVend) sVend.innerText = vendidos;
     });
 
-    // Monitor Funil (CRM)
+    // Monitor Funil (CRM) - Blindagem de erro de renderização
     onSnapshot(query(collection(db, "interesses"), where("lojaId", "==", user.uid)), (snap) => {
         const cols = { novo: '', contato: '', visita: '', fechado: '' };
+        
         snap.forEach(d => {
             const l = d.data();
             const s = l.statusFunil || 'novo';
             const html = `
                 <div class="kanban-card">
                     <b>${l.nome}</b><br><small>${l.carro}</small>
-                    <select onchange="window.moverLead('${d.id}', this.value)" style="width:100%; margin-top:8px; font-size:11px;">
+                    <select onchange="window.moverLead('${d.id}', this.value)" style="width:100%; margin-top:8px;">
                         <option value="novo" ${s=='novo'?'selected':''}>Novos</option>
                         <option value="contato" ${s=='contato'?'selected':''}>Contato</option>
                         <option value="visita" ${s=='visita'?'selected':''}>Visita</option>
                         <option value="fechado" ${s=='fechado'?'selected':''}>Fechado</option>
                     </select>
-                    <i class="fa fa-trash" onclick="window.excluirDoc('interesses', '${d.id}')" style="color:red; cursor:pointer; font-size:12px; margin-top:5px; display:block; text-align:right;"></i>
                 </div>`;
             if (cols[s] !== undefined) cols[s] += html;
         });
-        document.querySelector('#col-novo .kanban-cards').innerHTML = cols.novo;
-        document.querySelector('#col-contato .kanban-cards').innerHTML = cols.contato;
-        document.querySelector('#col-visita .kanban-cards').innerHTML = cols.visita;
-        document.querySelector('#col-fechado .kanban-cards').innerHTML = cols.fechado;
+
+        const renderCol = (id, html) => {
+            const el = document.querySelector(`#${id} .kanban-cards`);
+            if (el) el.innerHTML = html;
+        };
+
+        renderCol('col-novo', cols.novo);
+        renderCol('col-contato', cols.contato);
+        renderCol('col-visita', cols.visita);
+        renderCol('col-fechado', cols.fechado);
     });
 };
 
@@ -249,10 +254,11 @@ const iniciarMonitores = (user) => {
    INICIALIZAÇÃO
    ========================================================================== */
 onAuthStateChanged(auth, (user) => {
+    const login = document.getElementById('login-screen');
     if (user) {
-        document.getElementById('login-screen').style.display = 'none';
+        if(login) login.style.display = 'none';
         iniciarMonitores(user);
     } else {
-        document.getElementById('login-screen').style.display = 'flex';
+        if(login) login.style.display = 'flex';
     }
 });
