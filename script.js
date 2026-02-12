@@ -16,12 +16,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Variáveis de Estado
 window.fotosCarro = ["", "", ""];
 window.logoBase64 = "";
 
 /* ==========================================================================
-   NAVEGAÇÃO E RESPONSIVIDADE
+   NAVEGAÇÃO
    ========================================================================== */
 window.nav = (id) => {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -33,7 +32,6 @@ window.nav = (id) => {
     if (targetTab) targetTab.classList.add('active');
     if (targetBtn) targetBtn.classList.add('active');
 
-    // Fechar sidebar no mobile (se houver a classe mobile-open no CSS)
     const sidebar = document.getElementById('sidebar');
     if(window.innerWidth < 900 && sidebar) {
         sidebar.style.transform = "translateX(-100%)";
@@ -60,7 +58,7 @@ window.fazerLogin = () => {
 window.handleLogout = () => signOut(auth).then(() => location.reload());
 
 /* ==========================================================================
-   PROCESSAMENTO DE IMAGENS (PREVINE ERRO DE TAMANHO)
+   IMAGENS
    ========================================================================== */
 const comprimirImagem = (file, maxWidth) => {
     return new Promise((resolve) => {
@@ -91,16 +89,8 @@ window.handlePhoto = async (input, slotId, index) => {
     }
 };
 
-window.handleLogo = async (input) => {
-    if (input.files[0]) {
-        window.logoBase64 = await comprimirImagem(input.files[0], 400);
-        const preview = document.getElementById('preview-logo');
-        if(preview) preview.innerHTML = `<img src="${window.logoBase64}" style="max-height:80px;">`;
-    }
-};
-
 /* ==========================================================================
-   GESTÃO DE ESTOQUE
+   ESTOQUE
    ========================================================================== */
 window.salvarVeiculo = async () => {
     const idEdit = document.getElementById('edit-carro-id').value;
@@ -111,7 +101,7 @@ window.salvarVeiculo = async () => {
         marca: document.getElementById('marca').value,
         modelo: document.getElementById('modelo').value,
         preco: Number(document.getElementById('preco').value),
-        km: Number(document.getElementById('km').value),
+        km: Number(document.getElementById('km').value || 0),
         ano: document.getElementById('ano').value,
         cambio: document.getElementById('cambio').value,
         status: document.getElementById('status-carro').value,
@@ -139,15 +129,23 @@ window.prepararEdicaoCarro = (id, c) => {
     document.getElementById('marca').value = c.marca || "";
     document.getElementById('modelo').value = c.modelo || "";
     document.getElementById('preco').value = c.preco || "";
+    document.getElementById('km').value = c.km || "";
+    document.getElementById('ano').value = c.ano || "";
+    document.getElementById('cambio').value = c.cambio || "Automático";
     document.getElementById('status-carro').value = c.status || "disponivel";
+    document.getElementById('descricao').value = c.descricao || "";
     
     const titulo = document.getElementById('form-title');
     if(titulo) titulo.innerText = "Editando " + c.modelo;
     
     window.fotosCarro = c.fotos || ["","",""];
-    window.fotosCarro.forEach((f, i) => {
-        const slot = document.getElementById('p' + (i + 1));
-        if(slot && f) slot.innerHTML = `<img src="${f}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
+    [1, 2, 3].forEach((num, i) => {
+        const slot = document.getElementById('p' + num);
+        if(slot) {
+            slot.innerHTML = window.fotosCarro[i] 
+                ? `<img src="${window.fotosCarro[i]}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+                : '<i class="fa fa-camera"></i>';
+        }
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
@@ -156,13 +154,21 @@ window.limparFormEstoque = () => {
     document.getElementById('edit-carro-id').value = "";
     const titulo = document.getElementById('form-title');
     if(titulo) titulo.innerText = "Novo Veículo";
-    document.querySelectorAll('#showroom input, #showroom textarea').forEach(i => i.value = "");
+    
+    // Limpa todos os inputs e textareas
+    document.getElementById('marca').value = "";
+    document.getElementById('modelo').value = "";
+    document.getElementById('preco').value = "";
+    document.getElementById('km').value = "";
+    document.getElementById('ano').value = "";
+    document.getElementById('descricao').value = "";
+    
     window.fotosCarro = ["", "", ""];
     document.querySelectorAll('.slot').forEach(s => s.innerHTML = '<i class="fa fa-camera"></i>');
 };
 
 /* ==========================================================================
-   CRM (FUNIL DE VENDAS)
+   CRM E MONITORES
    ========================================================================== */
 window.moverLead = async (id, novoStatus) => {
     await updateDoc(doc(db, "interesses", id), { statusFunil: novoStatus });
@@ -172,63 +178,33 @@ window.excluirDoc = async (coll, id) => {
     if(confirm("Deseja realmente excluir?")) await deleteDoc(doc(db, coll, id));
 };
 
-/* ==========================================================================
-   CONFIGURAÇÕES E PORTAL
-   ========================================================================== */
-window.salvarConfig = async () => {
-    const cor = document.getElementById('cor-loja').value;
-    await setDoc(doc(db, "configuracoes", auth.currentUser.uid), {
-        corLoja: cor,
-        logo: window.logoBase64
-    }, { merge: true });
-    alert("Identidade salva!");
-};
-
-window.copiarLinkPortal = () => {
-    const link = `${window.location.origin}/portal.html?loja=${auth.currentUser.uid}`;
-    navigator.clipboard.writeText(link).then(() => alert("Link copiado!"));
-};
-
-/* ==========================================================================
-   MONITORES EM TEMPO REAL (PROTEGIDOS)
-   ========================================================================== */
 const iniciarMonitores = (user) => {
-    // Monitor Estoque
     onSnapshot(query(collection(db, "carros"), where("lojaId", "==", user.uid)), (snap) => {
         const lista = document.getElementById('lista-estoque-admin');
         if (!lista) return;
-        
-        let total = 0, vendidos = 0;
         lista.innerHTML = '';
         snap.forEach(d => {
             const c = d.data();
-            total++; if(c.status === 'vendido') vendidos++;
             lista.innerHTML += `
-                <div class="card-item" style="background:rgba(255,255,255,0.05); margin-bottom:8px; padding:10px; border-radius:10px; display:flex; justify-content:space-between;">
-                    <span>${c.modelo}</span>
+                <div class="card-item" style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
+                    <span><b>${c.marca} ${c.modelo}</b></span>
                     <div>
-                        <button onclick='window.prepararEdicaoCarro("${d.id}", ${JSON.stringify(c)})' style="color:var(--primary); background:none; border:none; cursor:pointer; margin-right:10px;"><i class="fa fa-edit"></i></button>
+                        <button onclick='window.prepararEdicaoCarro("${d.id}", ${JSON.stringify(c)})' style="color:var(--primary); background:none; border:none; cursor:pointer; margin-right:15px;"><i class="fa fa-edit"></i></button>
                         <button onclick="window.excluirDoc('carros', '${d.id}')" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
                     </div>
                 </div>`;
         });
-        const sTotal = document.getElementById('stat-total');
-        const sVend = document.getElementById('stat-vendidos');
-        if(sTotal) sTotal.innerText = total;
-        if(sVend) sVend.innerText = vendidos;
     });
 
-    // Monitor Funil (CRM) - Blindagem de erro de renderização
     onSnapshot(query(collection(db, "interesses"), where("lojaId", "==", user.uid)), (snap) => {
         const cols = { novo: '', contato: '', visita: '', fechado: '' };
-        
         snap.forEach(d => {
             const l = d.data();
             const s = l.statusFunil || 'novo';
             const html = `
                 <div class="kanban-card">
                     <b>${l.nome}</b><br><small>${l.carro}</small>
-                    <select onchange="window.moverLead('${d.id}', this.value)" style="width:100%; margin-top:8px;">
+                    <select onchange="window.moverLead('${d.id}', this.value)" style="width:100%; margin-top:8px; border-radius:5px; font-size:12px;">
                         <option value="novo" ${s=='novo'?'selected':''}>Novos</option>
                         <option value="contato" ${s=='contato'?'selected':''}>Contato</option>
                         <option value="visita" ${s=='visita'?'selected':''}>Visita</option>
@@ -237,22 +213,13 @@ const iniciarMonitores = (user) => {
                 </div>`;
             if (cols[s] !== undefined) cols[s] += html;
         });
-
-        const renderCol = (id, html) => {
-            const el = document.querySelector(`#${id} .kanban-cards`);
-            if (el) el.innerHTML = html;
-        };
-
-        renderCol('col-novo', cols.novo);
-        renderCol('col-contato', cols.contato);
-        renderCol('col-visita', cols.visita);
-        renderCol('col-fechado', cols.fechado);
+        ['novo', 'contato', 'visita', 'fechado'].forEach(c => {
+            const el = document.querySelector(`#col-${c} .kanban-cards`);
+            if (el) el.innerHTML = cols[c];
+        });
     });
 };
 
-/* ==========================================================================
-   INICIALIZAÇÃO
-   ========================================================================== */
 onAuthStateChanged(auth, (user) => {
     const login = document.getElementById('login-screen');
     if (user) {
@@ -262,3 +229,8 @@ onAuthStateChanged(auth, (user) => {
         if(login) login.style.display = 'flex';
     }
 });
+
+window.copiarLinkPortal = () => {
+    const link = `${window.location.origin}/portal.html?loja=${auth.currentUser.uid}`;
+    navigator.clipboard.writeText(link).then(() => alert("Link copiado!"));
+};
