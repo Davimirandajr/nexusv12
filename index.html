@@ -3,159 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Gestão Automotiva</title>
+    <title>NEXUS V12 | Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="icon" href="data:,">
-    <style>
-        :root { --primary: #E31010; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; }
-        .hidden { display: none !important; }
-        
-        /* SIDEBAR */
-        aside { width: 250px; background: #000; color: #fff; height: 100vh; position: fixed; padding: 20px; box-sizing: border-box; }
-        main { margin-left: 250px; padding: 30px; width: calc(100% - 250px); }
-        
-        .nav-btn { background: none; border: none; color: #888; width: 100%; text-align: left; padding: 15px; cursor: pointer; border-radius: 8px; font-size: 16px; margin-bottom: 5px; transition: 0.3s; }
-        .nav-btn:hover { background: #1a1a1a; }
-        .active-nav { color: #fff; background: var(--primary); }
-
-        /* CARDS */
-        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .tab-content { display: none; }
-        .active { display: block; }
-
-        /* FORMULÁRIOS */
-        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        .btn { background: var(--primary); color: #fff; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
-        .btn:hover { opacity: 0.8; }
-
-        /* FOTOS */
-        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
-        .photo-slot { aspect-ratio: 4/3; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fafafa; position: relative; }
-        .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* FUNIL CRM */
-        .funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-        .funnel-col { background: #ebedef; padding: 15px; border-radius: 10px; min-height: 450px; }
-        .funnel-col h3 { font-size: 14px; color: #666; text-transform: uppercase; text-align: center; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .lead-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 4px solid var(--primary); }
-
-        /* LOGIN */
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; }
-    </style>
-</head>
+    <link rel="stylesheet" href="style.css"> </head>
 <body>
 
     <div id="login-screen">
-        <h1 style="color:var(--primary); font-size: 40px; margin-bottom: 10px;">NEXUS V12</h1>
-        <p id="login-status">Carregando sistema...</p>
-        <div id="login-form" class="hidden" style="width: 320px;">
-            <input type="email" id="email-login" placeholder="E-mail de acesso">
-            <input type="password" id="pass-login" placeholder="Senha">
-            <button class="btn" onclick="window.fazerLogin()">ENTRAR NO PAINEL</button>
+        <div class="login-box">
+            <h1 class="logo-text">NEXUS <span>V12</span></h1>
+            <div id="login-form" class="hidden">
+                <input type="email" id="email-login" placeholder="E-mail">
+                <input type="password" id="pass-login" placeholder="Senha">
+                <button class="btn-main" onclick="window.fazerLogin()">ACESSAR SISTEMA</button>
+            </div>
         </div>
     </div>
 
     <aside id="menu-lateral" class="hidden">
-        <h2 style="color:var(--primary); text-align: center;">NEXUS V12</h2>
-        <nav style="margin-top: 30px;">
+        <div class="sidebar-header">
+            <h2 class="logo-text">NEXUS <span>V12</span></h2>
+        </div>
+        <nav>
             <button onclick="window.nav('showroom')" class="nav-btn active-nav" id="btn-showroom"><i class="fa fa-car"></i> Estoque</button>
-            <button onclick="window.nav('crm')" class="nav-btn" id="btn-crm"><i class="fa fa-users"></i> Clientes / Funil</button>
+            <button onclick="window.nav('crm')" class="nav-btn" id="btn-crm"><i class="fa fa-users"></i> Funil de Vendas</button>
             <button onclick="window.nav('vendedores')" class="nav-btn" id="btn-vendedores"><i class="fa fa-user-tie"></i> Vendedores</button>
             <button onclick="window.nav('config')" class="nav-btn" id="btn-config"><i class="fa fa-cog"></i> Configurações</button>
-            <button onclick="window.handleLogout()" class="nav-btn" style="color:#ff4444; margin-top:40px;"><i class="fa fa-power-off"></i> Sair</button>
         </nav>
+        <button onclick="window.handleLogout()" class="logout-btn"><i class="fa fa-sign-out-alt"></i> Sair</button>
     </aside>
 
     <main id="app" class="hidden">
-        
         <section id="showroom" class="tab-content active">
+            <div class="header-section">
+                <h1>Gerenciar Estoque</h1>
+                <p>Cadastre e edite os veículos da sua loja</p>
+            </div>
+            
             <div class="card">
-                <h2>Cadastrar Novo Veículo</h2>
-                <div class="grid-inputs">
-                    <input id="marca" placeholder="Marca (Ex: Ford)">
-                    <input id="modelo" placeholder="Modelo (Ex: Mustang)">
-                    <input id="ano" placeholder="Ano (Ex: 2024)">
-                    <input id="motor" placeholder="Motor (Ex: 5.0 V8)">
-                    <input id="cor" placeholder="Cor">
-                    <input id="km" type="number" placeholder="Kilometragem">
-                    <select id="cambio">
-                        <option value="Automático">Automático</option>
-                        <option value="Manual">Manual</option>
-                    </select>
-                    <input id="preco" type="number" placeholder="Preço (Somente números)">
+                <div class="grid-form">
+                    <div class="input-group">
+                        <label>Marca e Modelo</label>
+                        <div style="display:flex; gap:10px;">
+                            <input id="marca" placeholder="Marca">
+                            <input id="modelo" placeholder="Modelo">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Ano e Preço</label>
+                        <div style="display:flex; gap:10px;">
+                            <input id="ano" placeholder="Ex: 2023/2024">
+                            <input id="preco" type="number" placeholder="Valor (R$)">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Ficha Técnica</label>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <input id="motor" placeholder="Motor">
+                            <input id="km" type="number" placeholder="KM">
+                            <input id="cor" placeholder="Cor">
+                            <select id="cambio">
+                                <option value="Automático">Automático</option>
+                                <option value="Manual">Manual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Vendedor Responsável</label>
+                        <select id="vendedor-carro"><option value="">Carregando...</option></select>
+                    </div>
                 </div>
 
-                <p style="margin-top: 20px; font-weight: bold;">Fotos (Clique para adicionar):</p>
+                <label style="margin-top:20px; display:block;">Fotos do Veículo (4 slots)</label>
                 <div class="photo-grid">
-                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1">+<input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2">+<input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3">+<input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f4').click()" id="p4">+<input type="file" id="f4" hidden onchange="window.handlePhoto(this, 'p4', 3)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1"><i class="fa fa-camera"></i><input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2"><i class="fa fa-camera"></i><input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3"><i class="fa fa-camera"></i><input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f4').click()" id="p4"><i class="fa fa-camera"></i><input type="file" id="f4" hidden onchange="window.handlePhoto(this, 'p4', 3)"></div>
                 </div>
 
-                <textarea id="descricao" rows="3" placeholder="Descrição completa, opcionais e detalhes..."></textarea>
-                <button onclick="window.salvarVeiculo()" class="btn" style="margin-top: 10px;">PUBLICAR VEÍCULO</button>
+                <textarea id="descricao" placeholder="Descreva os opcionais e detalhes do carro..."></textarea>
+                <button onclick="window.salvarVeiculo()" class="btn-main">PUBLICAR VEÍCULO</button>
             </div>
 
-            <div class="card">
-                <input type="text" id="busca-estoque" placeholder="🔍 Filtrar estoque por marca ou modelo..." oninput="window.filtrarEstoque()">
-                <div id="listaCarros" style="margin-top: 20px;"></div>
-            </div>
+            <div id="listaCarros" class="inventory-list"></div>
         </section>
 
         <section id="crm" class="tab-content">
-            <div class="card">
-                <h2>Novo Lead / Oportunidade</h2>
-                <div class="grid-inputs">
+            <div class="header-section">
+                <h1>Funil de Vendas</h1>
+                <div style="display:flex; gap:10px;">
                     <input id="c-nome" placeholder="Nome do Cliente">
-                    <input id="c-whats" placeholder="WhatsApp do Cliente">
-                    <select id="c-veiculo"><option>Selecione um veículo...</option></select>
+                    <input id="c-whats" placeholder="WhatsApp">
+                    <select id="c-veiculo"><option>Veículo de interesse</option></select>
+                    <button onclick="window.salvarCliente()" class="btn-main" style="width: auto;">+</button>
                 </div>
-                <button onclick="window.salvarCliente()" class="btn" style="margin-top: 10px;">CRIAR OPORTUNIDADE</button>
             </div>
-
-            
-            <div class="funnel">
-                <div class="funnel-col"><h3>Aguardando</h3><div id="f-novo"></div></div>
-                <div class="funnel-col"><h3>Em Negociação</h3><div id="f-negocio"></div></div>
-                <div class="funnel-col" style="background: #d4edda;"><h3>Vendido ✅</h3><div id="f-ganho"></div></div>
+            <div class="kanban">
+                <div class="kanban-col"><h3>Novos Leads</h3><div id="f-novo"></div></div>
+                <div class="kanban-col"><h3>Em Negociação</h3><div id="f-negocio"></div></div>
+                <div class="kanban-col"><h3>Vendido</h3><div id="f-ganho"></div></div>
             </div>
         </section>
 
         <section id="vendedores" class="tab-content">
             <div class="card">
-                <h2>Equipe de Vendas</h2>
-                <div class="grid-inputs">
-                    <input id="v-nome" placeholder="Nome do Vendedor">
-                    <input id="v-whats" placeholder="WhatsApp (DDD + Número)">
+                <h2>Nova Equipe</h2>
+                <div style="display:flex; gap:10px;">
+                    <input id="v-nome" placeholder="Nome">
+                    <input id="v-whats" placeholder="WhatsApp (com DDD)">
+                    <button onclick="window.salvarVendedor()" class="btn-main">SALVAR</button>
                 </div>
-                <button onclick="window.salvarVendedor()" class="btn" style="margin-top: 10px;">CADASTRAR VENDEDOR</button>
             </div>
             <div id="listaVendedores"></div>
         </section>
 
         <section id="config" class="tab-content">
             <div class="card">
-                <h2>Configurações do Portal</h2>
-                <button onclick="window.copyPortalLink()" class="btn" style="background:#222; margin-bottom: 25px;">COPIAR LINK DO MEU SHOWROOM</button>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <h2>Identidade Visual</h2>
+                <button onclick="window.copyPortalLink()" class="btn-portal">COPIAR LINK DO MEU SHOWROOM</button>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; margin-top:20px;">
                     <div>
-                        <label><b>Logo da Loja:</b></label>
-                        <div class="photo-slot" style="width: 200px; height: 100px; margin-top: 10px;" onclick="document.getElementById('f-logo').click()" id="logo-preview">Selecionar Logo</div>
+                        <label>Logo da Empresa</label>
+                        <div class="logo-upload" onclick="document.getElementById('f-logo').click()" id="logo-preview">Upload Logo</div>
                         <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
                     </div>
                     <div>
-                        <label><b>Cor Principal do Site:</b></label>
-                        <input type="color" id="cor-loja" value="#E31010" style="height: 100px; cursor: pointer;">
+                        <label>Cor do Tema</label>
+                        <input type="color" id="cor-loja" value="#E31010" style="height:100px;">
                     </div>
                 </div>
-                <button onclick="window.salvarConfig()" class="btn" style="margin-top: 20px;">SALVAR IDENTIDADE VISUAL</button>
+                <button onclick="window.salvarConfig()" class="btn-main" style="margin-top:20px;">ATUALIZAR PORTAL</button>
             </div>
         </section>
-
     </main>
 
     <script type="module" src="script.js"></script>
