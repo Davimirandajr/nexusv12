@@ -33,6 +33,7 @@ window.fazerLogin = () => {
 
 window.handleLogout = () => signOut(auth).then(() => location.reload());
 
+
 // --- NAVEGAÇÃO E INTERFACE ---
 window.toggleMenu = () => {
     document.body.classList.toggle('collapsed');
@@ -181,3 +182,60 @@ window.copyPortalLink = () => {
     navigator.clipboard.writeText(url);
     alert("Link do seu portal copiado! Envie para seus clientes.");
 };
+// --- MONITOR DE ESTOQUE (PAINEL ADMIN) ---
+const listarEstoqueAdmin = (userId) => {
+    const q = query(collection(db, "carros"), where("lojaId", "==", userId));
+    
+    onSnapshot(q, (snap) => {
+        // Procure ou crie um lugar para listar os carros no index.html
+        let container = document.getElementById('lista-estoque-admin');
+        
+        // Se o container não existir no HTML, vamos criar um dinamicamente
+        if (!container) {
+            const novaDiv = document.createElement('div');
+            novaDiv.id = 'lista-estoque-admin';
+            novaDiv.innerHTML = '<h3 style="margin-top:40px">Seu Estoque Atual</h3><div id="cards-estoque"></div>';
+            document.querySelector('#showroom .glass-card').appendChild(novaDiv);
+            container = document.getElementById('cards-estoque');
+        } else {
+            container = document.getElementById('cards-estoque');
+        }
+
+        container.innerHTML = ''; // Limpa a lista antes de carregar
+
+        snap.forEach(d => {
+            const carro = d.data();
+            container.innerHTML += `
+                <div style="display:flex; align-items:center; gap:15px; background:#0a0a0b; padding:15px; border-radius:12px; margin-top:10px; border:1px solid #222">
+                    <img src="${carro.fotos[0]}" style="width:60px; height:60px; object-fit:cover; border-radius:8px">
+                    <div style="flex:1">
+                        <strong style="display:block">${carro.marca} ${carro.modelo}</strong>
+                        <span style="color:var(--primary); font-size:14px">R$ ${carro.preco.toLocaleString()}</span>
+                    </div>
+                    <button onclick="window.excluirCarro('${d.id}')" style="background:none; border:none; color:#ff4444; cursor:pointer">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        });
+    });
+};
+
+// Função para excluir carro
+window.excluirCarro = async (id) => {
+    if(confirm("Deseja realmente remover este veículo?")) {
+        try {
+            await deleteDoc(doc(db, "carros", id));
+            alert("Veículo removido!");
+        } catch (e) { alert("Erro ao excluir."); }
+    }
+};
+
+// --- CHAME A FUNÇÃO DENTRO DO onAuthStateChanged ---
+// Localize o onAuthStateChanged no seu script.js e adicione a chamada:
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // ... (seus códigos existentes)
+        listarEstoqueAdmin(user.uid); // <--- ADICIONE ESTA LINHA
+    }
+});
