@@ -3,95 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Gestão Completa</title>
+    <title>NEXUS V12 | Gestão Operacional</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="admin-body">
+<body>
 
     <div id="login-screen">
         <div class="login-container">
             <h1 class="brand">NEXUS <span>V12</span></h1>
             <div id="login-form" class="hidden">
-                <input type="email" id="email-login" placeholder="E-mail">
-                <input type="password" id="pass-login" placeholder="Senha">
-                <button class="btn-primary" onclick="window.fazerLogin()">ENTRAR</button>
+                <input type="email" id="email-login" placeholder="E-mail Administrativo">
+                <input type="password" id="pass-login" placeholder="Senha de Acesso">
+                <button class="btn-primary" onclick="window.fazerLogin()">ACESSAR PAINEL</button>
             </div>
-            <p id="auth-status">Verificando segurança...</p>
+            <p id="auth-status">Iniciando sistema seguro...</p>
         </div>
     </div>
 
     <aside id="sidebar">
         <div class="sidebar-top">
             <div class="sidebar-logo">NX<span>V12</span></div>
-            <button id="toggle-btn" onclick="window.toggleMenu()"><i class="fa fa-chevron-left" id="toggle-icon"></i></button>
+            <button id="toggle-btn" onclick="window.toggleMenu()">
+                <i class="fa fa-chevron-left" id="toggle-icon"></i>
+            </button>
         </div>
+        
         <nav>
-            <button onclick="window.nav('showroom')" class="nav-item active" id="btn-showroom"><i class="fa fa-car"></i> <span>Estoque</span></button>
-            <button onclick="window.nav('vendedores')" class="nav-item" id="btn-vendedores"><i class="fa fa-user-tie"></i> <span>Equipe</span></button>
-            <button onclick="window.nav('clientes')" class="nav-item" id="btn-clientes"><i class="fa fa-users"></i> <span>Clientes</span></button>
-            <button onclick="window.nav('config')" class="nav-item" id="btn-config"><i class="fa fa-palette"></i> <span>Identidade</span></button>
+            <button onclick="window.nav('showroom')" class="nav-item active" id="btn-showroom">
+                <i class="fa fa-car"></i> <span>Estoque</span>
+            </button>
+            <button onclick="window.nav('vendedores')" class="nav-item" id="btn-vendedores">
+                <i class="fa fa-user-tie"></i> <span>Equipe de Vendas</span>
+            </button>
+            <button onclick="window.nav('clientes')" class="nav-item" id="btn-clientes">
+                <i class="fa fa-users"></i> <span>Leads / Clientes</span>
+            </button>
+            <button onclick="window.nav('config')" class="nav-item" id="btn-config">
+                <i class="fa fa-palette"></i> <span>Identidade Visual</span>
+            </button>
         </nav>
-        <button onclick="window.handleLogout()" class="btn-logout"><i class="fa fa-power-off"></i> <span>Sair</span></button>
+
+        <button onclick="window.handleLogout()" class="btn-logout">
+            <i class="fa fa-power-off"></i> <span>Sair do Sistema</span>
+        </button>
     </aside>
 
     <main id="main-content">
         
         <section id="showroom" class="tab-content active">
             <div class="glass-card">
-                <h2>Cadastrar Veículo</h2>
+                <div class="card-header">
+                    <h2><i class="fa fa-plus-circle"></i> Cadastrar Novo Veículo</h2>
+                    <p>Preencha os detalhes para publicar no portal do cliente.</p>
+                </div>
+
                 <div class="form-grid">
-                    <input id="marca" placeholder="Marca">
-                    <input id="modelo" placeholder="Modelo">
-                    <input id="preco" type="number" placeholder="Preço (R$)">
-                    <input id="ano" placeholder="Ano (ex: 2024/2025)">
-                    <select id="vendedor-carro"><option value="">Vendedor Responsável</option></select>
+                    <div class="input-group">
+                        <label>Marca</label>
+                        <input id="marca" placeholder="Ex: Toyota">
+                    </div>
+                    <div class="input-group">
+                        <label>Modelo</label>
+                        <input id="modelo" placeholder="Ex: Corolla XEI">
+                    </div>
+                    <div class="input-group">
+                        <label>Preço (R$)</label>
+                        <input id="preco" type="number" placeholder="Ex: 125000">
+                    </div>
+                    <div class="input-group">
+                        <label>Ano/Modelo</label>
+                        <input id="ano" placeholder="Ex: 2023/2024">
+                    </div>
+                    <div class="input-group full-width">
+                        <label>Vendedor Responsável (WhatsApp vinculado)</label>
+                        <select id="vendedor-carro">
+                            <option value="">Selecione um vendedor cadastrado...</option>
+                        </select>
+                    </div>
                 </div>
-                <p>Fotos do Carro (Mínimo 1):</p>
+
+                <label>Galeria do Veículo (Mínimo 1 foto)</label>
                 <div class="photo-grid">
-                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1">+<input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2">+<input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3">+<input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
+                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1">
+                        <i class="fa fa-camera"></i>
+                        <input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)">
+                    </div>
+                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2">
+                        <i class="fa fa-camera"></i>
+                        <input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)">
+                    </div>
+                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3">
+                        <i class="fa fa-camera"></i>
+                        <input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)">
+                    </div>
                 </div>
-                <textarea id="descricao" placeholder="Descrição e Opcionais..."></textarea>
-                <button class="btn-primary" onclick="window.salvarVeiculo()">PUBLICAR NO SITE</button>
+
+                <div class="input-group">
+                    <label>Descrição e Opcionais</label>
+                    <textarea id="descricao" placeholder="Ar-condicionado, Teto solar, Único dono..."></textarea>
+                </div>
+
+                <button class="btn-primary main-btn" onclick="window.salvarVeiculo()">
+                    <i class="fa fa-cloud-upload-alt"></i> PUBLICAR NO PORTAL
+                </button>
             </div>
         </section>
 
         <section id="vendedores" class="tab-content">
             <div class="glass-card">
-                <h2>Gerenciar Equipe</h2>
+                <h2><i class="fa fa-user-plus"></i> Cadastro de Vendedores</h2>
                 <div class="form-grid">
-                    <input id="nome-vendedor" placeholder="Nome Completo">
-                    <input id="whats-vendedor" placeholder="WhatsApp (DDD + Número)">
+                    <input id="nome-vendedor" placeholder="Nome do Vendedor">
+                    <input id="whats-vendedor" placeholder="WhatsApp (ex: 11999999999)">
                 </div>
-                <button class="btn-primary" onclick="window.addVendedor()">SALVAR VENDEDOR</button>
-                <div id="lista-vendedores" class="list-container"></div>
+                <button class="btn-primary" onclick="window.addVendedor()">ADICIONAR À EQUIPE</button>
+                
+                <div class="list-container">
+                    <h3>Vendedores Ativos</h3>
+                    <div id="lista-vendedores" class="items-list"></div>
+                </div>
             </div>
         </section>
 
         <section id="clientes" class="tab-content">
             <div class="glass-card">
-                <h2>Interessados (Leads)</h2>
-                <div id="lista-clientes" class="clientes-grid"></div>
+                <h2><i class="fa fa-headset"></i> Leads Recebidos (Cliques no WhatsApp)</h2>
+                <p>Acompanhe quem demonstrou interesse em seus veículos.</p>
+                <div id="lista-clientes" class="leads-container">
+                    </div>
             </div>
         </section>
 
         <section id="config" class="tab-content">
             <div class="glass-card">
-                <h2>Personalização do Portal</h2>
+                <h2><i class="fa fa-id-card"></i> Identidade da Loja</h2>
                 <div class="config-row">
-                    <div class="upload-logo" onclick="document.getElementById('f-logo').click()" id="logo-preview">Subir Logo</div>
-                    <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
-                    <div class="color-picker">
-                        <label>Cor do Site:</label>
+                    <div class="logo-section">
+                        <label>Logo da Loja</label>
+                        <div class="upload-logo" onclick="document.getElementById('f-logo').click()" id="logo-preview">
+                            <i class="fa fa-upload"></i> Clique para subir sua Logo
+                        </div>
+                        <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
+                    </div>
+                    
+                    <div class="color-section">
+                        <label>Cor Principal do Portal</label>
                         <input type="color" id="cor-loja" value="#E31010">
                     </div>
                 </div>
-                <button class="btn-primary" onclick="window.salvarConfig()">ATUALIZAR PORTAL</button>
-                <button class="btn-secondary" onclick="window.copyPortalLink()">COPIAR MEU LINK</button>
+                
+                <div class="action-footer">
+                    <button class="btn-primary" onclick="window.salvarConfig()">SALVAR ALTERAÇÕES VISUAIS</button>
+                    <button class="btn-secondary" onclick="window.copyPortalLink()">
+                        <i class="fa fa-external-link-alt"></i> COPIAR LINK DO MEU SITE
+                    </button>
+                </div>
             </div>
         </section>
+
     </main>
 
     <script type="module" src="script.js"></script>
