@@ -33,10 +33,13 @@
 
         <nav>
             <button onclick="window.nav('showroom')" class="nav-item active" id="btn-showroom">
-                <i class="fa fa-th-large"></i> <span>Estoque</span>
+                <i class="fa fa-car"></i> <span>Estoque</span>
+            </button>
+            <button onclick="window.nav('funil')" class="nav-item" id="btn-funil">
+                <i class="fa fa-filter"></i> <span>Funil de Vendas</span>
             </button>
             <button onclick="window.nav('clientes')" class="nav-item" id="btn-clientes">
-                <i class="fa fa-comment-dots"></i> <span>Leads CRM</span>
+                <i class="fa fa-users"></i> <span>Leads CRM</span>
             </button>
             <button onclick="window.nav('vendedores')" class="nav-item" id="btn-vendedores">
                 <i class="fa fa-user-tie"></i> <span>Vendedores</span>
@@ -93,12 +96,24 @@
                 <textarea id="descricao" placeholder="Descrição e detalhes..."></textarea>
                 
                 <div class="actions">
-                    <button class="btn-main" onclick="window.salvarVeiculo()">SALVAR VEÍCULO</button>
-                    <button id="btn-cancel-edit" class="hidden-element btn-sec" onclick="window.limparFormEstoque()">Cancelar</button>
+                    <button class="btn-main" id="btn-save-carro" onclick="window.salvarVeiculo()">SALVAR VEÍCULO</button>
+                    <button id="btn-cancel-edit" class="btn-sec" onclick="window.limparFormEstoque()">Limpar/Cancelar</button>
                 </div>
 
                 <hr style="margin: 30px 0; opacity: 0.1;">
                 <div id="lista-estoque-admin" class="grid-list"></div>
+            </div>
+        </section>
+
+        <section id="funil" class="tab-content">
+            <header class="section-header">
+                <h2>Funil de Vendas</h2>
+            </header>
+            <div class="kanban-board">
+                <div class="kanban-col" id="col-novo"><h3>Novos</h3><div class="kanban-cards"></div></div>
+                <div class="kanban-col" id="col-contato"><h3>Em Contato</h3><div class="kanban-cards"></div></div>
+                <div class="kanban-col" id="col-visita"><h3>Visita</h3><div class="kanban-cards"></div></div>
+                <div class="kanban-col" id="col-fechado"><h3>Fechado</h3><div class="kanban-cards"></div></div>
             </div>
         </section>
 
@@ -107,16 +122,27 @@
                 <h2>Leads & Interesses</h2>
                 <button class="btn-main" onclick="window.addLeadManual()">+ Lead Manual</button>
             </header>
+            <div class="glass-box" id="form-lead-area" style="display:none; margin-bottom:20px;">
+                <h3>Editar Lead</h3>
+                <input type="hidden" id="edit-lead-id">
+                <div class="form-grid">
+                    <input id="nome-lead-edit" placeholder="Nome">
+                    <input id="carro-lead-edit" placeholder="Carro de Interesse">
+                </div>
+                <button class="btn-main" onclick="window.salvarEdicaoLead()">Atualizar Lead</button>
+                <button class="btn-sec" onclick="document.getElementById('form-lead-area').style.display='none'">Cancelar</button>
+            </div>
             <div id="lista-clientes-crm" class="crm-list"></div>
         </section>
 
         <section id="vendedores" class="tab-content">
             <header class="section-header"><h2>Minha Equipe</h2></header>
             <div class="glass-box">
+                <input type="hidden" id="edit-vendedor-id">
                 <div class="form-grid">
                     <input id="nome-vendedor" placeholder="Nome do Vendedor">
                     <input id="whats-vendedor" placeholder="WhatsApp (DDD + Número)">
-                    <button class="btn-main" onclick="window.addVendedor()">ADICIONAR</button>
+                    <button class="btn-main" id="btn-vendedor-action" onclick="window.addVendedor()">ADICIONAR</button>
                 </div>
                 <div id="lista-vendedores" class="grid-list" style="margin-top: 20px;"></div>
             </div>
