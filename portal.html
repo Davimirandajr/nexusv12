@@ -3,224 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Showroom Premium | NEXUS V12</title>
+    <title>Showroom Virtual</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style id="theme-style"> :root { --primary: #E31010; } </style>
     <style>
-        :root {
-            --red: #E31010;
-            --gold: #C5A059;
-            --dark: #0A0A0A;
-            --card-bg: #111111;
-            --text-gray: #AAAAAA;
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: #fff; }
+        header { padding: 40px 20px; text-align: center; border-bottom: 1px solid #111; }
+        #logo-loja { max-height: 70px; margin-bottom: 10px; }
+        .nexus-label { font-size: 0.6rem; color: #333; letter-spacing: 3px; }
+
+        .filter-section { max-width: 1100px; margin: 20px auto; padding: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-section input, .filter-section select { 
+            flex: 1; min-width: 180px; padding: 12px; background: #111; border: 1px solid #222; color: #fff; border-radius: 8px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-
-        body { background-color: #000; color: #fff; line-height: 1.6; }
-
-        /* HEADER LUXO */
-        header {
-            padding: 80px 20px;
-            text-align: center;
-            background: linear-gradient(to bottom, #151515, #000);
-            border-bottom: 1px solid #222;
-        }
-
-        header h1 { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; }
-        header h1 span { color: var(--red); }
-        header p { color: var(--gold); letter-spacing: 3px; font-size: 0.9rem; margin-top: 10px; font-weight: bold; }
-
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-
-        /* GRID DE VEÍCULOS */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 40px;
-        }
-
-        /* CARD DO CARRO */
-        .card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid #222;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .card:hover {
-            transform: translateY(-15px);
-            border-color: var(--red);
-            box-shadow: 0 20px 40px rgba(227, 16, 16, 0.15);
-        }
-
-        /* GALERIA DE FOTOS */
-        .img-box { height: 260px; position: relative; overflow: hidden; }
-        .main-photo {
-            width: 100%; height: 100%;
-            background-size: cover; background-position: center;
-            transition: 0.5s ease;
-        }
-
-        .thumbs-nav {
-            display: flex;
-            gap: 8px;
-            padding: 12px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            justify-content: center;
-        }
-
-        .thumb {
-            width: 60px; height: 45px;
-            background-size: cover; background-position: center;
-            border-radius: 6px; cursor: pointer;
-            border: 2px solid transparent;
-            transition: 0.3s;
-            opacity: 0.6;
-        }
-
-        .thumb:hover, .thumb.active { opacity: 1; border-color: var(--red); transform: scale(1.1); }
-
-        /* CONTEÚDO */
-        .content { padding: 30px; }
-        .vendedor-tag { font-size: 0.7rem; color: var(--gold); font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 10px; }
-        .card h3 { font-size: 1.6rem; margin-bottom: 5px; font-weight: 800; }
-        .price { font-size: 1.8rem; color: #fff; font-weight: 900; margin-bottom: 15px; }
-
-        /* DESCRIÇÃO IHC */
-        .description {
-            color: var(--text-gray);
-            font-size: 0.95rem;
-            margin-bottom: 25px;
-            height: 75px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        /* Scrollbar fina para descrição */
-        .description::-webkit-scrollbar { width: 3px; }
-        .description::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        .btn-zap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: #25D366;
-            color: #fff;
-            text-align: center;
-            padding: 18px;
-            border-radius: 15px;
-            text-decoration: none;
-            font-weight: 800;
-            transition: 0.3s;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-
-        .btn-zap:hover { background: #1eb954; transform: scale(1.02); }
-
-        /* RESPONSIVIDADE */
-        @media (max-width: 768px) {
-            header h1 { font-size: 2.2rem; }
-            .grid { grid-template-columns: 1fr; }
-        }
+        .grid { max-width: 1200px; margin: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding: 20px; }
+        .card { background: #111; border-radius: 20px; border: 1px solid #222; overflow: hidden; transition: 0.4s; }
+        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .img-main { height: 230px; background-size: cover; background-position: center; }
+        
+        .ficha { display: flex; gap: 8px; padding: 15px 15px 5px; }
+        .ficha span { font-size: 0.7rem; color: #777; background: #1a1a1a; padding: 3px 8px; border-radius: 4px; }
+        
+        .info { padding: 15px; }
+        .price { font-size: 1.6rem; color: var(--primary); font-weight: 800; margin: 10px 0; }
+        .btn-zap { display: block; background: #25D366; color: #fff; text-align: center; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-
     <header>
-        <h1>NEXUS <span>V12</span></h1>
-        <p>EXPERIÊNCIA AUTOMOTIVA PREMIUM</p>
+        <img id="logo-loja" src="" style="display:none">
+        <div class="nexus-label">POWERED BY NEXUS V12</div>
     </header>
 
-    <div class="container">
-        <div id="showroom" class="grid">
-            </div>
+    <div class="filter-section">
+        <input type="text" id="f-texto" placeholder="Marca ou Modelo..." oninput="window.filtrar()">
+        <select id="f-cambio" onchange="window.filtrar()">
+            <option value="">Câmbio (Todos)</option>
+            <option value="Automático">Automático</option>
+            <option value="Manual">Manual</option>
+        </select>
+        <input type="number" id="f-km" placeholder="KM Máxima" oninput="window.filtrar()">
     </div>
+
+    <div id="showroom" class="grid"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
-            authDomain: "nexus-v12.firebaseapp.com",
-            projectId: "nexus-v12",
-            storageBucket: "nexus-v12.firebasestorage.app",
-            messagingSenderId: "587840382224",
-            appId: "1:587840382224:web:61c0f1890c7c395dc77195"
-        };
-
+        const firebaseConfig = { /* Sua Config Aqui */ };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const lojaId = new URLSearchParams(window.location.search).get('loja');
 
-        // Função para trocar foto com efeito IHC
-        window.mudarFoto = (url, carId, element) => {
-            const mainImg = document.getElementById(`img-${carId}`);
-            mainImg.style.backgroundImage = `url('${url}')`;
-            
-            // Remove destaque de outras miniaturas do mesmo card
-            const thumbs = element.parentElement.querySelectorAll('.thumb');
-            thumbs.forEach(t => t.classList.remove('active'));
-            element.classList.add('active');
-        };
+        let todosVeiculos = [];
 
-        if (lojaId) {
-            onSnapshot(query(collection(db, "carros"), where("lojaId", "==", lojaId)), (snap) => {
-                const showroom = document.getElementById("showroom");
-                showroom.innerHTML = "";
-                
-                snap.forEach(d => {
-                    const c = d.data();
-                    if(c.status === 'vendido') return;
-
-                    const id = d.id;
-                    const zap = (c.vendedorWhats || "").replace(/\D/g, "");
-                    const link = `https://wa.me/55${zap}?text=Olá! Gostaria de mais detalhes sobre o veículo *${c.modelo}*.`;
-                    
-                    // Gerador de Miniaturas
-                    let thumbsHtml = "";
-                    if(c.fotos && c.fotos.length > 0) {
-                        c.fotos.forEach((foto, index) => {
-                            thumbsHtml += `
-                                <div class="thumb ${index === 0 ? 'active' : ''}" 
-                                     style="background-image:url('${foto}')" 
-                                     onclick="window.mudarFoto('${foto}', '${id}', this)">
-                                </div>`;
-                        });
-                    }
-
-                    showroom.innerHTML += `
-                        <div class="card">
-                            <div class="img-box">
-                                <div id="img-${id}" class="main-photo" style="background-image:url('${c.fotos[0] || ''}')"></div>
-                            </div>
-                            
-                            <div class="thumbs-nav">
-                                ${thumbsHtml}
-                            </div>
-
-                            <div class="content">
-                                <span class="vendedor-tag"><i class="fa fa-shield-alt"></i> Consultor: ${c.vendedorNome || 'Premium'}</span>
-                                <h3>${c.modelo}</h3>
-                                <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
-                                
-                                <div class="description">
-                                    ${c.descricao || 'Veículo premium com selo de qualidade Nexus V12. Entre em contato para ficha técnica completa.'}
-                                </div>
-
-                                <a href="${link}" target="_blank" class="btn-zap">
-                                    <i class="fab fa-whatsapp"></i> TENHO INTERESSE
-                                </a>
-                            </div>
-                        </div>`;
-                });
+        if(lojaId) {
+            // Carrega Logo e Cor
+            getDoc(doc(db, "configuracoes", lojaId)).then(s => {
+                if(s.exists()){
+                    const d = s.data();
+                    if(d.corLoja) document.getElementById('theme-style').innerHTML = `:root { --primary: ${d.corLoja}; }`;
+                    if(d.logoLoja) { const img = document.getElementById('logo-loja'); img.src = d.logoLoja; img.style.display = 'inline-block'; }
+                }
             });
-        } else {
-            document.getElementById("showroom").innerHTML = "<p>ID da Loja não encontrado na URL.</p>";
+
+            // Carrega Carros
+            onSnapshot(query(collection(db, "carros"), where("lojaId", "==", lojaId)), (snap) => {
+                todosVeiculos = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                window.filtrar();
+            });
+        }
+
+        window.filtrar = () => {
+            const txt = document.getElementById('f-texto').value.toLowerCase();
+            const cam = document.getElementById('f-cambio').value;
+            const km = document.getElementById('f-km').value;
+
+            const res = todosVeiculos.filter(v => {
+                const bateTexto = v.modelo.toLowerCase().includes(txt) || v.marca.toLowerCase().includes(txt);
+                const bateCambio = cam === "" || v.cambio === cam;
+                const bateKm = km === "" || v.km <= Number(km);
+                return bateTexto && bateCambio && bateKm && v.status !== 'vendido';
+            });
+
+            document.getElementById('showroom').innerHTML = res.map(v => `
+                <div class="card">
+                    <div class="img-main" style="background-image:url('${v.fotos[0]}')"></div>
+                    <div class="ficha"><span>${v.ano}</span><span>${v.cambio}</span><span>${Number(v.km).toLocaleString()} KM</span></div>
+                    <div class="info">
+                        <h3>${v.marca} ${v.modelo}</h3>
+                        <div class="price">R$ ${Number(v.preco).toLocaleString('pt-BR')}</div>
+                        <a href="https://wa.me/55${v.vendedorWhats}" class="btn-zap">TENHO INTERESSE</a>
+                    </div>
+                </div>
+            `).join('');
         }
     </script>
 </body>
