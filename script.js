@@ -1,264 +1,183 @@
-/* VARIÁVEIS DE CORES E ESTILO */
-:root {
-    --primary: #E31010; /* Cor padrão, alterada pelo JS posteriormente */
-    --bg-dark: #0a0a0b;
-    --card-bg: #151517;
-    --sidebar-bg: #000000;
-    --text-main: #ffffff;
-    --text-dim: #a0a0a0;
-    --sidebar-width: 260px;
-    --sidebar-collapsed: 80px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* RESET BÁSICO */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+// Configuração do seu projeto Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
+    authDomain: "nexus-v12.firebaseapp.com",
+    projectId: "nexus-v12",
+    storageBucket: "nexus-v12.firebasestorage.app",
+    messagingSenderId: "587840382224",
+    appId: "1:587840382224:web:61c0f1890c7c395dc77195"
+};
 
-body {
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    font-family: 'Inter', sans-serif;
-    display: flex;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
+// Inicialização
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-.hidden { display: none !important; }
+// Variáveis Globais de Estado
+window.fotosCarro = ["", "", ""];
+window.logoBase64 = "";
 
-/* TELA DE LOGIN */
-#login-screen {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at center, #1a1a1c 0%, #000 100%);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+// --- SISTEMA DE LOGIN ---
+window.fazerLogin = () => {
+    const e = document.getElementById('email-login').value;
+    const s = document.getElementById('pass-login').value;
+    if(!e || !s) return alert("Preencha todos os campos");
+    
+    signInWithEmailAndPassword(auth, e, s)
+        .catch(err => alert("Erro ao acessar: Verifique e-mail e senha."));
+};
 
-.login-container {
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 24px;
-    border: 1px solid #222;
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
+window.handleLogout = () => signOut(auth).then(() => location.reload());
 
-.brand { font-weight: 900; font-size: 32px; margin-bottom: 30px; letter-spacing: -1px; }
-.brand span { color: var(--primary); }
+// --- NAVEGAÇÃO E INTERFACE ---
+window.toggleMenu = () => {
+    document.body.classList.toggle('collapsed');
+    const icon = document.getElementById('toggle-icon');
+    icon.className = document.body.classList.contains('collapsed') ? 'fa fa-chevron-right' : 'fa fa-chevron-left';
+};
 
-/* SIDEBAR */
-#sidebar {
-    width: var(--sidebar-width);
-    background: var(--sidebar-bg);
-    height: 100vh;
-    position: fixed;
-    padding: 30px 15px;
-    border-right: 1px solid #1a1a1c;
-    display: flex;
-    flex-direction: column;
-    transition: var(--transition);
-    z-index: 1000;
-}
+window.nav = (id) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('btn-' + id).classList.add('active');
+};
 
-body.collapsed #sidebar { width: var(--sidebar-collapsed); }
+// --- PROCESSAMENTO DE IMAGENS ---
+window.handlePhoto = (input, slotId, index) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        window.fotosCarro[index] = e.target.result;
+        document.getElementById(slotId).innerHTML = `<img src="${e.target.result}">`;
+    };
+    if(input.files[0]) reader.readAsDataURL(input.files[0]);
+};
 
-.sidebar-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 50px;
-    padding: 0 10px;
-}
+window.handleLogo = (input) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        window.logoBase64 = e.target.result;
+        document.getElementById('logo-preview').innerHTML = `<img src="${e.target.result}" style="max-height:60px">`;
+    };
+    if(input.files[0]) reader.readAsDataURL(input.files[0]);
+};
 
-.sidebar-logo { font-weight: 900; font-size: 24px; }
-.sidebar-logo span { color: var(--primary); }
-body.collapsed .sidebar-logo { display: none; }
+// --- GESTÃO DE DADOS (CRUD) ---
 
-#toggle-btn {
-    background: #1a1a1c;
-    border: none;
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-}
+// 1. Salvar Veículo
+window.salvarVeiculo = async () => {
+    const user = auth.currentUser;
+    const fotosLimpas = window.fotosCarro.filter(f => f !== "");
+    const vendedorId = document.getElementById('vendedor-carro').value;
 
-/* NAVEGAÇÃO */
-nav { flex-grow: 1; }
+    if(fotosLimpas.length === 0 || !vendedorId) {
+        return alert("Por favor, selecione um vendedor e suba ao menos 1 foto.");
+    }
 
-.nav-item {
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    padding: 16px;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
-}
+    try {
+        await addDoc(collection(db, "carros"), {
+            lojaId: user.uid,
+            marca: document.getElementById('marca').value,
+            modelo: document.getElementById('modelo').value,
+            preco: Number(document.getElementById('preco').value),
+            ano: document.getElementById('ano').value,
+            vendedorId: vendedorId,
+            descricao: document.getElementById('descricao').value,
+            fotos: fotosLimpas,
+            dataCriacao: new Date()
+        });
+        alert("Veículo publicado com sucesso!");
+        location.reload();
+    } catch (e) { alert("Erro ao salvar veículo."); }
+};
 
-.nav-item i { font-size: 18px; min-width: 24px; }
-.nav-item:hover { background: #1a1a1c; color: #fff; }
-.nav-item.active { background: var(--primary); color: #fff; }
-body.collapsed .nav-item span { display: none; }
+// 2. Adicionar Vendedor
+window.addVendedor = async () => {
+    const nome = document.getElementById('nome-vendedor').value;
+    const whats = document.getElementById('whats-vendedor').value;
+    if(!nome || !whats) return alert("Preencha os dados do vendedor.");
 
-.btn-logout {
-    background: #1a1a1c;
-    border: none;
-    color: #ff4444;
-    padding: 15px;
-    border-radius: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-weight: bold;
-}
+    await addDoc(collection(db, "vendedores"), {
+        lojaId: auth.currentUser.uid,
+        nome,
+        whats
+    });
+    alert("Vendedor cadastrado!");
+    location.reload();
+};
 
-/* CONTEÚDO PRINCIPAL */
-#main-content {
-    margin-left: var(--sidebar-width);
-    padding: 40px;
-    width: 100%;
-    transition: var(--transition);
-}
+// 3. Salvar Identidade Visual
+window.salvarConfig = async () => {
+    const user = auth.currentUser;
+    await setDoc(doc(db, "configuracoes", user.uid), {
+        lojaId: user.uid,
+        corLoja: document.getElementById('cor-loja').value,
+        logo: window.logoBase64
+    }, { merge: true });
+    alert("Identidade da loja atualizada!");
+};
 
-body.collapsed #main-content { margin-left: var(--sidebar-collapsed); }
+// --- SINCRONIZAÇÃO EM TEMPO REAL ---
 
-.tab-content { display: none; animation: fadeIn 0.4s ease; }
-.tab-content.active { display: block; }
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        document.getElementById('login-screen').classList.add('hidden');
+        
+        // Carregar Vendedores no Select e na Lista
+        const qV = query(collection(db, "vendedores"), where("lojaId", "==", user.uid));
+        const snapV = await getDocs(qV);
+        const select = document.getElementById('vendedor-carro');
+        const listaV = document.getElementById('lista-vendedores');
+        
+        snapV.forEach(v => {
+            const d = v.data();
+            select.innerHTML += `<option value="${v.id}">${d.nome}</option>`;
+            listaV.innerHTML += `<div class="card-lead" style="border-left-color: #444"><b>${d.nome}</b> - ${d.whats}</div>`;
+        });
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        // Monitorar Leads (Interesses)
+        const qL = query(collection(db, "interesses"), where("lojaId", "==", user.uid), orderBy("data", "desc"));
+        onSnapshot(qL, (snap) => {
+            const listaL = document.getElementById('lista-clientes');
+            listaL.innerHTML = '';
+            snap.forEach(doc => {
+                const lead = doc.data();
+                const dataFormatada = new Date(lead.data.seconds * 1000).toLocaleString('pt-BR');
+                listaL.innerHTML += `
+                    <div class="card-lead">
+                        <p><strong>Carro:</strong> ${lead.carro}</p>
+                        <p><strong>Vendedor:</strong> ${lead.vendedor}</p>
+                        <p style="font-size:12px; color:#666">${dataFormatada}</p>
+                    </div>`;
+            });
+        });
 
-/* CARDS E FORMULÁRIOS */
-.glass-card {
-    background: var(--card-bg);
-    padding: 35px;
-    border-radius: 24px;
-    border: 1px solid #222;
-    max-width: 900px;
-    margin: 0 auto;
-}
+        // Carregar Configurações Atuais
+        onSnapshot(doc(db, "configuracoes", user.uid), (s) => {
+            if(s.exists()){
+                const d = s.data();
+                document.documentElement.style.setProperty('--primary', d.corLoja);
+                document.getElementById('cor-loja').value = d.corLoja;
+                if(d.logo) {
+                    document.getElementById('logo-preview').innerHTML = `<img src="${d.logo}" style="max-height:60px">`;
+                    window.logoBase64 = d.logo;
+                }
+            }
+        });
 
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin: 25px 0;
-}
+    } else {
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('auth-status').innerText = "Acesso restrito. Faça login.";
+    }
+});
 
-.full-width { grid-column: span 2; }
-
-.input-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-dim); }
-
-input, select, textarea {
-    width: 100%;
-    background: #0a0a0b;
-    border: 1px solid #333;
-    padding: 14px;
-    border-radius: 12px;
-    color: #fff;
-    font-size: 15px;
-    transition: 0.2s;
-}
-
-input:focus { border-color: var(--primary); outline: none; }
-
-/* FOTOS */
-.photo-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin: 15px 0 25px 0;
-}
-
-.photo-slot {
-    aspect-ratio: 1/1;
-    background: #0a0a0b;
-    border: 2px dashed #333;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    overflow: hidden;
-    position: relative;
-}
-
-.photo-slot img { width: 100%; height: 100%; object-fit: cover; }
-.photo-slot i { font-size: 24px; color: #444; }
-
-/* BOTÕES */
-.btn-primary {
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    padding: 16px 30px;
-    border-radius: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-primary:hover { filter: brightness(1.2); transform: translateY(-2px); }
-
-.btn-secondary {
-    background: #1a1a1c;
-    color: #fff;
-    border: 1px solid #333;
-    padding: 12px;
-    border-radius: 12px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-/* CONFIGURAÇÃO DE LOGO */
-.config-row { display: flex; gap: 30px; align-items: flex-end; margin-bottom: 30px; }
-.upload-logo {
-    width: 200px;
-    height: 100px;
-    background: #0a0a0b;
-    border: 2px dashed #333;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: var(--text-dim);
-    cursor: pointer;
-}
-
-/* LEADS (CLIENTES) */
-.card-lead {
-    background: #0a0a0b;
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 15px;
-    border-left: 5px solid var(--primary);
-}
-
-/* RESPONSIVIDADE */
-@media (max-width: 768px) {
-    #sidebar { width: var(--sidebar-collapsed); }
-    #sidebar span, .sidebar-logo { display: none; }
-    #main-content { margin-left: var(--sidebar-collapsed); padding: 20px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .full-width { grid-column: span 1; }
-}
+// Link do Portal
+window.copyPortalLink = () => {
+    const url = `${window.location.origin}${window.location.pathname.replace('index.html','')}portal.html?loja=${auth.currentUser.uid}`;
+    navigator.clipboard.writeText(url);
+    alert("Link do seu portal copiado! Envie para seus clientes.");
+};
