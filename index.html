@@ -3,136 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Admin Panel</title>
+    <title>NEXUS V12 | Gestão Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> </head>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
     <div id="login-screen">
-        <div class="login-box">
-            <h1 class="logo-text">NEXUS <span>V12</span></h1>
+        <div class="login-container">
+            <h1 class="brand">NEXUS <span>V12</span></h1>
             <div id="login-form" class="hidden">
-                <input type="email" id="email-login" placeholder="E-mail">
+                <input type="email" id="email-login" placeholder="E-mail Administrativo">
                 <input type="password" id="pass-login" placeholder="Senha">
-                <button class="btn-main" onclick="window.fazerLogin()">ACESSAR SISTEMA</button>
+                <button class="btn-primary" onclick="window.fazerLogin()">ENTRAR NO SISTEMA</button>
             </div>
+            <p id="auth-status">Iniciando módulos de segurança...</p>
         </div>
     </div>
 
     <aside id="menu-lateral" class="hidden">
-        <div class="sidebar-header">
-            <h2 class="logo-text">NEXUS <span>V12</span></h2>
-        </div>
+        <div class="sidebar-logo">NEXUS <span>V12</span></div>
         <nav>
-            <button onclick="window.nav('showroom')" class="nav-btn active-nav" id="btn-showroom"><i class="fa fa-car"></i> Estoque</button>
-            <button onclick="window.nav('crm')" class="nav-btn" id="btn-crm"><i class="fa fa-users"></i> Funil de Vendas</button>
-            <button onclick="window.nav('vendedores')" class="nav-btn" id="btn-vendedores"><i class="fa fa-user-tie"></i> Vendedores</button>
-            <button onclick="window.nav('config')" class="nav-btn" id="btn-config"><i class="fa fa-cog"></i> Configurações</button>
+            <button onclick="window.nav('showroom')" class="nav-item active" id="btn-showroom"><i class="fa fa-car"></i> Estoque</button>
+            <button onclick="window.nav('crm')" class="nav-item" id="btn-crm"><i class="fa fa-users"></i> Leads / CRM</button>
+            <button onclick="window.nav('vendedores')" class="nav-item" id="btn-vendedores"><i class="fa fa-user-tie"></i> Equipe</button>
+            <button onclick="window.nav('config')" class="nav-item" id="btn-config"><i class="fa fa-palette"></i> Identidade</button>
         </nav>
-        <button onclick="window.handleLogout()" class="logout-btn"><i class="fa fa-sign-out-alt"></i> Sair</button>
+        <button onclick="window.handleLogout()" class="btn-logout"><i class="fa fa-power-off"></i> Sair</button>
     </aside>
 
     <main id="app" class="hidden">
         <section id="showroom" class="tab-content active">
-            <div class="header-section">
-                <h1>Gerenciar Estoque</h1>
-                <p>Cadastre e edite os veículos da sua loja</p>
-            </div>
+            <header class="section-header">
+                <h2>Novo Veículo</h2>
+                <p>Preencha os dados para publicar no portal</p>
+            </header>
             
-            <div class="card">
-                <div class="grid-form">
-                    <div class="input-group">
-                        <label>Marca e Modelo</label>
-                        <div style="display:flex; gap:10px;">
-                            <input id="marca" placeholder="Marca">
-                            <input id="modelo" placeholder="Modelo">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Ano e Preço</label>
-                        <div style="display:flex; gap:10px;">
-                            <input id="ano" placeholder="Ex: 2023/2024">
-                            <input id="preco" type="number" placeholder="Valor (R$)">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Ficha Técnica</label>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                            <input id="motor" placeholder="Motor">
-                            <input id="km" type="number" placeholder="KM">
-                            <input id="cor" placeholder="Cor">
-                            <select id="cambio">
-                                <option value="Automático">Automático</option>
-                                <option value="Manual">Manual</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Vendedor Responsável</label>
-                        <select id="vendedor-carro"><option value="">Carregando...</option></select>
-                    </div>
+            <div class="glass-card">
+                <div class="form-grid">
+                    <input id="marca" placeholder="Marca (ex: BMW)">
+                    <input id="modelo" placeholder="Modelo (ex: 320i M Sport)">
+                    <input id="ano" placeholder="Ano (ex: 2024/2024)">
+                    <input id="preco" type="number" placeholder="Preço (R$)">
+                    <input id="km" type="number" placeholder="KM Atual">
+                    <select id="vendedor-carro">
+                        <option value="">Vendedor Responsável</option>
+                    </select>
+                </div>
+                
+                <div class="photo-uploader">
+                    <div class="slot" onclick="document.getElementById('f1').click()" id="p1"><i class="fa fa-plus"></i><input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
+                    <div class="slot" onclick="document.getElementById('f2').click()" id="p2"><i class="fa fa-plus"></i><input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
+                    <div class="slot" onclick="document.getElementById('f3').click()" id="p3"><i class="fa fa-plus"></i><input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
+                    <div class="slot" onclick="document.getElementById('f4').click()" id="p4"><i class="fa fa-plus"></i><input type="file" id="f4" hidden onchange="window.handlePhoto(this, 'p4', 3)"></div>
                 </div>
 
-                <label style="margin-top:20px; display:block;">Fotos do Veículo (4 slots)</label>
-                <div class="photo-grid">
-                    <div class="photo-slot" onclick="document.getElementById('f1').click()" id="p1"><i class="fa fa-camera"></i><input type="file" id="f1" hidden onchange="window.handlePhoto(this, 'p1', 0)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f2').click()" id="p2"><i class="fa fa-camera"></i><input type="file" id="f2" hidden onchange="window.handlePhoto(this, 'p2', 1)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f3').click()" id="p3"><i class="fa fa-camera"></i><input type="file" id="f3" hidden onchange="window.handlePhoto(this, 'p3', 2)"></div>
-                    <div class="photo-slot" onclick="document.getElementById('f4').click()" id="p4"><i class="fa fa-camera"></i><input type="file" id="f4" hidden onchange="window.handlePhoto(this, 'p4', 3)"></div>
-                </div>
-
-                <textarea id="descricao" placeholder="Descreva os opcionais e detalhes do carro..."></textarea>
-                <button onclick="window.salvarVeiculo()" class="btn-main">PUBLICAR VEÍCULO</button>
+                <textarea id="descricao" placeholder="Descrição técnica e opcionais..."></textarea>
+                <button class="btn-primary" onclick="window.salvarVeiculo()">PUBLICAR VEÍCULO</button>
             </div>
-
-            <div id="listaCarros" class="inventory-list"></div>
-        </section>
-
-        <section id="crm" class="tab-content">
-            <div class="header-section">
-                <h1>Funil de Vendas</h1>
-                <div style="display:flex; gap:10px;">
-                    <input id="c-nome" placeholder="Nome do Cliente">
-                    <input id="c-whats" placeholder="WhatsApp">
-                    <select id="c-veiculo"><option>Veículo de interesse</option></select>
-                    <button onclick="window.salvarCliente()" class="btn-main" style="width: auto;">+</button>
-                </div>
-            </div>
-            <div class="kanban">
-                <div class="kanban-col"><h3>Novos Leads</h3><div id="f-novo"></div></div>
-                <div class="kanban-col"><h3>Em Negociação</h3><div id="f-negocio"></div></div>
-                <div class="kanban-col"><h3>Vendido</h3><div id="f-ganho"></div></div>
-            </div>
-        </section>
-
-        <section id="vendedores" class="tab-content">
-            <div class="card">
-                <h2>Nova Equipe</h2>
-                <div style="display:flex; gap:10px;">
-                    <input id="v-nome" placeholder="Nome">
-                    <input id="v-whats" placeholder="WhatsApp (com DDD)">
-                    <button onclick="window.salvarVendedor()" class="btn-main">SALVAR</button>
-                </div>
-            </div>
-            <div id="listaVendedores"></div>
+            <div id="listaCarros" class="car-list"></div>
         </section>
 
         <section id="config" class="tab-content">
-            <div class="card">
-                <h2>Identidade Visual</h2>
-                <button onclick="window.copyPortalLink()" class="btn-portal">COPIAR LINK DO MEU SHOWROOM</button>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; margin-top:20px;">
-                    <div>
-                        <label>Logo da Empresa</label>
-                        <div class="logo-upload" onclick="document.getElementById('f-logo').click()" id="logo-preview">Upload Logo</div>
+            <div class="glass-card">
+                <h2>Personalização do Portal</h2>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Cor Identidade</label>
+                        <input type="color" id="cor-loja" value="#E31010">
+                    </div>
+                    <div class="config-item">
+                        <label>Sua Logo</label>
+                        <div class="logo-preview" id="logo-preview" onclick="document.getElementById('f-logo').click()">Upload Logo</div>
                         <input type="file" id="f-logo" hidden onchange="window.handleLogo(this)">
                     </div>
-                    <div>
-                        <label>Cor do Tema</label>
-                        <input type="color" id="cor-loja" value="#E31010" style="height:100px;">
-                    </div>
                 </div>
-                <button onclick="window.salvarConfig()" class="btn-main" style="margin-top:20px;">ATUALIZAR PORTAL</button>
+                <button class="btn-primary" onclick="window.salvarConfig()">SALVAR IDENTIDADE</button>
+                <hr>
+                <button class="btn-secondary" onclick="window.copyPortalLink()">COPIAR LINK DO SITE</button>
             </div>
         </section>
     </main>
