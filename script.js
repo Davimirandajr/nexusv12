@@ -209,7 +209,19 @@ onAuthStateChanged(auth, (user) => {
 window.excluirDoc = async (coll, id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, coll, id)); };
 window.moverLead = async (id, novoStatus) => { await updateDoc(doc(db, "interesses", id), { statusFunil: novoStatus }); };
 window.copiarLinkPortal = () => {
-    const link = `${window.location.origin}/portal.html?loja=${auth.currentUser.uid}`;
-    navigator.clipboard.writeText(link).then(() => alert("Link copiado!"));
+    if (!auth.currentUser) {
+        return alert("Você precisa estar logado para copiar o link!");
+    }
+
+    // Pega o endereço atual e troca o 'index.html' por 'portal.html'
+    const urlBase = window.location.href.split('index.html')[0];
+    const link = `${urlBase}portal.html?loja=${auth.currentUser.uid}`;
+
+    navigator.clipboard.writeText(link).then(() => {
+        alert("Link do seu portal copiado com sucesso!");
+        console.log("Link gerado:", link);
+    }).catch(err => {
+        alert("Erro ao copiar. Copie manualmente do console (F12)");
+        console.log("Link para copiar:", link);
+    });
 };
-window.limparFormEstoque = () => { location.reload(); };
