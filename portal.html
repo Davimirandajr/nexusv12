@@ -10,123 +10,83 @@
         :root { 
             --primary: #e31010; 
             --dark: #050508; 
-            --glass: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.05);
             --whatsapp: #25D366;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--dark); color: #fff; line-height: 1.4; }
+        body { font-family: 'Outfit', sans-serif; background: var(--dark); color: #fff; }
 
-        /* Header Futurista */
         header { 
-            background: rgba(5, 5, 8, 0.9); padding: 20px; 
+            background: rgba(5, 5, 8, 0.95); padding: 15px; 
             position: sticky; top: 0; z-index: 1000;
-            backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px); border-bottom: 2px solid var(--primary);
         }
-        .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: center; }
-        .logo-img { max-height: 50px; filter: drop-shadow(0 0 10px var(--primary)); }
-        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--primary); }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: center; }
+        .logo-img { max-height: 45px; }
+        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 20px; color: var(--primary); letter-spacing: 2px; }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
 
-        /* Busca High-Tech */
-        .search-section { margin-bottom: 40px; }
-        .search-box { position: relative; max-width: 500px; margin: 0 auto; }
+        .search-box { position: relative; max-width: 500px; margin: 10px auto 30px; }
         .search-box input { 
-            width: 100%; padding: 15px 20px 15px 50px; border-radius: 15px; 
+            width: 100%; padding: 12px 15px 12px 45px; border-radius: 12px; 
             border: 1px solid rgba(255,255,255,0.1); background: var(--glass); 
-            color: #fff; font-size: 16px; outline: none; transition: 0.3s;
+            color: #fff; outline: none;
         }
-        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(227, 16, 16, 0.2); }
-        .search-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* Grid Otimizada (2 colunas no mobile!) */
+        /* GRID: 2 colunas no mobile, 3 ou 4 no PC */
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
-            gap: 30px; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
         }
 
-        /* Card Masterpiece */
+        @media (min-width: 900px) {
+            .grid { grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        }
+
         .card { 
-            background: #0f0f13; border-radius: 30px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.4s;
-            position: relative;
+            background: #111116; border-radius: 18px; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column;
         }
-        .card:hover { transform: translateY(-10px); border-color: var(--primary); }
 
-        /* Media / Slider */
-        .slider { position: relative; width: 100%; aspect-ratio: 16/10; background: #000; overflow: hidden; }
-        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; transition: 0.5s; }
+        .slider { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; }
+        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .slider img.active { display: block; }
 
-        /* Botão Full Image */
-        .btn-expand {
-            position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
-            background: rgba(0,0,0,0.5); border-radius: 50%; color: #fff;
-            display: flex; align-items: center; justify-content: center; z-index: 20;
-            backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
+        .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
+        
+        .car-brand { font-size: 9px; text-transform: uppercase; color: var(--primary); font-weight: 800; letter-spacing: 1px; }
+        .car-title { font-size: 15px; font-weight: 700; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .price { font-size: 18px; font-weight: 800; color: #fff; margin: 5px 0; }
+
+        /* Infos (Ano/KM) visíveis no mobile de forma discreta */
+        .mini-specs { display: flex; gap: 8px; margin-bottom: 12px; font-size: 10px; color: #888; }
+        .mini-specs span { background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
+
+        .btn-whats { 
+            background: var(--primary); color: #fff; text-decoration: none;
+            padding: 10px; border-radius: 10px; font-weight: 700; text-align: center;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            font-size: 11px; transition: 0.3s; margin-top: auto;
         }
 
         .slider-btn { 
             position: absolute; top: 50%; transform: translateY(-50%); 
-            background: rgba(0,0,0,0.3); color: #fff; border: none; 
-            width: 30px; height: 30px; cursor: pointer; border-radius: 50%; z-index: 10;
+            background: rgba(0,0,0,0.5); color: #fff; border: none; 
+            width: 28px; height: 28px; cursor: pointer; border-radius: 50%; z-index: 5;
+            font-size: 10px;
         }
-        .prev { left: 10px; } .next { right: 10px; }
+        .prev { left: 5px; } .next { right: 5px; }
 
-        /* Content */
-        .card-content { padding: 20px; }
-        .car-brand { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--primary); font-weight: 800; }
-        .card-content h3 { margin: 5px 0; font-size: 20px; font-weight: 700; color: #fff; }
-        .price { font-size: 24px; font-weight: 800; color: #fff; margin: 10px 0; }
-        
-        /* Mini Specs Matrix */
-        .tags { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .tag { 
-            background: rgba(255,255,255,0.03); padding: 8px; border-radius: 10px; 
-            font-size: 10px; text-align: center; color: #aaa; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .tag i { display: block; margin-bottom: 4px; color: var(--primary); }
-
-        /* Botões */
-        .actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .btn-whats { 
-            background: var(--primary); color: #fff; text-decoration: none;
-            padding: 14px; border-radius: 15px; font-weight: 800; text-align: center;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            font-size: 13px; letter-spacing: 1px; transition: 0.3s;
-        }
-        .btn-whats:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(227, 16, 16, 0.4); }
-
-        /* MODAL FULL SCREEN */
+        /* Modal Full Screen */
         #viewer-modal {
             display: none; position: fixed; inset: 0; background: #000; z-index: 5000;
             align-items: center; justify-content: center;
         }
-        #viewer-modal img { max-width: 100%; max-height: 100vh; object-fit: contain; }
-
-        /* --- RESPONSIVIDADE MOBILE (Coração da Mudança) --- */
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .container { padding: 12px; }
-            .card { border-radius: 20px; }
-            .card-content { padding: 12px; }
-            .card-content h3 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .price { font-size: 16px; margin: 5px 0; }
-            .car-brand { font-size: 8px; letter-spacing: 1px; }
-            .tags { display: none; } /* Esconde specs no mobile para focar no visual */
-            .btn-whats { padding: 10px; font-size: 11px; border-radius: 10px; }
-            .slider { aspect-ratio: 1/1; }
-        }
-
-        /* Modal Lead */
-        #modal-lead { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
-            z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px);
-        }
-        .modal-content { background: #15151a; padding: 30px; border-radius: 30px; max-width: 400px; width: 100%; text-align: center; border: 1px solid var(--primary); }
-        .modal-content input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: #000; color: #fff; }
+        #viewer-modal img { max-width: 100%; max-height: 100%; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -138,13 +98,10 @@
     </header>
 
     <div class="container">
-        <div class="search-section">
-            <div class="search-box">
-                <i class="fa fa-search"></i>
-                <input type="text" id="busca" placeholder="O que você busca hoje?" oninput="window.filtrar()">
-            </div>
+        <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" id="busca" placeholder="Buscar veículo..." oninput="window.filtrar()">
         </div>
-
         <div id="lista-carros" class="grid"></div>
     </div>
 
@@ -152,20 +109,9 @@
         <img src="" id="full-img">
     </div>
 
-    <div id="modal-lead">
-        <div class="modal-content">
-            <h2 id="modal-carro-nome" style="font-family:'Syncopate'">Interesse</h2>
-            <p style="color:#888; margin: 10px 0;">Consultoria exclusiva Siow Veículos.</p>
-            <input type="text" id="lead-nome" placeholder="Seu Nome">
-            <input type="tel" id="lead-whats" placeholder="Seu WhatsApp">
-            <button class="btn-whats" style="width:100%; margin-top:10px" onclick="window.enviarInteresse()">SOLICITAR ATENDIMENTO</button>
-            <button style="background:none; border:none; color: #555; margin-top:15px; cursor:pointer;" onclick="document.getElementById('modal-lead').style.display='none'">CANCELAR</button>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, query, where, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
@@ -182,11 +128,8 @@
         const params = new URLSearchParams(window.location.search);
         const lojaId = params.get('loja');
         let todosCarros = [];
-        let carroSelecionadoObj = null;
 
-        if(!lojaId) {
-            document.body.innerHTML = `<div style="text-align:center; padding:100px 20px;"><h2>Portal Nexus v12 Off-line</h2></div>`;
-        } else {
+        if(lojaId) {
             onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
                 if(s.exists()){
                     const d = s.data();
@@ -208,44 +151,37 @@
             grid.innerHTML = '';
             
             lista.forEach((c, carIdx) => {
-                const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}" data-index="${i}">`).join('');
+                const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}" onclick="window.fullView('${f}')">`).join('');
                 
                 grid.innerHTML += `
                     <div class="card">
-                        <div class="btn-expand" onclick="window.fullView('${c.fotos[0]}')">
-                            <i class="fa fa-expand"></i>
-                        </div>
                         <div class="slider" id="slider-${carIdx}">
                             ${c.fotos.length > 1 ? `<button class="slider-btn prev" onclick="window.changeSlide(${carIdx}, -1)"><i class="fa fa-chevron-left"></i></button>` : ''}
                             ${fotosHtml}
                             ${c.fotos.length > 1 ? `<button class="slider-btn next" onclick="window.changeSlide(${carIdx}, 1)"><i class="fa fa-chevron-right"></i></button>` : ''}
                         </div>
                         <div class="card-content">
-                            <span class="car-brand">${c.marca}</span>
-                            <h3>${c.modelo}</h3>
+                            <span class="car-brand">${c.marca || 'Veículo'}</span>
+                            <div class="car-title">${c.modelo}</div>
                             <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
                             
-                            <div class="tags">
-                                <div class="tag"><i class="fa fa-calendar"></i>${c.ano}</div>
-                                <div class="tag"><i class="fa fa-road"></i>${c.km}km</div>
-                                <div class="tag"><i class="fa fa-cog"></i>Gota</div>
+                            <div class="mini-specs">
+                                <span>${c.ano || '---'}</span>
+                                <span>${c.km ? c.km + ' km' : '---'}</span>
                             </div>
 
-                            <div class="actions">
-                                <button class="btn-whats" onclick="window.negociarComVendedor('${c.modelo}', '${c.vendedorResponsavel}')">
-                                    <i class="fab fa-whatsapp"></i> NEGOCIAR AGORA
-                                </button>
-                            </div>
+                            <a href="#" class="btn-whats" onclick="window.negociar('${c.modelo}', '${c.vendedorResponsavel}')">
+                                <i class="fab fa-whatsapp"></i> NEGOCIAR
+                            </a>
                         </div>
                     </div>`;
             });
         }
 
         window.fullView = (url) => {
-            const modal = document.getElementById('viewer-modal');
             document.getElementById('full-img').src = url;
-            modal.style.display = 'flex';
-        }
+            document.getElementById('viewer-modal').style.display = 'flex';
+        };
 
         window.changeSlide = (carIdx, dir) => {
             const slider = document.getElementById(`slider-${carIdx}`);
@@ -256,18 +192,25 @@
             imgs[activeIdx].classList.add('active');
         };
 
-        window.negociarComVendedor = async (modelo, nomeVendedor) => {
-            const q = query(collection(db, "vendedores"), where("lojaId", "==", lojaId), where("nome", "==", nomeVendedor));
+        window.negociar = async (modelo, vendedor) => {
+            const q = query(collection(db, "vendedores"), where("lojaId", "==", lojaId), where("nome", "==", vendedor));
             const snap = await getDocs(q);
             let tel = "";
             snap.forEach(d => tel = d.data().whatsapp);
-            const num = tel.replace(/\D/g, "");
-            window.open(`https://wa.me/55${num}?text=Olá! Vi o *${modelo}* no portal Nexus e quero detalhes.`, '_blank');
+            if(tel) {
+                const num = tel.replace(/\D/g, "");
+                window.open(`https://wa.me/55${num}?text=Olá! Vi o ${modelo} no portal e quero informações.`, '_blank');
+            } else {
+                alert("Consultor não localizado.");
+            }
         };
 
         window.filtrar = () => {
             const termo = document.getElementById('busca').value.toLowerCase();
-            const filtrados = todosCarros.filter(c => c.modelo.toLowerCase().includes(termo) || c.marca.toLowerCase().includes(termo));
+            const filtrados = todosCarros.filter(c => 
+                c.modelo.toLowerCase().includes(termo) || 
+                c.marca.toLowerCase().includes(termo)
+            );
             renderizar(filtrados);
         };
     </script>
