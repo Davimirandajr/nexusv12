@@ -5,108 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEXUS V12 | Elite Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #e31010; 
-            --dark: #050508; 
-            --glass: rgba(255, 255, 255, 0.05);
-            --whatsapp: #25D366;
+            --primary: #e31010; /* Cor padrão, será substituída pelo Firebase */
+            --dark: #000000; 
+            --card-bg: #080808;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--dark); color: #fff; }
+        body { font-family: 'Outfit', sans-serif; background: var(--dark); color: #fff; overflow-x: hidden; }
 
+        /* Header Minimalista Estilo Luxo */
         header { 
-            background: rgba(5, 5, 8, 0.95); padding: 15px; 
+            background: #000; padding: 30px 20px; 
             position: sticky; top: 0; z-index: 1000;
-            backdrop-filter: blur(15px); border-bottom: 2px solid var(--primary);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: center; align-items: center;
         }
-        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: center; }
-        .logo-img { max-height: 45px; }
-        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 20px; color: var(--primary); letter-spacing: 2px; }
+        .logo-img { max-height: 60px; filter: grayscale(1) brightness(2); transition: 0.5s; }
+        .logo-img:hover { filter: grayscale(0); }
+        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 22px; letter-spacing: 6px; color: #fff; }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
-        .search-box { position: relative; max-width: 500px; margin: 10px auto 30px; }
+        /* Busca High-Tech */
+        .search-box { position: relative; max-width: 600px; margin: 20px auto 40px; }
         .search-box input { 
-            width: 100%; padding: 12px 15px 12px 45px; border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.1); background: var(--glass); 
-            color: #fff; outline: none;
+            width: 100%; padding: 15px 20px 15px 50px; background: transparent; 
+            border: 1px solid #222; color: #fff; font-size: 16px; outline: none;
+            transition: 0.4s; border-radius: 0px;
         }
-        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        .search-box input:focus { border-color: var(--primary); }
+        .search-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* GRID: 2 colunas no mobile, 3 ou 4 no PC */
+        /* Grid Lamborghini: 2 colunas no mobile, 3+ no desktop */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
-            gap: 12px; 
+            gap: 15px; 
         }
+        @media (min-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 30px; } }
 
-        @media (min-width: 900px) {
-            .grid { grid-template-columns: repeat(3, 1fr); gap: 25px; }
-        }
-
+        /* Card Agressivo */
         .card { 
-            background: #111116; border-radius: 18px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column;
+            background: var(--card-bg); border: 1px solid #111; 
+            transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative; animation: reveal 0.8s ease forwards;
         }
+        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
 
-        .slider { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; }
-        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        @keyframes reveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Slider com Zoom Anidmado */
+        .slider { position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden; background: #000; }
+        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; transition: 1.5s scale ease; }
         .slider img.active { display: block; }
-
-        .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
-        
-        .car-brand { font-size: 9px; text-transform: uppercase; color: var(--primary); font-weight: 800; letter-spacing: 1px; }
-        .car-title { font-size: 15px; font-weight: 700; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .price { font-size: 18px; font-weight: 800; color: #fff; margin: 5px 0; }
-
-        /* Infos (Ano/KM) visíveis no mobile de forma discreta */
-        .mini-specs { display: flex; gap: 8px; margin-bottom: 12px; font-size: 10px; color: #888; }
-        .mini-specs span { background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
-
-        .btn-whats { 
-            background: var(--primary); color: #fff; text-decoration: none;
-            padding: 10px; border-radius: 10px; font-weight: 700; text-align: center;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            font-size: 11px; transition: 0.3s; margin-top: auto;
-        }
+        .card:hover .slider img.active { scale: 1.1; }
 
         .slider-btn { 
             position: absolute; top: 50%; transform: translateY(-50%); 
-            background: rgba(0,0,0,0.5); color: #fff; border: none; 
-            width: 28px; height: 28px; cursor: pointer; border-radius: 50%; z-index: 5;
-            font-size: 10px;
+            background: rgba(0,0,0,0.6); color: #fff; border: none; 
+            width: 35px; height: 35px; cursor: pointer; z-index: 10; font-size: 12px;
         }
-        .prev { left: 5px; } .next { right: 5px; }
+        .prev { left: 0; } .next { right: 0; }
 
-        /* Modal Full Screen */
-        #viewer-modal {
-            display: none; position: fixed; inset: 0; background: #000; z-index: 5000;
-            align-items: center; justify-content: center;
+        /* Informações do Carro */
+        .card-content { padding: 20px; }
+        .car-brand { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--primary); font-weight: 700; margin-bottom: 5px; display: block; }
+        .car-title { font-family: 'Syncopate', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+        
+        .price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .price-line { height: 1px; background: var(--primary); flex-grow: 1; opacity: 0.3; }
+        .price { font-size: 20px; font-weight: 300; letter-spacing: 1px; }
+
+        /* Specs Minimalistas */
+        .mini-specs { display: flex; gap: 15px; margin-bottom: 20px; }
+        .spec-item { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+        .spec-item b { color: #fff; display: block; font-size: 13px; margin-top: 3px; font-weight: 400; }
+
+        /* Botão Minimalista Preto/Branco */
+        .btn-whats { 
+            display: block; width: 100%; padding: 15px; border: 1px solid #fff;
+            color: #fff; text-decoration: none; text-align: center;
+            font-size: 11px; font-weight: 800; letter-spacing: 2px;
+            transition: 0.4s;
         }
-        #viewer-modal img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .btn-whats:hover { background: #fff; color: #000; }
+
+        /* Responsividade Extra Mobile */
+        @media (max-width: 600px) {
+            .car-title { font-size: 13px; }
+            .price { font-size: 16px; }
+            .card-content { padding: 15px; }
+            .mini-specs { gap: 10px; }
+            .spec-item b { font-size: 11px; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-container">
-            <div id="logo-place"><h1>NEXUS V12</h1></div>
-        </div>
+        <div id="logo-place"><h1>NEXUS V12</h1></div>
     </header>
 
     <div class="container">
         <div class="search-box">
             <i class="fa fa-search"></i>
-            <input type="text" id="busca" placeholder="Buscar veículo..." oninput="window.filtrar()">
+            <input type="text" id="busca" placeholder="PROCURAR MODELO..." oninput="window.filtrar()">
         </div>
         <div id="lista-carros" class="grid"></div>
-    </div>
-
-    <div id="viewer-modal" onclick="this.style.display='none'">
-        <img src="" id="full-img">
     </div>
 
     <script type="module">
@@ -130,9 +138,11 @@
         let todosCarros = [];
 
         if(lojaId) {
+            // BUSCA A COR E LOGO DO BANCO (PAINEL ADMIN)
             onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
                 if(s.exists()){
                     const d = s.data();
+                    // AQUI A COR DO BANCO ENTRA NO CSS
                     if(d.corLoja) document.documentElement.style.setProperty('--primary', d.corLoja);
                     if(d.logo) document.getElementById('logo-place').innerHTML = `<img src="${d.logo}" class="logo-img">`;
                 }
@@ -151,37 +161,36 @@
             grid.innerHTML = '';
             
             lista.forEach((c, carIdx) => {
-                const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}" onclick="window.fullView('${f}')">`).join('');
+                const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}">`).join('');
                 
                 grid.innerHTML += `
-                    <div class="card">
+                    <div class="card" style="animation-delay: ${carIdx * 0.1}s">
                         <div class="slider" id="slider-${carIdx}">
                             ${c.fotos.length > 1 ? `<button class="slider-btn prev" onclick="window.changeSlide(${carIdx}, -1)"><i class="fa fa-chevron-left"></i></button>` : ''}
                             ${fotosHtml}
                             ${c.fotos.length > 1 ? `<button class="slider-btn next" onclick="window.changeSlide(${carIdx}, 1)"><i class="fa fa-chevron-right"></i></button>` : ''}
                         </div>
                         <div class="card-content">
-                            <span class="car-brand">${c.marca || 'Veículo'}</span>
+                            <span class="car-brand">${c.marca || 'PREMIUM'}</span>
                             <div class="car-title">${c.modelo}</div>
-                            <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
+                            
+                            <div class="price-row">
+                                <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
+                                <div class="price-line"></div>
+                            </div>
                             
                             <div class="mini-specs">
-                                <span>${c.ano || '---'}</span>
-                                <span>${c.km ? c.km + ' km' : '---'}</span>
+                                <div class="spec-item">Ano <b>${c.ano}</b></div>
+                                <div class="spec-item">KM <b>${c.km ? Number(c.km).toLocaleString('pt-BR') : '0'}</b></div>
                             </div>
 
                             <a href="#" class="btn-whats" onclick="window.negociar('${c.modelo}', '${c.vendedorResponsavel}')">
-                                <i class="fab fa-whatsapp"></i> NEGOCIAR
+                                DETALHES
                             </a>
                         </div>
                     </div>`;
             });
         }
-
-        window.fullView = (url) => {
-            document.getElementById('full-img').src = url;
-            document.getElementById('viewer-modal').style.display = 'flex';
-        };
 
         window.changeSlide = (carIdx, dir) => {
             const slider = document.getElementById(`slider-${carIdx}`);
@@ -199,18 +208,13 @@
             snap.forEach(d => tel = d.data().whatsapp);
             if(tel) {
                 const num = tel.replace(/\D/g, "");
-                window.open(`https://wa.me/55${num}?text=Olá! Vi o ${modelo} no portal e quero informações.`, '_blank');
-            } else {
-                alert("Consultor não localizado.");
+                window.open(`https://wa.me/55${num}?text=Olá! Vi o ${modelo} no portal e tenho interesse.`, '_blank');
             }
         };
 
         window.filtrar = () => {
             const termo = document.getElementById('busca').value.toLowerCase();
-            const filtrados = todosCarros.filter(c => 
-                c.modelo.toLowerCase().includes(termo) || 
-                c.marca.toLowerCase().includes(termo)
-            );
+            const filtrados = todosCarros.filter(c => c.modelo.toLowerCase().includes(termo) || c.marca.toLowerCase().includes(termo));
             renderizar(filtrados);
         };
     </script>
