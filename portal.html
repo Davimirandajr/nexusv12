@@ -3,115 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Vendas | NEXUS V12</title>
+    <title>NEXUS V12 | Elite Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
             --primary: #e31010; 
-            --dark: #0f172a; 
+            --dark: #050508; 
+            --glass: rgba(255, 255, 255, 0.03);
             --whatsapp: #25D366;
-            --gray-bg: #f8fafc;
         }
         
-        body { font-family: 'Inter', sans-serif; background: var(--gray-bg); color: var(--dark); margin: 0; overflow-x: hidden; }
-        
-        /* Header Luxo */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--dark); color: #fff; line-height: 1.4; }
+
+        /* Header Futurista */
         header { 
-            background: #fff; padding: 15px 0; 
+            background: rgba(5, 5, 8, 0.9); padding: 20px; 
             position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            border-bottom: 3px solid var(--primary);
+            backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: center; align-items: center; }
-        .logo-img { max-height: 60px; width: auto; object-fit: contain; }
+        .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: center; }
+        .logo-img { max-height: 50px; filter: drop-shadow(0 0 10px var(--primary)); }
+        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--primary); }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
-        /* Barra de Busca Moderna */
-        .search-section { margin: 30px 0; text-align: center; }
-        .search-box { 
-            position: relative; max-width: 600px; margin: 0 auto; 
-        }
+        /* Busca High-Tech */
+        .search-section { margin-bottom: 40px; }
+        .search-box { position: relative; max-width: 500px; margin: 0 auto; }
         .search-box input { 
-            width: 100%; padding: 18px 25px 18px 55px; 
-            border-radius: 100px; border: 2px solid #e2e8f0; 
-            font-size: 16px; outline: none; transition: 0.3s;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.02);
+            width: 100%; padding: 15px 20px 15px 50px; border-radius: 15px; 
+            border: 1px solid rgba(255,255,255,0.1); background: var(--glass); 
+            color: #fff; font-size: 16px; outline: none; transition: 0.3s;
         }
-        .search-box i { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 18px; }
-        .search-box input:focus { border-color: var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(227, 16, 16, 0.2); }
+        .search-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--primary); }
 
-        /* Grid e Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        
+        /* Grid Otimizada (2 colunas no mobile!) */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+            gap: 30px; 
+        }
+
+        /* Card Masterpiece */
         .card { 
-            background: #fff; border-radius: 20px; overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.4s;
-            border: 1px solid #f1f5f9; display: flex; flex-direction: column;
+            background: #0f0f13; border-radius: 30px; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.4s;
+            position: relative;
         }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); }
 
-        /* Slider de Imagens */
-        .slider { position: relative; width: 100%; height: 230px; background: #f1f5f9; overflow: hidden; }
-        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .slider img.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0.5; } to { opacity: 1; } }
+        /* Media / Slider */
+        .slider { position: relative; width: 100%; aspect-ratio: 16/10; background: #000; overflow: hidden; }
+        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; transition: 0.5s; }
+        .slider img.active { display: block; }
+
+        /* Botão Full Image */
+        .btn-expand {
+            position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
+            background: rgba(0,0,0,0.5); border-radius: 50%; color: #fff;
+            display: flex; align-items: center; justify-content: center; z-index: 20;
+            backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
+        }
 
         .slider-btn { 
             position: absolute; top: 50%; transform: translateY(-50%); 
-            background: rgba(255,255,255,0.9); color: var(--dark); border: none; 
-            width: 35px; height: 35px; cursor: pointer; border-radius: 50%; z-index: 10;
-            display: flex; align-items: center; justify-content: center; font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
+            background: rgba(0,0,0,0.3); color: #fff; border: none; 
+            width: 30px; height: 30px; cursor: pointer; border-radius: 50%; z-index: 10;
         }
-        .slider-btn:hover { background: var(--primary); color: white; }
         .prev { left: 10px; } .next { right: 10px; }
 
-        .card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
-        .card-content h3 { margin: 0; font-size: 22px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
+        /* Content */
+        .card-content { padding: 20px; }
+        .car-brand { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--primary); font-weight: 800; }
+        .card-content h3 { margin: 5px 0; font-size: 20px; font-weight: 700; color: #fff; }
+        .price { font-size: 24px; font-weight: 800; color: #fff; margin: 10px 0; }
         
-        .price { color: var(--primary); font-size: 28px; font-weight: 800; margin: 15px 0; letter-spacing: -1px; }
-        
-        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-        .tag { background: var(--gray-bg); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #64748b; border: 1px solid #e2e8f0; }
+        /* Mini Specs Matrix */
+        .tags { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .tag { 
+            background: rgba(255,255,255,0.03); padding: 8px; border-radius: 10px; 
+            font-size: 10px; text-align: center; color: #aaa; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .tag i { display: block; margin-bottom: 4px; color: var(--primary); }
 
-        /* Botões de Ação */
-        .actions { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-        
+        /* Botões */
+        .actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
         .btn-whats { 
-            background: var(--whatsapp); color: #fff; text-decoration: none;
-            padding: 15px; border-radius: 12px; font-weight: 700; text-align: center;
+            background: var(--primary); color: #fff; text-decoration: none;
+            padding: 14px; border-radius: 15px; font-weight: 800; text-align: center;
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s; border: none; cursor: pointer; font-size: 15px;
+            font-size: 13px; letter-spacing: 1px; transition: 0.3s;
         }
-        .btn-whats:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-whats:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(227, 16, 16, 0.4); }
 
-        .btn-interesse { 
-            background: transparent; color: #64748b; padding: 10px; 
-            border-radius: 12px; font-weight: 600; text-align: center;
-            border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s; font-size: 14px;
+        /* MODAL FULL SCREEN */
+        #viewer-modal {
+            display: none; position: fixed; inset: 0; background: #000; z-index: 5000;
+            align-items: center; justify-content: center;
         }
-        .btn-interesse:hover { background: #f1f5f9; color: var(--dark); }
+        #viewer-modal img { max-width: 100%; max-height: 100vh; object-fit: contain; }
+
+        /* --- RESPONSIVIDADE MOBILE (Coração da Mudança) --- */
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .container { padding: 12px; }
+            .card { border-radius: 20px; }
+            .card-content { padding: 12px; }
+            .card-content h3 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .price { font-size: 16px; margin: 5px 0; }
+            .car-brand { font-size: 8px; letter-spacing: 1px; }
+            .tags { display: none; } /* Esconde specs no mobile para focar no visual */
+            .btn-whats { padding: 10px; font-size: 11px; border-radius: 10px; }
+            .slider { aspect-ratio: 1/1; }
+        }
 
         /* Modal Lead */
         #modal-lead { 
-            display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); 
-            z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px);
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px);
         }
-        .modal-content { background: #fff; padding: 40px; border-radius: 24px; max-width: 400px; width: 100%; text-align: center; position: relative; }
-        .modal-content h2 { margin-top: 0; font-weight: 800; }
-        .modal-content input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
-        .modal-content input:focus { border-color: var(--primary); outline: none; }
-
-        /* Responsividade Celular */
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-            .header-container { padding: 0 15px; }
-            .logo-img { max-height: 50px; }
-            .card-content h3 { font-size: 20px; }
-            .price { font-size: 24px; }
-        }
+        .modal-content { background: #15151a; padding: 30px; border-radius: 30px; max-width: 400px; width: 100%; text-align: center; border: 1px solid var(--primary); }
+        .modal-content input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: #000; color: #fff; }
     </style>
 </head>
 <body>
@@ -126,24 +141,25 @@
         <div class="search-section">
             <div class="search-box">
                 <i class="fa fa-search"></i>
-                <input type="text" id="busca" placeholder="Busque por modelo, marca ou ano..." oninput="window.filtrar()">
+                <input type="text" id="busca" placeholder="O que você busca hoje?" oninput="window.filtrar()">
             </div>
         </div>
 
-        <div id="lista-carros" class="grid">
-            </div>
+        <div id="lista-carros" class="grid"></div>
+    </div>
+
+    <div id="viewer-modal" onclick="this.style.display='none'">
+        <img src="" id="full-img">
     </div>
 
     <div id="modal-lead">
         <div class="modal-content">
-            <h2 id="modal-carro-nome">Tenho Interesse</h2>
-            <p style="color:#64748b">Receba uma proposta personalizada agora mesmo.</p>
-            <input type="text" id="lead-nome" placeholder="Seu Nome Completo">
+            <h2 id="modal-carro-nome" style="font-family:'Syncopate'">Interesse</h2>
+            <p style="color:#888; margin: 10px 0;">Consultoria exclusiva Siow Veículos.</p>
+            <input type="text" id="lead-nome" placeholder="Seu Nome">
             <input type="tel" id="lead-whats" placeholder="Seu WhatsApp">
-            <button class="btn-whats" style="width:100%; margin-top:10px" onclick="window.enviarInteresse()">
-                RECEBER PROPOSTA
-            </button>
-            <button style="background:none; border:none; color: #94a3b8; margin-top:15px; cursor:pointer; font-weight:600" onclick="document.getElementById('modal-lead').style.display='none'">Voltar</button>
+            <button class="btn-whats" style="width:100%; margin-top:10px" onclick="window.enviarInteresse()">SOLICITAR ATENDIMENTO</button>
+            <button style="background:none; border:none; color: #555; margin-top:15px; cursor:pointer;" onclick="document.getElementById('modal-lead').style.display='none'">CANCELAR</button>
         </div>
     </div>
 
@@ -169,13 +185,8 @@
         let carroSelecionadoObj = null;
 
         if(!lojaId) {
-            document.body.innerHTML = `<div style="text-align:center; padding:100px 20px;">
-                <i class="fa fa-exclamation-triangle" style="font-size:50px; color:#cbd5e0; margin-bottom:20px"></i>
-                <h2>Portal não encontrado</h2>
-                <p>Verifique o link enviado pela loja.</p>
-            </div>`;
+            document.body.innerHTML = `<div style="text-align:center; padding:100px 20px;"><h2>Portal Nexus v12 Off-line</h2></div>`;
         } else {
-            // 1. Identidade Visual
             onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
                 if(s.exists()){
                     const d = s.data();
@@ -184,7 +195,6 @@
                 }
             });
 
-            // 2. Carregar Carros
             const q = query(collection(db, "carros"), where("lojaId", "==", lojaId), where("status", "==", "disponivel"));
             onSnapshot(q, (snap) => {
                 todosCarros = [];
@@ -195,32 +205,35 @@
 
         function renderizar(lista) {
             const grid = document.getElementById('lista-carros');
-            grid.innerHTML = lista.length ? '' : '<p style="text-align:center; grid-column: 1/-1; padding: 50px; color: #94a3b8;">Nenhum veículo disponível no momento.</p>';
+            grid.innerHTML = '';
             
             lista.forEach((c, carIdx) => {
                 const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}" data-index="${i}">`).join('');
                 
                 grid.innerHTML += `
                     <div class="card">
+                        <div class="btn-expand" onclick="window.fullView('${c.fotos[0]}')">
+                            <i class="fa fa-expand"></i>
+                        </div>
                         <div class="slider" id="slider-${carIdx}">
                             ${c.fotos.length > 1 ? `<button class="slider-btn prev" onclick="window.changeSlide(${carIdx}, -1)"><i class="fa fa-chevron-left"></i></button>` : ''}
                             ${fotosHtml}
                             ${c.fotos.length > 1 ? `<button class="slider-btn next" onclick="window.changeSlide(${carIdx}, 1)"><i class="fa fa-chevron-right"></i></button>` : ''}
                         </div>
                         <div class="card-content">
+                            <span class="car-brand">${c.marca}</span>
                             <h3>${c.modelo}</h3>
                             <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
+                            
                             <div class="tags">
-                                <span class="tag"><i class="fa fa-tag"></i> ${c.marca}</span>
-                                <span class="tag"><i class="fa fa-calendar"></i> ${c.ano}</span>
-                                <span class="tag"><i class="fa fa-road"></i> ${c.km} km</span>
+                                <div class="tag"><i class="fa fa-calendar"></i>${c.ano}</div>
+                                <div class="tag"><i class="fa fa-road"></i>${c.km}km</div>
+                                <div class="tag"><i class="fa fa-cog"></i>Gota</div>
                             </div>
+
                             <div class="actions">
                                 <button class="btn-whats" onclick="window.negociarComVendedor('${c.modelo}', '${c.vendedorResponsavel}')">
                                     <i class="fab fa-whatsapp"></i> NEGOCIAR AGORA
-                                </button>
-                                <button class="btn-interesse" onclick='window.abrirModal(${JSON.stringify(c)})'>
-                                    Tenho Interesse
                                 </button>
                             </div>
                         </div>
@@ -228,28 +241,11 @@
             });
         }
 
-        // Lógica de WhatsApp com Vendedor Específico
-        window.negociarComVendedor = async (modelo, nomeVendedor) => {
-            if(!nomeVendedor || nomeVendedor === "undefined") {
-                alert("Entre em contato com a loja para mais informações.");
-                return;
-            }
-
-            try {
-                const q = query(collection(db, "vendedores"), where("lojaId", "==", lojaId), where("nome", "==", nomeVendedor));
-                const snap = await getDocs(q);
-                let tel = "";
-                snap.forEach(d => tel = d.data().whatsapp);
-
-                if(tel) {
-                    const num = tel.replace(/\D/g, "");
-                    const msg = encodeURIComponent(`Olá! Vi o *${modelo}* no portal e gostaria de negociar.`);
-                    window.open(`https://wa.me/55${num}?text=${msg}`, '_blank');
-                } else {
-                    alert("Consultor não disponível no momento.");
-                }
-            } catch (e) { alert("Erro ao conectar."); }
-        };
+        window.fullView = (url) => {
+            const modal = document.getElementById('viewer-modal');
+            document.getElementById('full-img').src = url;
+            modal.style.display = 'flex';
+        }
 
         window.changeSlide = (carIdx, dir) => {
             const slider = document.getElementById(`slider-${carIdx}`);
@@ -260,37 +256,19 @@
             imgs[activeIdx].classList.add('active');
         };
 
+        window.negociarComVendedor = async (modelo, nomeVendedor) => {
+            const q = query(collection(db, "vendedores"), where("lojaId", "==", lojaId), where("nome", "==", nomeVendedor));
+            const snap = await getDocs(q);
+            let tel = "";
+            snap.forEach(d => tel = d.data().whatsapp);
+            const num = tel.replace(/\D/g, "");
+            window.open(`https://wa.me/55${num}?text=Olá! Vi o *${modelo}* no portal Nexus e quero detalhes.`, '_blank');
+        };
+
         window.filtrar = () => {
             const termo = document.getElementById('busca').value.toLowerCase();
-            const filtrados = todosCarros.filter(c => 
-                c.modelo.toLowerCase().includes(termo) || c.marca.toLowerCase().includes(termo)
-            );
+            const filtrados = todosCarros.filter(c => c.modelo.toLowerCase().includes(termo) || c.marca.toLowerCase().includes(termo));
             renderizar(filtrados);
-        };
-
-        window.abrirModal = (carro) => {
-            carroSelecionadoObj = carro;
-            document.getElementById('modal-carro-nome').innerText = carro.modelo;
-            document.getElementById('modal-lead').style.display = 'flex';
-        };
-
-        window.enviarInteresse = async () => {
-            const nome = document.getElementById('lead-nome').value;
-            const whats = document.getElementById('lead-whats').value;
-            if(!nome || !whats) return alert("Preencha seus dados.");
-
-            await addDoc(collection(db, "interesses"), {
-                lojaId: lojaId,
-                nome: nome,
-                whatsapp: whats,
-                carro: carroSelecionadoObj.modelo,
-                vendedorResponsavel: carroSelecionadoObj.vendedorResponsavel || "Direto da Loja",
-                statusFunil: 'novo',
-                data: new Date()
-            });
-
-            alert("Recebemos seu interesse! Um consultor entrará em contato em breve.");
-            document.getElementById('modal-lead').style.display = 'none';
         };
     </script>
 </body>
