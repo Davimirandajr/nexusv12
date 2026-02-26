@@ -3,107 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Showroom Profissional</title>
+    <title>NEXUS V12 | Excellence Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@200;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@100;300;400;600;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --primary: #e31010; 
-            --dark: #000000; 
-            --card-bg: #0d0d0d;
-            --sidebar-bg: #050505;
+            --dark: #050505; 
+            --card-bg: rgba(20, 20, 20, 0.6);
+            --glass: rgba(255, 255, 255, 0.03);
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--dark); color: #fff; overflow-x: hidden; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: var(--dark); 
+            background-image: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #050505 80%);
+            color: #fff; 
+            overflow-x: hidden; 
+        }
 
-        /* HEADER RESPONSIVO */
+        /* HEADER FLUTUANTE */
         header { 
-            background: #000; padding: 15px 30px; 
-            position: sticky; top: 0; z-index: 1000;
-            border-bottom: 2px solid var(--primary);
+            background: rgba(0,0,0,0.8); padding: 20px 5%; 
+            position: sticky; top: 0; z-index: 2000;
             display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .logo-img { max-height: 45px; transition: 0.3s; }
-        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 18px; letter-spacing: 5px; }
+        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 18px; letter-spacing: 8px; color: #fff; }
+        .logo-img { max-height: 40px; }
 
-        /* LAYOUT PRINCIPAL */
-        .main-wrapper { display: flex; max-width: 1800px; margin: 0 auto; min-height: 100vh; }
+        /* LAYOUT COLUNAS */
+        .main-container { display: flex; max-width: 1600px; margin: 0 auto; gap: 30px; padding: 40px 20px; }
 
-        /* SIDEBAR (FILTROS) */
+        /* FILTROS LATERAIS (ESTILO UNIDAS) */
         .sidebar { 
-            width: 320px; background: var(--sidebar-bg); padding: 30px;
-            border-right: 1px solid #1a1a1a; position: sticky; top: 77px; height: calc(100vh - 77px);
-            overflow-y: auto; transition: 0.3s;
+            width: 300px; position: sticky; top: 120px; height: fit-content;
+            background: var(--glass); padding: 30px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
         }
-        .sidebar h3 { font-family: 'Syncopate', sans-serif; font-size: 11px; margin-bottom: 25px; color: var(--primary); letter-spacing: 2px; }
-        
+        .sidebar h3 { font-family: 'Syncopate', sans-serif; font-size: 10px; margin-bottom: 25px; color: var(--primary); letter-spacing: 3px; }
         .filter-group { margin-bottom: 20px; }
-        .filter-group label { display: block; font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 8px; }
-        .filter-group input, .filter-group select { 
-            width: 100%; background: #111; border: 1px solid #222; padding: 12px; 
-            color: #fff; outline: none; border-radius: 5px; font-size: 14px;
+        .filter-group label { display: block; font-size: 10px; color: #555; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        .filter-group input { 
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); 
+            padding: 12px; color: #fff; border-radius: 8px; outline: none; transition: 0.3s;
         }
-        .filter-group input:focus { border-color: var(--primary); }
+        .filter-group input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
 
-        /* ÁREA DE CARROS */
-        .content { flex: 1; padding: 30px; }
-        .results-info { margin-bottom: 25px; font-size: 18px; font-weight: 200; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px; }
-        .results-info b { color: var(--primary); }
+        /* GRID DE CARROS */
+        .content { flex: 1; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
 
-        /* GRID ADAPTÁVEL */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 25px; 
-        }
-
-        /* CARD ESTILO UNIDAS DARK */
+        /* CARDS ULTRA MODERNOS */
         .card { 
-            background: var(--card-bg); border-radius: 10px; overflow: hidden; 
-            border: 1px solid #1a1a1a; transition: 0.4s; position: relative;
+            background: var(--card-bg); border-radius: 24px; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(5px);
         }
-        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
 
-        .slider { position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden; background: #000; }
-        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .slider img.active { display: block; animation: fadeIn 0.5s; }
+        /* SLIDER COM NAVEGAÇÃO INTERNA */
+        .slider { position: relative; width: 100%; aspect-ratio: 16/10; background: #000; overflow: hidden; }
+        .slider img { width: 100%; height: 100%; object-fit: cover; position: absolute; opacity: 0; transition: 0.8s ease; transform: scale(1.1); }
+        .slider img.active { opacity: 1; transform: scale(1); }
+
+        .nav-btn { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(0,0,0,0.4); color: #fff; border: none; 
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer; z-index: 10;
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
+            transition: 0.3s; opacity: 0;
+        }
+        .card:hover .nav-btn { opacity: 1; }
+        .nav-btn:hover { background: var(--primary); }
+        .btn-prev { left: 15px; } .btn-next { right: 15px; }
+
+        /* CONTEÚDO DO CARD */
+        .card-body { padding: 25px; }
+        .brand-label { font-size: 10px; color: var(--primary); font-weight: 800; letter-spacing: 4px; text-transform: uppercase; }
+        .model-name { font-family: 'Syncopate', sans-serif; font-size: 16px; margin: 8px 0 20px; font-weight: 700; }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .spec-item { font-size: 11px; color: #666; }
+        .spec-item span { display: block; color: #ddd; font-size: 14px; font-weight: 300; margin-top: 4px; }
 
-        .card-content { padding: 20px; }
-        .car-brand { font-size: 10px; color: var(--primary); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-        .car-title { font-family: 'Syncopate', sans-serif; font-size: 15px; margin: 5px 0 15px; }
-        
-        .car-specs { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #1a1a1a; }
-        .spec-item { font-size: 10px; color: #777; text-transform: uppercase; }
-        .spec-item b { color: #fff; display: block; font-size: 12px; margin-top: 2px; font-weight: 400; }
+        .price-container { border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .price-val { font-size: 24px; font-weight: 200; letter-spacing: -1px; }
 
-        .price { font-size: 22px; font-weight: 300; margin-bottom: 15px; display: block; }
-
-        .btn-talk { 
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 14px; background: #25D366; color: #fff; 
-            text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 12px;
+        .btn-action { 
+            background: #fff; color: #000; padding: 12px 20px; border-radius: 12px;
+            text-decoration: none; font-size: 11px; font-weight: 900; letter-spacing: 1px;
             text-transform: uppercase; transition: 0.3s;
         }
-        .btn-talk:hover { filter: brightness(1.1); }
+        .btn-action:hover { background: var(--primary); color: #fff; }
 
-        /* AJUSTES PARA TELAS MENORES (TABLETS E CELULARES) */
-        @media (max-width: 900px) {
-            .main-wrapper { flex-direction: column; }
-            .sidebar { 
-                width: 100%; height: auto; position: relative; top: 0; 
-                border-right: none; border-bottom: 1px solid #1a1a1a; padding: 20px;
-            }
-            .grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-            header { padding: 15px 20px; }
-            #logo-place h1 { font-size: 14px; letter-spacing: 3px; }
-            .content { padding: 15px; }
+        /* RESPONSIVIDADE */
+        @media (max-width: 1000px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; position: relative; top: 0; }
         }
     </style>
 </head>
@@ -111,27 +109,22 @@
 
     <header>
         <div id="logo-place"><h1>NEXUS V12</h1></div>
-        <div style="font-size: 10px; opacity: 0.5;">SHOWROOM VIRTUAL</div>
+        <div style="font-size: 10px; color: #555; letter-spacing: 2px;">SINCE 2026</div>
     </header>
 
-    <div class="main-wrapper">
+    <div class="main-container">
         <aside class="sidebar">
-            <h3>Filtros</h3>
+            <h3>Filtros de Busca</h3>
             <div class="filter-group">
-                <label>O que você busca?</label>
+                <label>Pesquisar</label>
                 <input type="text" id="busca" placeholder="Modelo ou marca..." oninput="window.filtrar()">
             </div>
-            <div class="filter-group">
-                <label>Ordenar por</label>
-                <select id="ordem" onchange="window.filtrar()">
-                    <option value="recentes">Mais recentes</option>
-                    <option value="menor-preco">Menor Preço</option>
-                </select>
+            <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+                <p style="font-size: 9px; color: #444; line-height: 1.5;">O NEXUS V12 sincroniza seu estoque em tempo real usando tecnologia militar de dados.</p>
             </div>
         </aside>
 
         <main class="content">
-            <div class="results-info">Estoque: <b id="count-total">0</b> veículos</div>
             <div id="lista-carros" class="grid"></div>
         </main>
     </div>
@@ -140,6 +133,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Configuração mantida do seu projeto
         const firebaseConfig = {
             apiKey: "AIzaSyBOCli1HzoijZ1gcplo_18tKH-5Umb63q8",
             authDomain: "nexus-v12.firebaseapp.com",
@@ -156,6 +150,7 @@
         let todosCarros = [];
 
         if(lojaId) {
+            // Sincronização de Marca e Cor
             onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
                 if(s.exists()){
                     const d = s.data();
@@ -164,6 +159,7 @@
                 }
             });
 
+            // Sincronização de Estoque
             const q = query(collection(db, "carros"), where("lojaId", "==", lojaId), where("status", "==", "disponivel"));
             onSnapshot(q, (snap) => {
                 todosCarros = [];
@@ -174,29 +170,44 @@
 
         function renderizar(lista) {
             const grid = document.getElementById('lista-carros');
-            document.getElementById('count-total').innerText = lista.length;
             grid.innerHTML = '';
             
             lista.forEach((c, carIdx) => {
                 const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}">`).join('');
+                
                 grid.innerHTML += `
                     <div class="card">
-                        <div class="slider" id="slider-${carIdx}">${fotosHtml}</div>
-                        <div class="card-content">
-                            <span class="car-brand">${c.marca || 'Premium'}</span>
-                            <div class="car-title">${c.modelo}</div>
-                            <div class="car-specs">
-                                <div class="spec-item">Ano <b>${c.ano}</b></div>
-                                <div class="spec-item">KM <b>${Number(c.km).toLocaleString('pt-BR')}</b></div>
+                        <div class="slider" id="slider-${carIdx}">
+                            <button class="nav-btn btn-prev" onclick="window.changeSlide(${carIdx}, -1)"><i class="fa fa-chevron-left"></i></button>
+                            <button class="nav-btn btn-next" onclick="window.changeSlide(${carIdx}, 1)"><i class="fa fa-chevron-right"></i></button>
+                            ${fotosHtml}
+                        </div>
+                        <div class="card-body">
+                            <span class="brand-label">${c.marca || 'Elite Selection'}</span>
+                            <div class="model-name">${c.modelo}</div>
+                            
+                            <div class="specs-grid">
+                                <div class="spec-item">Ano<span>${c.ano}</span></div>
+                                <div class="spec-item">Quilometragem<span>${Number(c.km).toLocaleString('pt-BR')} km</span></div>
                             </div>
-                            <span class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</span>
-                            <a href="#" class="btn-talk" onclick="window.negociar('${c.modelo}', '${c.vendedorResponsavel}')">
-                                <i class="fab fa-whatsapp"></i> Consultar Agora
-                            </a>
+
+                            <div class="price-container">
+                                <div class="price-val">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
+                                <a href="#" class="btn-action" onclick="window.negociar('${c.modelo}', '${c.vendedorResponsavel}')">RESERVAR</a>
+                            </div>
                         </div>
                     </div>`;
             });
         }
+
+        window.changeSlide = (carIdx, dir) => {
+            const slider = document.getElementById(`slider-${carIdx}`);
+            const imgs = slider.querySelectorAll('img');
+            let activeIdx = Array.from(imgs).findIndex(img => img.classList.contains('active'));
+            imgs[activeIdx].classList.remove('active');
+            activeIdx = (activeIdx + dir + imgs.length) % imgs.length;
+            imgs[activeIdx].classList.add('active');
+        };
 
         window.negociar = async (modelo, vendedor) => {
             const q = query(collection(db, "vendedores"), where("lojaId", "==", lojaId), where("nome", "==", vendedor));
@@ -205,7 +216,7 @@
             snap.forEach(d => tel = d.data().whatsapp);
             if(tel) {
                 const num = tel.replace(/\D/g, "");
-                window.open(`https://wa.me/55${num}?text=Olá! Gostaria de mais informações sobre o ${modelo}.`, '_blank');
+                window.open(`https://wa.me/55${num}?text=Tenho interesse no veículo ${modelo}. Podemos conversar?`, '_blank');
             }
         };
 
