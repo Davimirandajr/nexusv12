@@ -3,103 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS V12 | Elite Portal</title>
+    <title>NEXUS V12 | Showroom Profissional</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@200;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #e31010; /* Cor padrão, será substituída pelo Firebase */
+            --primary: #e31010; 
             --dark: #000000; 
-            --card-bg: #080808;
+            --card-bg: #0d0d0d;
+            --sidebar-bg: #050505;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Outfit', sans-serif; background: var(--dark); color: #fff; overflow-x: hidden; }
 
-        /* Header Minimalista Estilo Luxo */
+        /* HEADER RESPONSIVO */
         header { 
-            background: #000; padding: 30px 20px; 
+            background: #000; padding: 15px 30px; 
             position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex; justify-content: center; align-items: center;
+            border-bottom: 2px solid var(--primary);
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .logo-img { max-height: 60px; filter: grayscale(1) brightness(2); transition: 0.5s; }
-        .logo-img:hover { filter: grayscale(0); }
-        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 22px; letter-spacing: 6px; color: #fff; }
+        .logo-img { max-height: 45px; transition: 0.3s; }
+        #logo-place h1 { font-family: 'Syncopate', sans-serif; font-size: 18px; letter-spacing: 5px; }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        /* LAYOUT PRINCIPAL */
+        .main-wrapper { display: flex; max-width: 1800px; margin: 0 auto; min-height: 100vh; }
 
-        /* Busca High-Tech */
-        .search-box { position: relative; max-width: 600px; margin: 20px auto 40px; }
-        .search-box input { 
-            width: 100%; padding: 15px 20px 15px 50px; background: transparent; 
-            border: 1px solid #222; color: #fff; font-size: 16px; outline: none;
-            transition: 0.4s; border-radius: 0px;
+        /* SIDEBAR (FILTROS) */
+        .sidebar { 
+            width: 320px; background: var(--sidebar-bg); padding: 30px;
+            border-right: 1px solid #1a1a1a; position: sticky; top: 77px; height: calc(100vh - 77px);
+            overflow-y: auto; transition: 0.3s;
         }
-        .search-box input:focus { border-color: var(--primary); }
-        .search-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        .sidebar h3 { font-family: 'Syncopate', sans-serif; font-size: 11px; margin-bottom: 25px; color: var(--primary); letter-spacing: 2px; }
+        
+        .filter-group { margin-bottom: 20px; }
+        .filter-group label { display: block; font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 8px; }
+        .filter-group input, .filter-group select { 
+            width: 100%; background: #111; border: 1px solid #222; padding: 12px; 
+            color: #fff; outline: none; border-radius: 5px; font-size: 14px;
+        }
+        .filter-group input:focus { border-color: var(--primary); }
 
-        /* Grid Lamborghini: 2 colunas no mobile, 3+ no desktop */
+        /* ÁREA DE CARROS */
+        .content { flex: 1; padding: 30px; }
+        .results-info { margin-bottom: 25px; font-size: 18px; font-weight: 200; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px; }
+        .results-info b { color: var(--primary); }
+
+        /* GRID ADAPTÁVEL */
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 15px; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
         }
-        @media (min-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 30px; } }
 
-        /* Card Agressivo */
+        /* CARD ESTILO UNIDAS DARK */
         .card { 
-            background: var(--card-bg); border: 1px solid #111; 
-            transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative; animation: reveal 0.8s ease forwards;
+            background: var(--card-bg); border-radius: 10px; overflow: hidden; 
+            border: 1px solid #1a1a1a; transition: 0.4s; position: relative;
         }
         .card:hover { border-color: var(--primary); transform: translateY(-5px); }
 
-        @keyframes reveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Slider com Zoom Anidmado */
         .slider { position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden; background: #000; }
-        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; transition: 1.5s scale ease; }
-        .slider img.active { display: block; }
-        .card:hover .slider img.active { scale: 1.1; }
-
-        .slider-btn { 
-            position: absolute; top: 50%; transform: translateY(-50%); 
-            background: rgba(0,0,0,0.6); color: #fff; border: none; 
-            width: 35px; height: 35px; cursor: pointer; z-index: 10; font-size: 12px;
-        }
-        .prev { left: 0; } .next { right: 0; }
-
-        /* Informações do Carro */
-        .card-content { padding: 20px; }
-        .car-brand { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--primary); font-weight: 700; margin-bottom: 5px; display: block; }
-        .car-title { font-family: 'Syncopate', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+        .slider img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .slider img.active { display: block; animation: fadeIn 0.5s; }
         
-        .price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-        .price-line { height: 1px; background: var(--primary); flex-grow: 1; opacity: 0.3; }
-        .price { font-size: 20px; font-weight: 300; letter-spacing: 1px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Specs Minimalistas */
-        .mini-specs { display: flex; gap: 15px; margin-bottom: 20px; }
-        .spec-item { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
-        .spec-item b { color: #fff; display: block; font-size: 13px; margin-top: 3px; font-weight: 400; }
+        .card-content { padding: 20px; }
+        .car-brand { font-size: 10px; color: var(--primary); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+        .car-title { font-family: 'Syncopate', sans-serif; font-size: 15px; margin: 5px 0 15px; }
+        
+        .car-specs { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #1a1a1a; }
+        .spec-item { font-size: 10px; color: #777; text-transform: uppercase; }
+        .spec-item b { color: #fff; display: block; font-size: 12px; margin-top: 2px; font-weight: 400; }
 
-        /* Botão Minimalista Preto/Branco */
-        .btn-whats { 
-            display: block; width: 100%; padding: 15px; border: 1px solid #fff;
-            color: #fff; text-decoration: none; text-align: center;
-            font-size: 11px; font-weight: 800; letter-spacing: 2px;
-            transition: 0.4s;
+        .price { font-size: 22px; font-weight: 300; margin-bottom: 15px; display: block; }
+
+        .btn-talk { 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 14px; background: #25D366; color: #fff; 
+            text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 12px;
+            text-transform: uppercase; transition: 0.3s;
         }
-        .btn-whats:hover { background: #fff; color: #000; }
+        .btn-talk:hover { filter: brightness(1.1); }
 
-        /* Responsividade Extra Mobile */
+        /* AJUSTES PARA TELAS MENORES (TABLETS E CELULARES) */
+        @media (max-width: 900px) {
+            .main-wrapper { flex-direction: column; }
+            .sidebar { 
+                width: 100%; height: auto; position: relative; top: 0; 
+                border-right: none; border-bottom: 1px solid #1a1a1a; padding: 20px;
+            }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        }
+
         @media (max-width: 600px) {
-            .car-title { font-size: 13px; }
-            .price { font-size: 16px; }
-            .card-content { padding: 15px; }
-            .mini-specs { gap: 10px; }
-            .spec-item b { font-size: 11px; }
+            .grid { grid-template-columns: 1fr; }
+            header { padding: 15px 20px; }
+            #logo-place h1 { font-size: 14px; letter-spacing: 3px; }
+            .content { padding: 15px; }
         }
     </style>
 </head>
@@ -107,14 +111,29 @@
 
     <header>
         <div id="logo-place"><h1>NEXUS V12</h1></div>
+        <div style="font-size: 10px; opacity: 0.5;">SHOWROOM VIRTUAL</div>
     </header>
 
-    <div class="container">
-        <div class="search-box">
-            <i class="fa fa-search"></i>
-            <input type="text" id="busca" placeholder="PROCURAR MODELO..." oninput="window.filtrar()">
-        </div>
-        <div id="lista-carros" class="grid"></div>
+    <div class="main-wrapper">
+        <aside class="sidebar">
+            <h3>Filtros</h3>
+            <div class="filter-group">
+                <label>O que você busca?</label>
+                <input type="text" id="busca" placeholder="Modelo ou marca..." oninput="window.filtrar()">
+            </div>
+            <div class="filter-group">
+                <label>Ordenar por</label>
+                <select id="ordem" onchange="window.filtrar()">
+                    <option value="recentes">Mais recentes</option>
+                    <option value="menor-preco">Menor Preço</option>
+                </select>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="results-info">Estoque: <b id="count-total">0</b> veículos</div>
+            <div id="lista-carros" class="grid"></div>
+        </main>
     </div>
 
     <script type="module">
@@ -132,17 +151,14 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         const params = new URLSearchParams(window.location.search);
         const lojaId = params.get('loja');
         let todosCarros = [];
 
         if(lojaId) {
-            // BUSCA A COR E LOGO DO BANCO (PAINEL ADMIN)
             onSnapshot(doc(db, "configuracoes", lojaId), (s) => {
                 if(s.exists()){
                     const d = s.data();
-                    // AQUI A COR DO BANCO ENTRA NO CSS
                     if(d.corLoja) document.documentElement.style.setProperty('--primary', d.corLoja);
                     if(d.logo) document.getElementById('logo-place').innerHTML = `<img src="${d.logo}" class="logo-img">`;
                 }
@@ -158,48 +174,29 @@
 
         function renderizar(lista) {
             const grid = document.getElementById('lista-carros');
+            document.getElementById('count-total').innerText = lista.length;
             grid.innerHTML = '';
             
             lista.forEach((c, carIdx) => {
                 const fotosHtml = c.fotos.map((f, i) => `<img src="${f}" class="${i===0?'active':''}">`).join('');
-                
                 grid.innerHTML += `
-                    <div class="card" style="animation-delay: ${carIdx * 0.1}s">
-                        <div class="slider" id="slider-${carIdx}">
-                            ${c.fotos.length > 1 ? `<button class="slider-btn prev" onclick="window.changeSlide(${carIdx}, -1)"><i class="fa fa-chevron-left"></i></button>` : ''}
-                            ${fotosHtml}
-                            ${c.fotos.length > 1 ? `<button class="slider-btn next" onclick="window.changeSlide(${carIdx}, 1)"><i class="fa fa-chevron-right"></i></button>` : ''}
-                        </div>
+                    <div class="card">
+                        <div class="slider" id="slider-${carIdx}">${fotosHtml}</div>
                         <div class="card-content">
-                            <span class="car-brand">${c.marca || 'PREMIUM'}</span>
+                            <span class="car-brand">${c.marca || 'Premium'}</span>
                             <div class="car-title">${c.modelo}</div>
-                            
-                            <div class="price-row">
-                                <div class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</div>
-                                <div class="price-line"></div>
-                            </div>
-                            
-                            <div class="mini-specs">
+                            <div class="car-specs">
                                 <div class="spec-item">Ano <b>${c.ano}</b></div>
-                                <div class="spec-item">KM <b>${c.km ? Number(c.km).toLocaleString('pt-BR') : '0'}</b></div>
+                                <div class="spec-item">KM <b>${Number(c.km).toLocaleString('pt-BR')}</b></div>
                             </div>
-
-                            <a href="#" class="btn-whats" onclick="window.negociar('${c.modelo}', '${c.vendedorResponsavel}')">
-                                DETALHES
+                            <span class="price">R$ ${Number(c.preco).toLocaleString('pt-BR')}</span>
+                            <a href="#" class="btn-talk" onclick="window.negociar('${c.modelo}', '${c.vendedorResponsavel}')">
+                                <i class="fab fa-whatsapp"></i> Consultar Agora
                             </a>
                         </div>
                     </div>`;
             });
         }
-
-        window.changeSlide = (carIdx, dir) => {
-            const slider = document.getElementById(`slider-${carIdx}`);
-            const imgs = slider.querySelectorAll('img');
-            let activeIdx = Array.from(imgs).findIndex(img => img.classList.contains('active'));
-            imgs[activeIdx].classList.remove('active');
-            activeIdx = (activeIdx + dir + imgs.length) % imgs.length;
-            imgs[activeIdx].classList.add('active');
-        };
 
         window.negociar = async (modelo, vendedor) => {
             const q = query(collection(db, "vendedores"), where("lojaId", "==", lojaId), where("nome", "==", vendedor));
@@ -208,7 +205,7 @@
             snap.forEach(d => tel = d.data().whatsapp);
             if(tel) {
                 const num = tel.replace(/\D/g, "");
-                window.open(`https://wa.me/55${num}?text=Olá! Vi o ${modelo} no portal e tenho interesse.`, '_blank');
+                window.open(`https://wa.me/55${num}?text=Olá! Gostaria de mais informações sobre o ${modelo}.`, '_blank');
             }
         };
 
